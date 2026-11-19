@@ -4,6 +4,7 @@ import Footer from "../../components/landing/Footer.astro";
 import { getLocaleStaticPaths, getTranslator, localizedPath, type Locale } from "../../i18n";
 import { config } from "../../config";
 import { daysUntil } from "../../core/countdown";
+import { EXPORTERS, EXPORTER_ORDER } from "../../core/exporters";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -42,6 +43,37 @@ const appPath = localizedPath(lang, "/app/");
       </a>
     </div>
     {!config.msalClientId && <p class="muted">{t("landing.noClientId")}</p>}
+
+    <section aria-labelledby="how-heading">
+      <h2 id="how-heading">{t("landing.how.heading")}</h2>
+      <ol class="steps">
+        <li>{t("landing.how.step1")}</li>
+        <li>{t("landing.how.step2")}</li>
+        <li>{t("landing.how.step3")}</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="formats-heading">
+      <h2 id="formats-heading">{t("landing.formats.heading")}</h2>
+      <ul class="formats">
+        {EXPORTER_ORDER.map((id) => (
+          <li>
+            <strong>{t(EXPORTERS[id].label)}</strong>
+            <span class="muted">{t(EXPORTERS[id].targets)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="limits-heading">
+      <h2 id="limits-heading">{t("app.limits.heading")}</h2>
+      <p>{t("app.limits.text")}</p>
+    </section>
+
+    <section aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading">{t("landing.privacyDetails.heading")}</h2>
+      <p>{t("landing.privacyDetails.body")}</p>
+    </section>
   </main>
   <Footer lang={lang} path="/" />
   <script>
@@ -64,5 +96,25 @@ const appPath = localizedPath(lang, "/app/");
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 24px;
+  }
+  section {
+    margin-top: 48px;
+  }
+  .steps li {
+    margin: 6px 0;
+  }
+  .formats {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .formats li {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
   }
 </style>

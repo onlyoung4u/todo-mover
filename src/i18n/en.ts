@@ -18,7 +18,6 @@ const en = {
 
   "app.title": "Export your tasks",
   "app.loading": "Loading…",
-  "app.placeholder": "The export tool is under construction.",
 
   "footer.disclaimer":
     "This is an independent open-source project and is not affiliated with Microsoft. Microsoft To Do is a trademark of Microsoft.",
@@ -99,6 +98,121 @@ const en = {
   "markdown.plain.low": " (low priority)",
 
   "things.batch": "{name} ({index}/{total})",
+
+  "landing.how.heading": "How it works",
+  "landing.how.step1":
+    "Sign in with your Microsoft account, or open a JSON backup you exported earlier.",
+  "landing.how.step2":
+    "Preview your lists, choose which ones to export and the time zone you used To Do in.",
+  "landing.how.step3": "Pick one or more formats and download the files.",
+  "landing.formats.heading": "Export formats",
+  "landing.privacyDetails.heading": "Privacy",
+  "landing.privacyDetails.body":
+    "This site has no backend. Your tasks are read in your browser, kept only in memory, and sent nowhere except Microsoft's own servers. Sign-in tokens live in session storage and are cleared when you close the tab. The source code is public.",
+  "app.start.heading": "Where should your tasks come from?",
+  "app.start.signIn": "Microsoft account",
+  "app.start.signInDesc": "Read all your lists directly from Microsoft To Do.",
+  "app.start.signInSoon": "Sign-in is coming soon. For now, try the demo or open a JSON backup.",
+  "app.start.demo": "Demo",
+  "app.start.demoDesc": "Sample lists and tasks. No sign-in needed.",
+  "app.start.import": "JSON backup",
+  "app.start.importDesc":
+    "A todo-backup.json exported from this site. Works without signing in, even after Microsoft To Do shuts down.",
+  "app.start.chooseFile": "Choose file…",
+  "app.import.error.invalidJson": "This file isn't valid JSON.",
+  "app.import.error.notBackup": "This file isn't a backup exported by this site.",
+  "app.import.error.noRawData":
+    "This backup doesn't contain the original data, so it can't be converted again.",
+  "app.import.error.newerSchema":
+    "This backup was made by a newer version of this site. Reload the page and try again.",
+  "app.source.demo": "Demo data",
+  "app.source.import": "From backup: {file}",
+  "app.back": "Start over",
+  "app.lists.heading": "Lists",
+  "app.lists.selectAll": "All",
+  "app.lists.selectNone": "None",
+  "app.lists.count": "Tasks: {tasks} · Done: {completed}",
+  "app.lists.flagged": "Flagged email",
+  "app.lists.shared": "Shared",
+  "app.lists.empty": "No tasks",
+  "app.preview.noList": "Select a list to preview its tasks.",
+  "app.preview.steps": "Steps {done}/{total}",
+  "app.preview.due": "Due {date}",
+  "app.preview.reminder": "Reminder {time}",
+  "app.preview.attachments": "Attachments: {count}",
+  "app.preview.links": "Links: {count}",
+  "app.preview.important": "Important",
+  "app.options.heading": "Options",
+  "app.options.includeCompleted": "Include completed tasks",
+  "app.options.timeZone": "Export time zone",
+  "app.options.timeZoneHelp":
+    "Choose the time zone you usually used Microsoft To Do in. Due dates are calculated in this time zone, so a wrong choice can shift them by a day.",
+  "app.options.attachments": "Download attachments",
+  "app.options.attachmentsUnavailable": "Only available after signing in with Microsoft.",
+  "app.limits.heading": "Not available from Microsoft:",
+  "app.limits.text": "My Day (a temporary view) and list groups. All lists are exported flat.",
+  "app.formats.heading": "Formats",
+  "app.formats.ticktick":
+    "Moving to TickTick or 滴答清单? Their built-in “Import from Microsoft To Do” is the easiest route. Keep the JSON backup from here as a safety net.",
+  "app.formats.ticktickLink": "Official help",
+  "app.formats.recommended": "Recommended",
+  "app.formats.targets": "Works with",
+  "app.formats.losses": "What gets lost",
+  "app.formats.appleOnly": "Only for macOS and iOS.",
+  "opt.csv.formulaGuard":
+    "Protect against Excel formulas (adds ' before cells starting with = + - @)",
+  "opt.markdown.style": "Style",
+  "opt.markdown.styleObsidian": "Obsidian Tasks (emoji markers)",
+  "opt.markdown.stylePlain": "Plain text",
+  "opt.markdown.singleFile": "Combine into a single todo.md",
+  "opt.todoist.includeCompleted": "Include completed tasks (imported as open)",
+  "opt.todoist.includeCheckedSteps": "Include checked steps",
+  "opt.todoist.categoriesAsLabels": "Turn categories into Todoist labels",
+  "app.export.button": "Export",
+  "app.export.working": "Preparing files…",
+  "app.export.noList": "Choose at least one list.",
+  "app.export.noFormat": "Choose at least one format.",
+  "app.export.summary": "Lists: {lists} · Tasks: {tasks} · Formats: {formats}",
+  "app.export.failed": "Something went wrong while creating the files. Please try again.",
+  "app.done.heading": "Your export is ready",
+  "app.done.downloaded": "Downloaded {file}.",
+  "app.done.downloadAgain": "Download again",
+  "app.done.backToPreview": "Back to options",
+  "app.done.things.heading": "Open in Things",
+  "app.done.things.hint": "Click the buttons one at a time and wait a few seconds between clicks.",
+  "app.done.things.open": "Open in Things",
+  "app.done.warnings": "Notes from the export ({count})",
+  "app.done.guides": "How to import",
+  "app.done.officialHelp": "Official help",
+  "app.done.revoke.heading": "Remove this site's access",
+  "app.done.revoke.personal": "Personal Microsoft account:",
+  "app.done.revoke.work": "Work or school account:",
+  "app.done.donate": "If this saved you some time, you can buy me a coffee.",
+  "app.done.follow": "Follow the project for future tools:",
+  "guide.json.title": "Keep the JSON backup",
+  "guide.json.steps":
+    "Save todo-backup.json somewhere safe, such as your cloud drive.\nTo convert it later, open this site and choose “JSON backup”.\nNo sign-in is needed, so this works even after Microsoft To Do shuts down.",
+  "guide.excel.title": "Excel, Numbers, Google Sheets",
+  "guide.excel.steps":
+    "Open todo-tasks.csv directly. The file is UTF-8 with a BOM, so non-English text displays correctly.\nIf characters still look garbled in an older Excel, use Data → From Text/CSV and choose UTF-8.\nIn Google Sheets, use File → Import → Upload.",
+  "guide.obsidian.title": "Obsidian and other notes apps",
+  "guide.obsidian.steps":
+    "Copy the .md files into your vault.\nFor due dates, priorities and recurrence, install the community plugin “Tasks”.\nThe plain-text style works in any notes app, such as Logseq or Notion (Import → Markdown).",
+  "guide.thunderbird.title": "Thunderbird",
+  "guide.thunderbird.steps":
+    "Open the Tasks tab.\nChoose Events and Tasks → Import (in newer versions: File → Import → Calendars) and pick an .ics file.\nRepeat for each list.",
+  "guide.nextcloud.title": "Nextcloud Tasks",
+  "guide.nextcloud.steps":
+    "Open the Calendar app and go to Calendar settings → Import calendar.\nChoose an .ics file and the calendar to import into (or a new one).\nThe tasks then appear in the Tasks app.",
+  "guide.todoist.title": "Todoist",
+  "guide.todoist.steps":
+    "Create a project for each list, or open an existing one.\nOpen the project's … menu and choose Import from CSV.\nPick the matching CSV file, then repeat for each list.\nRecurring tasks start from today; the original due date is kept in the description.",
+  "guide.things.title": "Things 3",
+  "guide.things.steps":
+    "Do the export on the Mac, iPhone or iPad where Things is installed; the buttons only work there.\nClick the “Open in Things” buttons one at a time, waiting a few seconds between clicks.\nTags that don't already exist in Things are skipped, so create them first if you need them.",
+  "guide.ticktick.title": "TickTick / 滴答清单",
+  "guide.ticktick.steps":
+    "TickTick can import straight from Microsoft To Do: in the web app, open Settings → Integrations & Import → Microsoft To Do.\nSign in with your Microsoft account and choose the lists to import.\nKeep the JSON backup from this site as a safety net.",
 } as const;
 
 export type MessageKey = keyof typeof en;

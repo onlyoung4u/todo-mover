@@ -48,3 +48,14 @@ export function sampleRawData(): RawData {
 export function syntheticRawData(): RawData {
   return toRawData(synthetic as unknown as Collections);
 }
+
+/** 演示模式使用的数据：真实样例在前，合成数据在后。 */
+export function demoRawData(): RawData {
+  const a = sampleRawData();
+  const b = syntheticRawData();
+  return {
+    lists: [...a.lists, ...b.lists],
+    tasksByListId: { ...a.tasksByListId, ...b.tasksByListId },
+    attachmentsByTaskId: { ...a.attachmentsByTaskId, ...b.attachmentsByTaskId },
+  };
+}
