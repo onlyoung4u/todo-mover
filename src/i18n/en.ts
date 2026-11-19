@@ -45,6 +45,19 @@ const en = {
   "export.markdown.targets": "Obsidian (Tasks plugin), Logseq, Notion, any notes app",
   "export.markdown.losses": "Reminder times, step completion times, attachments",
 
+  "export.ics.label": "ICS calendar tasks",
+  "export.ics.targets": "Thunderbird, Nextcloud Tasks, and other CalDAV task apps",
+  "export.ics.losses":
+    "Note formatting; steps and links are added to the description. Attachments are not included.",
+  "export.todoist.label": "Todoist CSV",
+  "export.todoist.targets": "Todoist (one project per list)",
+  "export.todoist.losses":
+    "Completed tasks and checked steps (skipped by default), start dates, reminders, attachments. Todoist only supports p1 and p4 here.",
+  "export.things.label": "Things 3",
+  "export.things.targets": "Things 3 on Mac, iPhone and iPad",
+  "export.things.losses":
+    "Repeat rules, reminders and start dates are added to the notes. Tags that don't already exist in Things are dropped. Attachments are not included.",
+
   "csv.col.list": "List",
   "csv.col.title": "Title",
   "csv.col.status": "Status",
@@ -84,6 +97,8 @@ const en = {
   "markdown.plain.recurrence": " (repeats: {rule})",
   "markdown.plain.high": " (important)",
   "markdown.plain.low": " (low priority)",
+
+  "things.batch": "{name} ({index}/{total})",
 } as const;
 
 export type MessageKey = keyof typeof en;

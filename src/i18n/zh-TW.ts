@@ -44,6 +44,18 @@ const zhTW: Messages = {
   "export.markdown.targets": "Obsidian（Tasks 外掛程式）、Logseq、Notion 及任何筆記應用程式",
   "export.markdown.losses": "提醒時間、步驟完成時間、附件",
 
+  "export.ics.label": "ICS 行事曆工作",
+  "export.ics.targets": "Thunderbird、Nextcloud Tasks 及其他 CalDAV 工作應用程式",
+  "export.ics.losses": "備註格式；步驟與連結寫進描述。不包含附件。",
+  "export.todoist.label": "Todoist CSV",
+  "export.todoist.targets": "Todoist（每個清單匯入為一個專案）",
+  "export.todoist.losses":
+    "已完成工作與已勾選步驟（預設略過）、開始日期、提醒、附件。重要性只區分 p1 與 p4。",
+  "export.things.label": "Things 3",
+  "export.things.targets": "Mac、iPhone、iPad 上的 Things 3",
+  "export.things.losses":
+    "重複規則、提醒與開始日期寫進備註。Things 中不存在的標籤會被捨棄。不包含附件。",
+
   "csv.col.list": "清單",
   "csv.col.title": "標題",
   "csv.col.status": "狀態",
@@ -83,6 +95,8 @@ const zhTW: Messages = {
   "markdown.plain.recurrence": "（重複：{rule}）",
   "markdown.plain.high": "（重要）",
   "markdown.plain.low": "（低優先順序）",
+
+  "things.batch": "{name}（{index}/{total}）",
 };
 
 export default zhTW;
