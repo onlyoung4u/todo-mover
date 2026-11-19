@@ -32,6 +32,58 @@ const en = {
   "notFound.back": "Back to home",
 
   "auth.redirecting": "Completing sign-in…",
+
+  "export.json.label": "JSON backup",
+  "export.json.targets":
+    "A lossless backup. Open it here again later to convert it to any format, even after Microsoft To Do shuts down.",
+  "export.json.losses": "Nothing. Attachments are saved as separate files.",
+  "export.csv.label": "CSV spreadsheet",
+  "export.csv.targets": "Excel, Numbers, Google Sheets, Notion",
+  "export.csv.losses":
+    "Note formatting. Steps, links and repeat rules become plain text; attachments are not included.",
+  "export.markdown.label": "Markdown",
+  "export.markdown.targets": "Obsidian (Tasks plugin), Logseq, Notion, any notes app",
+  "export.markdown.losses": "Reminder times, step completion times, attachments",
+
+  "csv.col.list": "List",
+  "csv.col.title": "Title",
+  "csv.col.status": "Status",
+  "csv.col.importance": "Importance",
+  "csv.col.due": "Due date",
+  "csv.col.start": "Start date",
+  "csv.col.reminder": "Reminder",
+  "csv.col.recurrence": "Repeat",
+  "csv.col.completed": "Completed date",
+  "csv.col.created": "Created",
+  "csv.col.modified": "Modified",
+  "csv.col.categories": "Categories",
+  "csv.col.notes": "Notes",
+  "csv.col.steps": "Steps",
+  "csv.col.stepProgress": "Step progress",
+  "csv.col.links": "Links",
+  "csv.col.hasAttachments": "Has attachments",
+  "csv.col.taskId": "Task ID",
+  "csv.col.listId": "List ID",
+
+  "status.notStarted": "Not started",
+  "status.inProgress": "In progress",
+  "status.completed": "Completed",
+  "status.waitingOnOthers": "Waiting on others",
+  "status.deferred": "Deferred",
+
+  "importance.low": "Low",
+  "importance.normal": "Normal",
+  "importance.high": "High",
+
+  "common.yes": "Yes",
+  "common.no": "No",
+
+  "markdown.plain.due": " (due {date})",
+  "markdown.plain.start": " (starts {date})",
+  "markdown.plain.completed": " (done {date})",
+  "markdown.plain.recurrence": " (repeats: {rule})",
+  "markdown.plain.high": " (important)",
+  "markdown.plain.low": " (low priority)",
 } as const;
 
 export type MessageKey = keyof typeof en;
