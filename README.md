@@ -58,6 +58,8 @@ The official site's Azure app only allows the official domain as a redirect URI,
 5. Under **API permissions**, add the Microsoft Graph **Delegated** permissions `Tasks.Read` and `User.Read`. Admin consent is not required.
 6. Don't create a client secret. This is a browser-only app.
 
+If sign-in fails with **AADSTS70002** ("must include a 'client_secret'") or **AADSTS9002326**, the redirect URI is registered under the **Web** platform. Remove it there and add it under **Single-page application** instead. **AADSTS50011** means the current address (for example `http://localhost:8787/auth/redirect/`) isn't registered yet.
+
 ### 2. Deploy to Cloudflare Workers (static assets)
 
 The site is purely static and is served by Workers static assets with no Worker script, so requests are not billed as Worker invocations.

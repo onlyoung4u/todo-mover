@@ -36,6 +36,15 @@ describe("parseBackup", () => {
     expect(again.lists[0]!.tasks[0]!.dueDate).toBe("2019-11-29");
   });
 
+  it("removes nested @odata.context annotations left in older backups", () => {
+    const backup = JSON.parse(backupText);
+    backup.raw.tasksByListId.LIST_DEFAULT[0]["checklistItems@odata.context"] =
+      "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/x";
+    const parsed = parseBackup(JSON.stringify(backup));
+    expect(JSON.stringify(parsed.raw)).not.toContain("@odata.context");
+    expect(parsed.raw).toEqual(raw);
+  });
+
   it("fills a missing attachmentsByTaskId", () => {
     const backup = JSON.parse(backupText);
     delete backup.raw.attachmentsByTaskId;

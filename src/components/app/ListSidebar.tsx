@@ -5,6 +5,8 @@ type Props = {
   lists: TodoList[];
   /** 未按"包含已完成"筛选前的统计（显示清单原本有多少任务） */
   counts: Record<string, { total: number; completed: number }>;
+  /** 读取失败的清单 */
+  failed: string[];
   selected: string[];
   focused?: string;
   onToggle: (id: string, checked: boolean) => void;
@@ -15,6 +17,7 @@ type Props = {
 export function ListSidebar({
   lists,
   counts,
+  failed,
   selected,
   focused,
   onToggle,
@@ -53,8 +56,13 @@ export function ListSidebar({
                 <span className="meta">
                   {t("app.lists.count", { tasks: count.total, completed: count.completed })}
                 </span>
-                {(list.wellknown === "flaggedEmails" || list.isShared) && (
+                {(list.wellknown === "flaggedEmails" ||
+                  list.isShared ||
+                  failed.includes(list.id)) && (
                   <span className="badges">
+                    {failed.includes(list.id) && (
+                      <span className="badge danger">{t("app.lists.failed")}</span>
+                    )}
                     {list.wellknown === "flaggedEmails" && (
                       <span className="badge">{t("app.lists.flagged")}</span>
                     )}

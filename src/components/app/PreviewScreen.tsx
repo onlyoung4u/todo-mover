@@ -15,10 +15,15 @@ type Props = {
   settings: Settings;
   thingsAvailable: boolean;
   attachmentsAvailable: boolean;
-  exporting: boolean;
+  /** 读取失败的清单（可重试） */
+  failedListIds: string[];
+  /** 正在进行的操作说明（导出、下载附件、重试）；有值时禁用按钮 */
+  busy?: string;
   onChange: (settings: Settings) => void;
   onExport: () => void;
   onBack: () => void;
+  onSignOut?: () => void;
+  onRetryFailed: () => void;
 };
 
 export function PreviewScreen({
@@ -27,10 +32,13 @@ export function PreviewScreen({
   settings,
   thingsAvailable,
   attachmentsAvailable,
-  exporting,
+  failedListIds,
+  busy,
   onChange,
   onExport,
   onBack,
+  onSignOut,
+  onRetryFailed,
 }: Props) {
   const { t } = useI18n();
   const tzId = useId();
@@ -84,15 +92,39 @@ export function PreviewScreen({
     <div className="preview-screen">
       <div className="source-bar">
         <span>{sourceLabel}</span>
-        <button type="button" className="link-button" onClick={onBack}>
-          {t("app.back")}
-        </button>
+        <span className="button-row">
+          {onSignOut && (
+            <button type="button" className="link-button" onClick={onSignOut}>
+              {t("app.signOut")}
+            </button>
+          )}
+          <button type="button" className="link-button" onClick={onBack}>
+            {t("app.back")}
+          </button>
+        </span>
       </div>
+
+      {failedListIds.length > 0 && (
+        <div className="notice warning" role="alert">
+          <p>
+            {t("app.read.someFailed", {
+              names: raw.lists
+                .filter((l) => failedListIds.includes(l.id))
+                .map((l) => l.displayName)
+                .join(t("app.listSeparator")),
+            })}
+          </p>
+          <button type="button" className="button" disabled={Boolean(busy)} onClick={onRetryFailed}>
+            {t("app.read.retry")}
+          </button>
+        </div>
+      )}
 
       <div className="workspace">
         <ListSidebar
           lists={preview.lists}
           counts={counts}
+          failed={failedListIds}
           selected={settings.selectedListIds}
           focused={focused}
           onFocus={setFocused}
@@ -165,8 +197,9 @@ export function PreviewScreen({
       />
 
       <div className="export-bar">
-        <p className="muted">
-          {blocker ??
+        <p className="muted" aria-live="polite">
+          {busy ??
+            blocker ??
             t("app.export.summary", {
               lists: selected.size,
               tasks: selectedTasks,
@@ -176,10 +209,10 @@ export function PreviewScreen({
         <button
           type="button"
           className="button primary"
-          disabled={Boolean(blocker) || exporting}
+          disabled={Boolean(blocker) || Boolean(busy)}
           onClick={onExport}
         >
-          {exporting ? t("app.export.working") : t("app.export.button")}
+          {busy ? t("app.export.working") : t("app.export.button")}
         </button>
       </div>
     </div>

@@ -206,6 +206,39 @@ const zhTW: Messages = {
   "guide.ticktick.title": "TickTick / 滴答清單",
   "guide.ticktick.steps":
     "TickTick 可以直接從 Microsoft To Do 匯入：在網頁版的「設定」中找到匯入相關選項，選擇 Microsoft To Do。\n使用 Microsoft 帳戶登入並選擇要匯入的清單。\n本站匯出的 JSON 備份可作為保險。",
+
+  "app.source.graph": "Microsoft 帳戶：{name}",
+  "app.signOut": "登出",
+  "app.listSeparator": "、",
+  "app.lists.failed": "讀取失敗",
+  "app.start.signedInAs": "已登入：{name}",
+  "app.start.readTasks": "讀取我的工作",
+  "app.start.signInRedirect": "改為在目前頁面登入",
+  "app.start.grantPermission": "授予額外權限",
+  "app.start.permissions": "唯讀：本站只讀取你的名稱與工作，不會修改你帳戶中的任何內容。",
+  "app.read.heading": "正在讀取工作…",
+  "app.read.starting": "正在連線至 Microsoft…",
+  "app.read.progress": "清單 {done}/{total}，工作 {tasks} 項…",
+  "app.read.someFailed": "以下清單讀取失敗：{names}。其餘資料已讀取完成，可以只重試這些清單。",
+  "app.read.retry": "重試",
+  "app.read.retrying": "正在重試…",
+  "app.read.listFailed": "清單「{name}」讀取失敗，未包含在匯出中。",
+  "app.error.consentBlocked":
+    "你的組織不允許授權第三方應用程式。請聯絡 IT 管理員，或改用個人帳戶。",
+  "app.error.misconfigured":
+    "本站的 Azure 應用程式註冊設定有誤：重新導向 URI {uri} 需要登記在「單頁應用程式（SPA）」平台下（不是「Web」）。請參考 README 中的自行部署指南。詳細資訊：{message}",
+  "app.error.popupBlocked":
+    "瀏覽器封鎖了登入快顯視窗。請允許本站的快顯視窗後重試，或改為在目前頁面登入。",
+  "app.error.sessionExpired": "登入已過期，請重新登入。已讀取的資料會保留。",
+  "app.error.forbidden":
+    "Microsoft 拒絕以唯讀權限讀取你的工作。你可以改為授予讀寫權限，本站仍然只讀取資料，不會修改任何內容。",
+  "app.error.network": "無法連線至 Microsoft 伺服器，請檢查網路後重試。",
+  "app.error.other": "發生錯誤：{message}",
+  "app.attachments.metadata": "正在檢查附件 {done}/{total}…",
+  "app.attachments.downloading": "正在下載附件 {done}/{total}…",
+  "app.attachments.confirm": "附件總共約 {size} MB，確定全部下載嗎？",
+  "app.attachments.skipped": "依你的選擇，沒有下載附件。附件名稱仍記錄在 JSON 備份中。",
+  "app.attachments.failed": "工作「{task}」的附件「{name}」下載失敗。",
 };
 
 export default zhTW;

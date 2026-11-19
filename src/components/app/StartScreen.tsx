@@ -1,12 +1,21 @@
 import { useId, useRef, useState, type ChangeEvent } from "react";
 import { BackupError, parseBackup, type ParsedBackup } from "../../core/model/backup";
 import type { MessageKey } from "../../i18n";
+import { errorText, type UiError } from "./errors";
 import { useI18n } from "./i18n";
+import type { MicrosoftState } from "./useMicrosoft";
 
 type Props = {
-  msalConfigured: boolean;
-  /** 从落地页点"导入 JSON"进来时突出导入入口 */
+  microsoft: MicrosoftState["status"];
+  account?: { name?: string; username?: string };
+  error?: UiError;
+  /** 从落地页点"导入 JSON" / "登录"进来时突出对应入口 */
   highlight?: "import" | "signin";
+  onSignIn: () => void;
+  onSignInRedirect: () => void;
+  onReadAgain: () => void;
+  onSignOut: () => void;
+  onRequestReadWrite: () => void;
   onDemo: () => void;
   onImport: (backup: ParsedBackup, fileName: string) => void;
 };
@@ -18,8 +27,79 @@ const IMPORT_ERRORS: Record<BackupError["code"], MessageKey> = {
   newerSchema: "app.import.error.newerSchema",
 };
 
-export function StartScreen({ msalConfigured, highlight, onDemo, onImport }: Props) {
+function MicrosoftCard({
+  microsoft,
+  account,
+  error,
+  highlight,
+  onSignIn,
+  onSignInRedirect,
+  onReadAgain,
+  onSignOut,
+  onRequestReadWrite,
+}: Omit<Props, "onDemo" | "onImport">) {
   const { t } = useI18n();
+  const name = account?.name || account?.username;
+
+  return (
+    <div className={`card${highlight === "signin" ? " card-highlight" : ""}`}>
+      <h2>{t("app.start.signIn")}</h2>
+      <p className="muted">{t("app.start.signInDesc")}</p>
+
+      {microsoft === "unavailable" && (
+        <>
+          <button type="button" className="button primary" disabled>
+            {t("landing.signIn")}
+          </button>
+          <p className="hint">{t("landing.noClientId")}</p>
+        </>
+      )}
+
+      {microsoft === "initializing" && <p className="hint">{t("app.loading")}</p>}
+
+      {microsoft === "ready" && !account && (
+        <button type="button" className="button primary" onClick={onSignIn}>
+          {t("landing.signIn")}
+        </button>
+      )}
+
+      {microsoft === "ready" && account && (
+        <>
+          <p>{t("app.start.signedInAs", { name: name ?? "" })}</p>
+          <div className="button-row">
+            <button type="button" className="button primary" onClick={onReadAgain}>
+              {t("app.start.readTasks")}
+            </button>
+            <button type="button" className="link-button" onClick={onSignOut}>
+              {t("app.signOut")}
+            </button>
+          </div>
+        </>
+      )}
+
+      {error && (
+        <div className="error" role="alert">
+          <p>{errorText(error, t)}</p>
+          {error.kind === "popupBlocked" && (
+            <button type="button" className="button" onClick={onSignInRedirect}>
+              {t("app.start.signInRedirect")}
+            </button>
+          )}
+          {error.kind === "forbidden" && (
+            <button type="button" className="button" onClick={onRequestReadWrite}>
+              {t("app.start.grantPermission")}
+            </button>
+          )}
+        </div>
+      )}
+      <p className="hint">{t("app.start.permissions")}</p>
+    </div>
+  );
+}
+
+export function StartScreen(props: Props) {
+  const { t } = useI18n();
+  const { highlight, onDemo, onImport } = props;
   const fileInput = useRef<HTMLInputElement>(null);
   const fileInputId = useId();
   const [error, setError] = useState<string>();
@@ -46,16 +126,7 @@ export function StartScreen({ msalConfigured, highlight, onDemo, onImport }: Pro
     <section className="start">
       <h1>{t("app.start.heading")}</h1>
       <div className="start-options">
-        <div className={`card${highlight === "signin" ? " card-highlight" : ""}`}>
-          <h2>{t("app.start.signIn")}</h2>
-          <p className="muted">{t("app.start.signInDesc")}</p>
-          <button type="button" className="button primary" disabled>
-            {t("landing.signIn")}
-          </button>
-          <p className="hint">
-            {msalConfigured ? t("app.start.signInSoon") : t("landing.noClientId")}
-          </p>
-        </div>
+        <MicrosoftCard {...props} />
 
         <div className="card">
           <h2>{t("app.start.demo")}</h2>

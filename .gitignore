@@ -35,3 +35,7 @@ pnpm-debug.log*
 .vscode/*
 !.vscode/extensions.json
 *.swp
+
+# 本地导出的真实数据（不要提交）
+export/
+m1-samples/

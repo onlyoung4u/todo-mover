@@ -213,6 +213,43 @@ const en = {
   "guide.ticktick.title": "TickTick / 滴答清单",
   "guide.ticktick.steps":
     "TickTick can import straight from Microsoft To Do: in the web app, open Settings → Integrations & Import → Microsoft To Do.\nSign in with your Microsoft account and choose the lists to import.\nKeep the JSON backup from this site as a safety net.",
+
+  "app.source.graph": "Microsoft account: {name}",
+  "app.signOut": "Sign out",
+  "app.listSeparator": ", ",
+  "app.lists.failed": "Couldn't read",
+  "app.start.signedInAs": "Signed in as {name}",
+  "app.start.readTasks": "Read my tasks",
+  "app.start.signInRedirect": "Sign in in this tab instead",
+  "app.start.grantPermission": "Grant the extra permission",
+  "app.start.permissions":
+    "Read-only: this site reads your name and your tasks, and never changes anything in your account.",
+  "app.read.heading": "Reading your tasks…",
+  "app.read.starting": "Connecting to Microsoft…",
+  "app.read.progress": "Lists {done}/{total}, tasks {tasks}…",
+  "app.read.someFailed":
+    "These lists couldn't be read: {names}. Everything else was read; you can retry just these.",
+  "app.read.retry": "Retry",
+  "app.read.retrying": "Retrying…",
+  "app.read.listFailed": "List “{name}” couldn't be read and is not included.",
+  "app.error.consentBlocked":
+    "Your organization doesn't allow authorizing third-party apps. Please contact your IT administrator, or use a personal account.",
+  "app.error.misconfigured":
+    "This site's Azure app registration is set up incorrectly: the redirect URI {uri} must be registered under the “Single-page application” platform (not “Web”). See the self-hosting guide in the README. Details: {message}",
+  "app.error.popupBlocked":
+    "Your browser blocked the sign-in pop-up. Allow pop-ups for this site and try again, or sign in in this tab instead.",
+  "app.error.sessionExpired":
+    "Your sign-in has expired. Please sign in again; data that was already read is kept.",
+  "app.error.forbidden":
+    "Microsoft refused to share your tasks with the read-only permission. You can grant the read/write permission instead; this site still only reads and never changes anything.",
+  "app.error.network": "Couldn't reach Microsoft. Check your connection and try again.",
+  "app.error.other": "Something went wrong: {message}",
+  "app.attachments.metadata": "Checking attachments {done}/{total}…",
+  "app.attachments.downloading": "Downloading attachments {done}/{total}…",
+  "app.attachments.confirm": "The attachments add up to about {size} MB. Download all of them?",
+  "app.attachments.skipped":
+    "Attachments were not downloaded, as you chose. Their names are still listed in the JSON backup.",
+  "app.attachments.failed": "Attachment “{name}” of task “{task}” couldn't be downloaded.",
 } as const;
 
 export type MessageKey = keyof typeof en;

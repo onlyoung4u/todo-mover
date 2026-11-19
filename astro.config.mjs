@@ -43,7 +43,8 @@ export default defineConfig({
       directives: [
         "default-src 'self'",
         `connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com${cfBeacon}`,
-        "frame-src https://login.microsoftonline.com",
+        // 个人账号的静默续期 iframe 可能从 login.microsoftonline.com 跳转到 login.live.com
+        "frame-src https://login.microsoftonline.com https://login.live.com",
         "img-src 'self' data: blob:",
         "object-src 'none'",
         "base-uri 'self'",

@@ -4,6 +4,7 @@
  */
 import type { Locale } from "../../i18n/locales";
 import { EXPORTERS } from "../exporters";
+import { uniqueFileNamer } from "../exporters/files";
 import type { ExportFile, ExporterId } from "../exporters/types";
 import type { RawData } from "../graph/types";
 import { normalize, selectRaw, type Selection } from "../model/normalize";
@@ -21,6 +22,8 @@ export type ExportRequest = {
   formats: FormatRequest[];
   account?: ExportData["meta"]["account"];
   exportedAt?: Date;
+  /** 已下载的附件内容，按附件 ID 索引（只有登录读取并开启"下载附件"时才有） */
+  attachmentData?: ReadonlyMap<string, Uint8Array>;
 };
 
 export type ExportOutput = {
@@ -39,6 +42,35 @@ const FOLDER: Record<ExporterId, string> = {
   things: "things/",
 };
 
+/**
+ * 附件放在 zip 包的 attachments/<清单名>/<任务标题>-<附件名>（SPEC 7.1），
+ * 同时把路径写入归一化数据的 fileName，JSON 备份里就能找到对应文件。
+ */
+function attachmentFiles(data: ExportData, store: ReadonlyMap<string, Uint8Array>): ExportFile[] {
+  const files: ExportFile[] = [];
+  const folderName = uniqueFileNamer();
+  for (const list of data.lists) {
+    const withData = list.tasks.flatMap((task) =>
+      task.attachments.filter((a) => store.has(a.id)).map((a) => ({ task, a })),
+    );
+    if (!withData.length) continue;
+    const folder = folderName(list.name, "");
+    const fileName = uniqueFileNamer();
+    for (const { task, a } of withData) {
+      // 扩展名单独保留，重名序号加在扩展名之前
+      const m = /^(.*?)(\.[^.\s]{1,10})?$/.exec(a.name)!;
+      const path = `attachments/${folder}/${fileName(`${task.title}-${m[1]}`, m[2] ?? "")}`;
+      a.fileName = path;
+      files.push({
+        path,
+        content: store.get(a.id)!,
+        mime: a.contentType || "application/octet-stream",
+      });
+    }
+  }
+  return files;
+}
+
 export function runExport(request: ExportRequest): ExportOutput {
   const raw = selectRaw(request.raw, request.selection);
   const data = normalize(raw, {
@@ -47,6 +79,7 @@ export function runExport(request: ExportRequest): ExportOutput {
     account: request.account,
   });
 
+  const attachments = request.attachmentData ? attachmentFiles(data, request.attachmentData) : [];
   const files: ExportFile[] = [];
   const links: ExportOutput["links"] = [];
   const warnings = [...data.warnings];
@@ -60,5 +93,6 @@ export function runExport(request: ExportRequest): ExportOutput {
     links.push(...(result.links ?? []));
     warnings.push(...result.warnings);
   }
+  files.push(...attachments);
   return { files, links, warnings: [...new Set(warnings)] };
 }

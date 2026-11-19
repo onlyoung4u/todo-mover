@@ -16,7 +16,12 @@ export type Settings = {
   formats: FormatState;
 };
 
-export function initialSettings(raw: RawData, timeZone: string): Settings {
+/** 默认勾选全部清单；读取失败的清单默认不勾选 */
+export function initialSettings(
+  raw: RawData,
+  timeZone: string,
+  failedListIds: ReadonlySet<string> = new Set(),
+): Settings {
   const formats = Object.fromEntries(
     EXPORTER_ORDER.map((id) => [
       id,
@@ -25,7 +30,7 @@ export function initialSettings(raw: RawData, timeZone: string): Settings {
     ]),
   ) as FormatState;
   return {
-    selectedListIds: raw.lists.map((l) => l.id),
+    selectedListIds: raw.lists.map((l) => l.id).filter((id) => !failedListIds.has(id)),
     includeCompleted: true,
     timeZone,
     downloadAttachments: false,

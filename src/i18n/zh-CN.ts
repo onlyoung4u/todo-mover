@@ -205,6 +205,38 @@ const zhCN: Messages = {
   "guide.ticktick.title": "滴答清单 / TickTick",
   "guide.ticktick.steps":
     "滴答清单可以直接从 Microsoft To Do 导入：在网页版的“设置”中找到导入相关选项，选择 Microsoft To Do。\n用微软账号登录并选择要导入的清单。\n本站导出的 JSON 备份可作为保险。",
+
+  "app.source.graph": "微软账号：{name}",
+  "app.signOut": "退出登录",
+  "app.listSeparator": "、",
+  "app.lists.failed": "读取失败",
+  "app.start.signedInAs": "已登录：{name}",
+  "app.start.readTasks": "读取我的任务",
+  "app.start.signInRedirect": "改为在当前页面登录",
+  "app.start.grantPermission": "授予额外权限",
+  "app.start.permissions": "只读：本站只读取你的名字和任务，不会修改你账号里的任何内容。",
+  "app.read.heading": "正在读取任务…",
+  "app.read.starting": "正在连接微软…",
+  "app.read.progress": "清单 {done}/{total}，任务 {tasks} 条…",
+  "app.read.someFailed": "以下清单读取失败：{names}。其余数据已读取完成，可以只重试这些清单。",
+  "app.read.retry": "重试",
+  "app.read.retrying": "正在重试…",
+  "app.read.listFailed": "清单“{name}”读取失败，未包含在导出中。",
+  "app.error.consentBlocked": "你的组织不允许授权第三方应用。请联系 IT 管理员，或改用个人账号。",
+  "app.error.misconfigured":
+    "本站的 Azure 应用注册配置有误：回调地址 {uri} 需要登记在“单页应用程序（SPA）”平台下（不是“Web”）。请参考 README 中的自部署指南。详细信息：{message}",
+  "app.error.popupBlocked":
+    "浏览器拦截了登录弹窗。请允许本站弹出窗口后重试，或改为在当前页面登录。",
+  "app.error.sessionExpired": "登录已过期，请重新登录。已读取的数据会保留。",
+  "app.error.forbidden":
+    "微软拒绝以只读权限读取你的任务。你可以改为授予读写权限，本站仍然只读取数据，不会修改任何内容。",
+  "app.error.network": "无法连接微软服务器，请检查网络后重试。",
+  "app.error.other": "出错了：{message}",
+  "app.attachments.metadata": "正在检查附件 {done}/{total}…",
+  "app.attachments.downloading": "正在下载附件 {done}/{total}…",
+  "app.attachments.confirm": "附件总共约 {size} MB，确定全部下载吗？",
+  "app.attachments.skipped": "按你的选择，没有下载附件。附件名称仍记录在 JSON 备份中。",
+  "app.attachments.failed": "任务“{task}”的附件“{name}”下载失败。",
 };
 
 export default zhCN;

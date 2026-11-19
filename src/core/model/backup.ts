@@ -2,6 +2,7 @@
  * 读取之前导出的 todo-backup.json（SPEC 7.1 离线重导）。
  * 只使用其中的 raw 部分：归一化结果依赖导出时区，重新计算才能让时区设置生效。
  */
+import { cleanGraphObject } from "../graph/clean";
 import type { RawData } from "../graph/types";
 import type { ExportData } from "./types";
 
@@ -53,8 +54,8 @@ export function parseBackup(text: string): ParsedBackup {
   }
   if (!isRawData(json.raw)) throw new BackupError("noRawData");
   return {
-    // 旧备份可能没有 attachmentsByTaskId
-    raw: { ...json.raw, attachmentsByTaskId: json.raw.attachmentsByTaskId ?? {} },
+    // 旧备份可能没有 attachmentsByTaskId；早期版本的备份可能残留含邮箱的 @odata.context 注解，重新导出时一并清除
+    raw: cleanGraphObject({ ...json.raw, attachmentsByTaskId: json.raw.attachmentsByTaskId ?? {} }),
     meta,
   };
 }

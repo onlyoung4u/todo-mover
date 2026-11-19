@@ -1,6 +1,6 @@
 import JSZip from "jszip";
 import { describe, expect, it } from "vitest";
-import { demoRawData, sampleRawData } from "../../fixtures";
+import { demoRawData, sampleRawData, syntheticRawData } from "../../fixtures";
 import { EXPORTERS, EXPORTER_ORDER } from "../exporters";
 import { runExport, type FormatRequest } from "./run";
 import { makeZip, packageFiles, zipFileName } from "./zip";
@@ -66,6 +66,51 @@ describe("runExport", () => {
     expect(new Set(paths).size).toBe(paths.length);
     // Things 链接：演示数据的 125 条任务清单分 3 批，其余清单各 1 个
     expect(all.links.filter((l) => l.label.startsWith("Bulk list"))).toHaveLength(3);
+  });
+});
+
+describe("runExport with attachments", () => {
+  it("adds downloaded attachments under attachments/<list>/ and records the path", () => {
+    const store = new Map([
+      ["SYN_ATT_1", new Uint8Array([1, 2, 3])],
+      ["SYN_ATT_2", new Uint8Array([4])],
+    ]);
+    const out = runExport({
+      raw: syntheticRawData(),
+      selection: { includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("json")],
+      exportedAt,
+      attachmentData: store,
+    });
+    const paths = out.files.map((f) => f.path);
+    expect(paths).toEqual([
+      "todo-backup.json",
+      "attachments/工作 _ 项目_ _Q1___/Has attachments-receipt.pdf",
+      "attachments/工作 _ 项目_ _Q1___/Has attachments-photo_ 1_2.jpg",
+    ]);
+    expect(out.files[1]!.content).toEqual(new Uint8Array([1, 2, 3]));
+    expect(out.files[1]!.mime).toBe("application/pdf");
+
+    const backup = JSON.parse(out.files[0]!.content as string);
+    const task = backup.normalized.lists[0].tasks.find(
+      (t: { id: string }) => t.id === "SYN_ATTACHMENT",
+    );
+    expect(task.attachments.map((a: { fileName: string }) => a.fileName)).toEqual(paths.slice(1));
+  });
+
+  it("skips attachments of lists that are not selected", () => {
+    const out = runExport({
+      raw: syntheticRawData(),
+      selection: { listIds: ["SYN_LIST_BULK"], includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("csv")],
+      exportedAt,
+      attachmentData: new Map([["SYN_ATT_1", new Uint8Array([1])]]),
+    });
+    expect(out.files.map((f) => f.path)).toEqual(["todo-tasks.csv"]);
   });
 });
 
