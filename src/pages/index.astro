@@ -1,0 +1,31 @@
+---
+import Base from "../layouts/Base.astro";
+import { LOCALES, LOCALE_NAMES, MESSAGES, localizedPath } from "../i18n";
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+---
+
+<Base title={MESSAGES.en["site.title"]} description={MESSAGES.en["site.description"]}>
+  <Fragment slot="head">
+    {LOCALES.map((l) => (
+      <link rel="alternate" hreflang={l} href={new URL(localizedPath(l), site).href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={new URL("/", site).href} />
+  </Fragment>
+  <main class="container">
+    <h1>{MESSAGES.en["site.name"]}</h1>
+    <ul>
+      {LOCALES.map((l) => (
+        <li>
+          <a href={localizedPath(l)} hreflang={l} lang={l} data-locale={l}>
+            {LOCALE_NAMES[l]} — {MESSAGES[l]["root.choose"]}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <script>
+    import "../scripts/locale-switch";
+    import "../scripts/root-redirect";
+  </script>
+</Base>

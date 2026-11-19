@@ -1,0 +1,22 @@
+{
+  // 纯静态资源托管：只配置 assets，不配置 main（没有 Worker 脚本，静态请求不计入调用次数）。见 SPEC 第 15 节。
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "todo-mover",
+  "compatibility_date": "2026-11-19",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+  // 正式环境只通过自定义域名访问：*.workers.dev 在中国大陆无法访问，且会造成重复收录
+  "workers_dev": false,
+  // TODO: 购买域名后把 todo-mover.example.com 替换为正式域名（DNS 需托管在 Cloudflare）
+  "routes": [{ "pattern": "todo-mover.example.com", "custom_domain": true }],
+  "env": {
+    "staging": {
+      "name": "todo-mover-staging",
+      "workers_dev": true,
+      "routes": [{ "pattern": "staging.todo-mover.example.com", "custom_domain": true }],
+    },
+  },
+}

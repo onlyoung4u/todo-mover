@@ -1,0 +1,9 @@
+dist/
+.astro/
+.wrangler/
+node_modules/
+docs/
+coverage/
+package-lock.json
+src/fixtures/*.json
+LICENSE

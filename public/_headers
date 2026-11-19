@@ -1,0 +1,23 @@
+# 安全响应头与缓存策略（SPEC 第 9 节、15.3 节），由 Cloudflare 静态资源托管下发。
+#
+# CSP 分两处下发：
+# - default-src / script-src / style-src / connect-src 等由 Astro 在构建时写入每个页面的
+#   <meta http-equiv="content-security-policy">，其中包含内联脚本的哈希（见 astro.config.mjs）。
+# - 这里只放 <meta> 无法生效的 frame-ancestors，以及与之不冲突的两条兜底指令。
+#   不要在这里加 default-src 或 script-src：两条 CSP 会同时生效，header 里没有哈希，会拦截 Astro 的内联脚本。
+#
+# 不要把 Cross-Origin-Opener-Policy 设为 same-origin，否则 MSAL 弹窗登录会失败。
+
+/*
+  Content-Security-Policy: frame-ancestors 'none'; object-src 'none'; base-uri 'self'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/auth/*
+  Cache-Control: no-store

@@ -1,0 +1,21 @@
+---
+import Base from "../layouts/Base.astro";
+import { LOCALES, LOCALE_NAMES, MESSAGES, localizedPath } from "../i18n";
+---
+
+<Base title={`404 · ${MESSAGES.en["site.name"]}`} noindex>
+  <main class="container">
+    <h1>404</h1>
+    <ul>
+      {LOCALES.map((l) => (
+        <li lang={l}>
+          {MESSAGES[l]["notFound.title"]} ·{" "}
+          <a href={localizedPath(l)} hreflang={l}>
+            {MESSAGES[l]["notFound.back"]}
+          </a>{" "}
+          <span class="muted">({LOCALE_NAMES[l]})</span>
+        </li>
+      ))}
+    </ul>
+  </main>
+</Base>

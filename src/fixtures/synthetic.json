@@ -1,0 +1,2744 @@
+{
+  "_comment": "按 Graph 文档构造，非真实数据。由 scripts/generate-synthetic-fixture.mjs 生成，请勿手改。Synthetic data built from the Graph docs; not real data.",
+  "lists": {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists",
+    "value": [
+      {
+        "@odata.etag": "W/\"etag-SYN_LIST_MAIN\"",
+        "displayName": "工作 / 项目: \"Q1\"*?",
+        "isOwner": true,
+        "isShared": false,
+        "wellknownListName": "none",
+        "id": "SYN_LIST_MAIN"
+      },
+      {
+        "@odata.etag": "W/\"etag-SYN_LIST_FLAGGED\"",
+        "displayName": "Flagged email",
+        "isOwner": true,
+        "isShared": false,
+        "wellknownListName": "flaggedEmails",
+        "id": "SYN_LIST_FLAGGED"
+      },
+      {
+        "@odata.etag": "W/\"etag-SYN_LIST_SHARED\"",
+        "displayName": "家庭共享清单",
+        "isOwner": false,
+        "isShared": true,
+        "wellknownListName": "none",
+        "id": "SYN_LIST_SHARED"
+      },
+      {
+        "@odata.etag": "W/\"etag-SYN_LIST_BULK\"",
+        "displayName": "Bulk list 📦",
+        "isOwner": true,
+        "isShared": false,
+        "wellknownListName": "none",
+        "id": "SYN_LIST_BULK"
+      }
+    ]
+  },
+  "tasksByListId": {
+    "SYN_LIST_MAIN": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists('SYN_LIST_MAIN')/tasks",
+      "value": [
+        {
+          "@odata.etag": "W/\"etag-SYN_WEEKLY\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "周会（每周一、三）",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_WEEKLY",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [],
+          "dueDateTime": {
+            "dateTime": "2026-01-04T16:00:00.0000000",
+            "timeZone": "UTC"
+          },
+          "recurrence": {
+            "pattern": {
+              "type": "weekly",
+              "interval": 1,
+              "month": 0,
+              "dayOfMonth": 0,
+              "daysOfWeek": [
+                "monday",
+                "wednesday"
+              ],
+              "firstDayOfWeek": "sunday",
+              "index": "first"
+            },
+            "range": {
+              "type": "endDate",
+              "startDate": "2026-01-05",
+              "endDate": "2026-06-29",
+              "recurrenceTimeZone": "China Standard Time",
+              "numberOfOccurrences": 0
+            }
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_MONTHLY\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Monthly review on the first Monday",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_MONTHLY",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [],
+          "dueDateTime": {
+            "dateTime": "2026-02-01T16:00:00.0000000",
+            "timeZone": "UTC"
+          },
+          "recurrence": {
+            "pattern": {
+              "type": "relativeMonthly",
+              "interval": 1,
+              "month": 0,
+              "dayOfMonth": 0,
+              "daysOfWeek": [
+                "monday"
+              ],
+              "firstDayOfWeek": "sunday",
+              "index": "first"
+            },
+            "range": {
+              "type": "noEnd",
+              "startDate": "2026-02-02",
+              "endDate": "0001-01-01",
+              "recurrenceTimeZone": "China Standard Time",
+              "numberOfOccurrences": 0
+            }
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_REMINDER\"",
+          "importance": "normal",
+          "isReminderOn": true,
+          "status": "notStarted",
+          "title": "Call the dentist",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_REMINDER",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [],
+          "reminderDateTime": {
+            "dateTime": "2026-03-10T01:30:00.0000000",
+            "timeZone": "UTC"
+          },
+          "dueDateTime": {
+            "dateTime": "2026-03-09T16:00:00.0000000",
+            "timeZone": "UTC"
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_START\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Plan the trip",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_START",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [],
+          "startDateTime": {
+            "dateTime": "2026-04-01T16:00:00.0000000",
+            "timeZone": "UTC"
+          },
+          "dueDateTime": {
+            "dateTime": "2026-04-09T16:00:00.0000000",
+            "timeZone": "UTC"
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_HTML_NOTES\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "HTML notes",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_HTML_NOTES",
+          "body": {
+            "content": "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><p>第一行<br>第二行</p><ul><li>要点 A</li><li>要点 B</li></ul><p><b>加粗</b> &amp; 结尾</p></body></html>",
+            "contentType": "html"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_LOW\"",
+          "importance": "low",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Low priority someday",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_LOW",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_CATEGORIES\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Two categories",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [
+            "工作",
+            "Home Errands"
+          ],
+          "id": "SYN_CATEGORIES",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_ATTACHMENT\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Has attachments",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": true,
+          "categories": [],
+          "id": "SYN_ATTACHMENT",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_FORMULA\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "=SUM(A1:A2)",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_FORMULA",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_ESCAPE\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "买菜, \"牛奶\"\n🥛 & 鸡蛋; a\\b",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_ESCAPE",
+          "body": {
+            "content": "  备注第一行\r\n备注, 第二行; 含分号  ",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_LONG\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "这是一个很长的中文标题，用来测试 ICS 按 75 字节折行时不会把多字节字符拆开——🚀🚀🚀 emoji 也一样",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_LONG",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_WINDOWS_TZ\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Windows time zone name",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_WINDOWS_TZ",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [],
+          "dueDateTime": {
+            "dateTime": "2026-05-20T00:00:00.0000000",
+            "timeZone": "China Standard Time"
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_COMPLETED\"",
+          "importance": "high",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Completed with steps",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_COMPLETED",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [
+            {
+              "displayName": "Done step",
+              "createdDateTime": "2026-01-10T01:00:00.0000000Z",
+              "checkedDateTime": "2026-01-14T02:00:00.0000000Z",
+              "isChecked": true,
+              "id": "SYN_COMPLETED_STEP_1"
+            },
+            {
+              "displayName": "Open step",
+              "createdDateTime": "2026-01-10T01:01:00.0000000Z",
+              "isChecked": false,
+              "id": "SYN_COMPLETED_STEP_2"
+            }
+          ],
+          "linkedResources": [],
+          "completedDateTime": {
+            "dateTime": "2026-01-15T00:00:00.0000000",
+            "timeZone": "UTC"
+          },
+          "dueDateTime": {
+            "dateTime": "2026-01-14T16:00:00.0000000",
+            "timeZone": "UTC"
+          }
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_IN_PROGRESS\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "inProgress",
+          "title": "In progress",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_IN_PROGRESS",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        }
+      ]
+    },
+    "SYN_LIST_FLAGGED": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists('SYN_LIST_FLAGGED')/tasks",
+      "value": [
+        {
+          "@odata.etag": "W/\"etag-SYN_FLAGGED_1\"",
+          "importance": "high",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Re: 季度报告",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_FLAGGED_1",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": [
+            {
+              "@odata.etag": "W/\"etag-lr-1\"",
+              "id": "SYN_LR_1",
+              "webUrl": "https://outlook.live.com/owa/?ItemID=AAMkAGSYNTHETIC&exvsurl=1&viewmodel=ReadMessageItem",
+              "applicationName": "Outlook",
+              "displayName": "Re: 季度报告",
+              "externalId": "AAMkAGSYNTHETIC"
+            }
+          ]
+        }
+      ]
+    },
+    "SYN_LIST_SHARED": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists('SYN_LIST_SHARED')/tasks",
+      "value": [
+        {
+          "@odata.etag": "W/\"etag-SYN_SHARED_1\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "牛奶",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_SHARED_1",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_SHARED_2\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "面包",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_SHARED_2",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        }
+      ]
+    },
+    "SYN_LIST_BULK": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists('SYN_LIST_BULK')/tasks",
+      "value": [
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_001\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 001",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_001",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_002\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 002",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_002",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_003\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 003",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_003",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_004\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 004",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_004",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_005\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 005",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_005",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_006\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 006",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_006",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_007\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 007",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_007",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_008\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 008",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_008",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_009\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 009",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_009",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_010\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 010",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_010",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_011\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 011",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_011",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_012\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 012",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_012",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_013\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 013",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_013",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_014\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 014",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_014",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_015\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 015",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_015",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_016\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 016",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_016",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_017\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 017",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_017",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_018\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 018",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_018",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_019\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 019",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_019",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_020\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 020",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_020",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_021\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 021",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_021",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_022\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 022",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_022",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_023\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 023",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_023",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_024\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 024",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_024",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_025\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 025",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_025",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_026\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 026",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_026",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_027\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 027",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_027",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_028\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 028",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_028",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_029\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 029",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_029",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_030\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 030",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_030",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_031\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 031",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_031",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_032\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 032",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_032",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_033\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 033",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_033",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_034\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 034",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_034",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_035\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 035",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_035",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_036\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 036",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_036",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_037\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 037",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_037",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_038\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 038",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_038",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_039\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 039",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_039",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_040\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 040",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_040",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_041\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 041",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_041",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_042\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 042",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_042",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_043\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 043",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_043",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_044\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 044",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_044",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_045\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 045",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_045",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_046\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 046",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_046",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_047\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 047",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_047",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_048\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 048",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_048",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_049\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 049",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_049",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_050\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 050",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_050",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_051\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 051",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_051",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_052\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 052",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_052",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_053\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 053",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_053",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_054\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 054",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_054",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_055\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 055",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_055",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_056\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 056",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_056",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_057\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 057",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_057",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_058\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 058",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_058",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_059\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 059",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_059",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_060\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 060",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_060",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_061\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 061",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_061",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_062\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 062",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_062",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_063\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 063",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_063",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_064\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 064",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_064",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_065\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 065",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_065",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_066\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 066",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_066",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_067\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 067",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_067",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_068\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 068",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_068",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_069\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 069",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_069",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_070\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 070",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_070",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_071\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 071",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_071",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_072\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 072",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_072",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_073\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 073",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_073",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_074\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 074",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_074",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_075\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 075",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_075",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_076\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 076",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_076",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_077\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 077",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_077",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_078\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 078",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_078",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_079\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 079",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_079",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_080\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 080",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_080",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_081\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 081",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_081",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_082\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 082",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_082",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_083\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 083",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_083",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_084\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 084",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_084",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_085\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 085",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_085",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_086\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 086",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_086",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_087\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 087",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_087",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_088\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 088",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_088",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_089\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 089",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_089",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_090\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 090",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_090",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_091\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 091",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_091",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_092\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 092",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_092",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_093\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 093",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_093",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_094\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 094",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_094",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_095\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 095",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_095",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_096\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 096",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_096",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_097\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 097",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_097",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_098\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 098",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_098",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_099\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 099",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_099",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_100\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 100",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_100",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_101\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 101",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_101",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_102\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 102",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_102",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_103\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 103",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_103",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_104\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 104",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_104",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_105\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 105",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_105",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_106\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 106",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_106",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_107\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 107",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_107",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_108\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 108",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_108",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_109\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 109",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_109",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_110\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 110",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_110",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_111\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 111",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_111",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_112\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 112",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_112",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_113\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 113",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_113",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_114\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 114",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_114",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_115\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 115",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_115",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_116\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 116",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_116",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_117\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 117",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_117",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_118\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 118",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_118",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_119\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 119",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_119",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_120\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 120",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_120",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_121\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "completed",
+          "title": "Bulk task 121",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_121",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_122\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 122",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_122",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_123\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 123",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_123",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_124\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 124",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_124",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        },
+        {
+          "@odata.etag": "W/\"etag-SYN_BULK_125\"",
+          "importance": "normal",
+          "isReminderOn": false,
+          "status": "notStarted",
+          "title": "Bulk task 125",
+          "createdDateTime": "2026-01-02T03:04:05.1234567Z",
+          "lastModifiedDateTime": "2026-01-03T04:05:06.7654321Z",
+          "hasAttachments": false,
+          "categories": [],
+          "id": "SYN_BULK_125",
+          "body": {
+            "content": "",
+            "contentType": "text"
+          },
+          "checklistItems": [],
+          "linkedResources": []
+        }
+      ]
+    }
+  },
+  "attachmentsByTaskId": {
+    "SYN_ATTACHMENT": {
+      "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists('SYN_LIST_MAIN')/tasks('SYN_ATTACHMENT')/attachments",
+      "value": [
+        {
+          "@odata.type": "#microsoft.graph.taskFileAttachment",
+          "id": "SYN_ATT_1",
+          "name": "receipt.pdf",
+          "contentType": "application/pdf",
+          "size": 12345,
+          "lastModifiedDateTime": "2026-01-03T04:05:06Z"
+        },
+        {
+          "@odata.type": "#microsoft.graph.taskFileAttachment",
+          "id": "SYN_ATT_2",
+          "name": "photo: 1/2.jpg",
+          "contentType": "image/jpeg",
+          "size": 204800,
+          "lastModifiedDateTime": "2026-01-03T04:05:07Z"
+        }
+      ]
+    }
+  }
+}

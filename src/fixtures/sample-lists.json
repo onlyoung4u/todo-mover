@@ -1,0 +1,21 @@
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists",
+  "value": [
+    {
+      "@odata.etag": "W/\"etag-list-default\"",
+      "displayName": "任务",
+      "isOwner": true,
+      "isShared": false,
+      "wellknownListName": "defaultList",
+      "id": "LIST_DEFAULT"
+    },
+    {
+      "@odata.etag": "W/\"etag-list-baby\"",
+      "displayName": "🐶Baby购物清单",
+      "isOwner": true,
+      "isShared": false,
+      "wellknownListName": "none",
+      "id": "LIST_BABY"
+    }
+  ]
+}

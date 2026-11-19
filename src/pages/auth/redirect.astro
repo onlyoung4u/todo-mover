@@ -1,0 +1,25 @@
+---
+/**
+ * MSAL 登录回调页（SPEC 5.2）。
+ * 只负责把登录结果交回主窗口：不渲染界面，不加载 React 和完整的 MSAL 实例。
+ */
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Signing in…</title>
+  </head>
+  <body>
+    <script>
+      import { broadcastResponseToMainFrame } from "@azure/msal-browser/redirect-bridge";
+
+      broadcastResponseToMainFrame().catch((error: unknown) => {
+        console.error(error);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+---
+import { LOCALES, LOCALE_NAMES, getTranslator, localizedPath, type Locale } from "../../i18n";
+import { config, donateUrlFor } from "../../config";
+
+interface Props {
+  lang: Locale;
+  /** 不含语言前缀的当前页面路径，用于语言切换后停留在同一页面。 */
+  path: string;
+}
+
+const { lang, path } = Astro.props;
+const t = getTranslator(lang);
+const donateUrl = donateUrlFor(lang);
+---
+
+<footer class="footer">
+  <div class="container">
+    <p class="muted">{t("footer.disclaimer")}</p>
+    <nav class="links">
+      <a href={config.repoUrl} rel="noopener">
+        {t("footer.source")}
+      </a>
+      {donateUrl && (
+        <a href={donateUrl} rel="noopener">
+          {t("footer.donate")}
+        </a>
+      )}
+    </nav>
+    <nav class="locales" aria-label={t("footer.language")}>
+      {LOCALES.map((l) => (
+        <a
+          href={localizedPath(l, path)}
+          hreflang={l}
+          lang={l}
+          data-locale={l}
+          aria-current={l === lang ? "page" : undefined}
+        >
+          {LOCALE_NAMES[l]}
+        </a>
+      ))}
+    </nav>
+  </div>
+</footer>
+
+<script>
+  import "../../scripts/locale-switch";
+</script>
+
+<style>
+  .footer {
+    margin-top: 64px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+  }
+  .links,
+  .locales {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .locales a[aria-current="page"] {
+    color: var(--fg);
+    text-decoration: none;
+    font-weight: 600;
+  }
+</style>
