@@ -139,6 +139,7 @@ const zhCN: Messages = {
   "app.lists.selectAll": "全选",
   "app.lists.selectNone": "全不选",
   "app.lists.count": "{tasks} 个任务 · 已完成 {completed}",
+  "app.lists.countFiltered": "将导出 {shown} / 共 {total} 个任务（已排除 {completed} 个已完成）",
   "app.lists.flagged": "标记邮件",
   "app.lists.shared": "共享",
   "app.lists.empty": "没有任务",

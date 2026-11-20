@@ -129,7 +129,7 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
             </div>
             <p>{t(EXPORTERS[id].targets)}</p>
             <p class="loss">
-              <span class="mono">{t("app.formats.losses")}</span> {t(EXPORTERS[id].losses)}
+              <span class="loss-label">{t("app.formats.losses")}</span> {t(EXPORTERS[id].losses)}
             </p>
           </li>
         ))}
@@ -223,14 +223,12 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
     font-size: 0.85rem;
     color: var(--muted);
   }
-  .loss .mono {
+  .loss .loss-label {
+    font-family: var(--font-label);
     font-size: 0.75rem;
+    font-weight: var(--font-label-weight);
     color: var(--subtle);
     margin-right: 4px;
-  }
-  :global(:lang(zh)) .loss .mono {
-    font-family: var(--font-sans);
-    font-weight: 550;
   }
   .two-col {
     display: grid;

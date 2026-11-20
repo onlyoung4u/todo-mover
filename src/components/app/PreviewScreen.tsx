@@ -227,6 +227,7 @@ export function PreviewScreen({
           <ListSidebar
             lists={preview.lists}
             counts={counts}
+            includeCompleted={settings.includeCompleted}
             failed={failedListIds}
             selected={settings.selectedListIds}
             focused={focused}

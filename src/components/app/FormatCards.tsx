@@ -155,7 +155,7 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
                 <p className="hint">{t("app.formats.appleOnly")}</p>
               ) : (
                 <p className="format-losses">
-                  <span className="mono">{t("app.formats.losses")}</span> {t(exporter.losses)}
+                  <span className="loss-label">{t("app.formats.losses")}</span> {t(exporter.losses)}
                 </p>
               )}
               {enabled && <FormatOptions id={id} formats={formats} onOptions={onOptions} />}

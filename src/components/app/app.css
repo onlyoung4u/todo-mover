@@ -157,10 +157,11 @@
 }
 
 .option-group legend {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--font-label-tracking);
   color: var(--subtle);
   margin-bottom: 2px;
 }
@@ -213,13 +214,10 @@
 
 .reading-body p {
   margin: 14px 0 0;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
   font-size: 0.85rem;
   color: var(--muted);
-}
-
-:lang(zh) .reading-body p.mono {
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
 }
 
 /* ── 预览：三栏查看器 ── */
@@ -263,7 +261,7 @@
 .viewer-panes {
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr) 340px;
-  height: min(448px, 50vh);
+  height: clamp(440px, 60vh, 580px);
 }
 
 .pane {
@@ -297,11 +295,12 @@
 }
 
 .pane-label {
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--font-label-tracking);
   color: var(--subtle);
 }
 
@@ -531,8 +530,9 @@
 }
 
 .detail-fields dt {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
   color: var(--subtle);
   padding-top: 2px;
 }
@@ -555,11 +555,12 @@
 
 .detail-block h4 {
   margin: 0 0 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--font-label-tracking);
   color: var(--subtle);
 }
 
@@ -611,7 +612,7 @@
 /* ── 导出面板 ── */
 
 .export-panel {
-  margin-top: 24px;
+  margin-top: 36px;
 }
 
 .options-row {
@@ -695,7 +696,7 @@
 
 .format-name {
   flex: 1;
-  font-family: var(--font-serif);
+  font-family: var(--font-card-heading);
   font-size: 1.05rem;
   font-weight: 600;
 }
@@ -711,8 +712,10 @@
   color: var(--muted);
 }
 
-.format-losses .mono {
-  font-size: 0.7rem;
+.format-losses .loss-label {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  font-weight: var(--font-label-weight);
   color: var(--subtle);
   margin-right: 4px;
 }
@@ -759,8 +762,9 @@
 
 .export-bar p {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-label-size);
   color: var(--muted);
 }
 
@@ -788,32 +792,6 @@
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-}
-
-/* 中文界面下，状态与标签文案改用无衬线 + 等宽数字，避免等宽西文空格拉宽间距 */
-:lang(zh) .format-name {
-  font-family: var(--font-sans);
-  font-weight: 600;
-}
-
-:lang(zh) .pane-label,
-:lang(zh) .detail-fields dt,
-:lang(zh) .detail-block h4,
-:lang(zh) .option-group legend,
-:lang(zh) .format-losses .mono,
-:lang(zh) .export-bar p {
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-}
-
-:lang(zh) .format-losses .mono {
-  font-size: 0.78rem;
-  font-weight: 550;
-}
-
-:lang(zh) .export-bar p {
-  font-size: 0.875rem;
 }
 
 /* ── 完成页 ── */

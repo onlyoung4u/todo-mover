@@ -139,6 +139,7 @@ const zhTW: Messages = {
   "app.lists.selectAll": "全選",
   "app.lists.selectNone": "全不選",
   "app.lists.count": "{tasks} 項工作 · 已完成 {completed}",
+  "app.lists.countFiltered": "將匯出 {shown} / 共 {total} 項工作（已排除 {completed} 項已完成）",
   "app.lists.flagged": "已標幟的電子郵件",
   "app.lists.shared": "共用",
   "app.lists.empty": "沒有工作",

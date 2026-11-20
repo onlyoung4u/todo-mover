@@ -46,7 +46,7 @@ const donateUrl = donateUrlFor(lang);
       </nav>
     </div>
     <p class="disclaimer">{t("footer.disclaimer")}</p>
-    <p class="license mono">AGPL-3.0 · {t("footer.local")}</p>
+    <p class="license">AGPL-3.0 · {t("footer.local")}</p>
   </div>
 </footer>
 
@@ -96,12 +96,10 @@ const donateUrl = donateUrlFor(lang);
     margin: 0 0 8px;
   }
   .license {
-    font-size: 0.75rem;
+    font-family: var(--font-label);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--font-label-size);
     color: var(--subtle);
     margin: 0;
-  }
-  :global(:lang(zh)) .license {
-    font-family: var(--font-sans);
-    font-variant-numeric: tabular-nums;
   }
 </style>

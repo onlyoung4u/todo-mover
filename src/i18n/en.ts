@@ -148,6 +148,7 @@ const en = {
   "app.lists.selectAll": "All",
   "app.lists.selectNone": "None",
   "app.lists.count": "Tasks: {tasks} · Done: {completed}",
+  "app.lists.countFiltered": "Exporting {shown} of {total} · {completed} completed excluded",
   "app.lists.flagged": "Flagged email",
   "app.lists.shared": "Shared",
   "app.lists.empty": "No tasks",

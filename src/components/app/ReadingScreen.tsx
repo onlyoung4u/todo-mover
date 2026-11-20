@@ -36,7 +36,7 @@ export function ReadingScreen({ progress }: { progress?: FetchProgress }) {
         </div>
         <div className="reading-body">
           <progress max={1} value={progress ? ratio : undefined} />
-          <p className="mono">
+          <p>
             {attachments
               ? t("app.attachments.metadata", { done: attachments.done, total: attachments.total })
               : progress

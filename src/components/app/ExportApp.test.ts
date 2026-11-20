@@ -456,4 +456,19 @@ describe("ExportApp integration", () => {
     expect(container.querySelector(".entry-grid")).not.toBeNull();
     expect(container.querySelector(".entry-focused")).toBeNull();
   });
+
+  it("keeps sidebar task count and tooltip in sync when toggling includeCompleted", async () => {
+    await mountAndSignIn();
+
+    const firstRow = container.querySelector<HTMLLIElement>(".list-rows li")!;
+    const countEl = firstRow.querySelector<HTMLElement>(".count")!;
+    const nameBtn = firstRow.querySelector<HTMLButtonElement>(".list-name")!;
+    const totalBefore = Number(countEl.textContent);
+    expect(nameBtn.title).toContain(`${totalBefore} 个任务`);
+
+    act(() => checkboxByLabel("包含已完成的任务").click());
+    const shownAfter = Number(countEl.textContent);
+    expect(shownAfter).toBeLessThan(totalBefore);
+    expect(nameBtn.title).toContain(`将导出 ${shownAfter} / 共 ${totalBefore} 个任务`);
+  });
 });

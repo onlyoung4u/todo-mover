@@ -2,9 +2,11 @@ import type { TodoList } from "../../core/model/types";
 import { useI18n } from "./i18n";
 
 type Props = {
+  /** 已按"包含已完成"筛选后的清单（行尾数字显示当前将导出的任务数） */
   lists: TodoList[];
-  /** 未按"包含已完成"筛选前的统计（显示清单原本有多少任务） */
+  /** 各清单的原始任务总数与已完成数（用于悬停提示，展示原始总量与被排除的已完成数） */
   counts: Record<string, { total: number; completed: number }>;
+  includeCompleted: boolean;
   /** 读取失败的清单 */
   failed: string[];
   selected: string[];
@@ -17,6 +19,7 @@ type Props = {
 export function ListSidebar({
   lists,
   counts,
+  includeCompleted,
   failed,
   selected,
   focused,
@@ -44,6 +47,14 @@ export function ListSidebar({
         {lists.map((list) => {
           const count = counts[list.id] ?? { total: 0, completed: 0 };
           const isFailed = failed.includes(list.id);
+          const countTitle =
+            !includeCompleted && count.completed > 0
+              ? t("app.lists.countFiltered", {
+                  shown: list.tasks.length,
+                  total: count.total,
+                  completed: count.completed,
+                })
+              : t("app.lists.count", { tasks: count.total, completed: count.completed });
           return (
             <li key={list.id} className={list.id === focused ? "focused" : undefined}>
               <input
@@ -58,7 +69,7 @@ export function ListSidebar({
                 className="list-name"
                 aria-current={list.id === focused ? "true" : undefined}
                 onClick={() => onFocus(list.id)}
-                title={t("app.lists.count", { tasks: count.total, completed: count.completed })}
+                title={countTitle}
               >
                 <span className="name">{list.name}</span>
                 {(list.wellknown === "flaggedEmails" || list.isShared || isFailed) && (

@@ -34,6 +34,21 @@
     "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Songti SC",
     "Songti TC", STSong, "Noto Serif CJK SC", "Source Han Serif SC", serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* 标签与状态文案字体：西文用等宽；中文在 :root:lang(zh) 统一收口为无衬线，避免等宽西文空格拉宽字距 */
+  --font-label: var(--font-mono);
+  --font-label-tracking: 0.08em;
+  --font-label-size: 0.75rem;
+  --font-label-weight: 400;
+  --font-card-heading: var(--font-serif);
+}
+
+:root:lang(zh) {
+  --font-label: var(--font-sans);
+  --font-label-tracking: 0.03em;
+  --font-label-size: 0.82rem;
+  --font-label-weight: 550;
+  --font-card-heading: var(--font-sans);
 }
 
 /* 深色：跟随系统，除非用户手动选了浅色；或者用户手动选了深色（见 public/theme-init.js） */
@@ -179,24 +194,19 @@ progress {
   font-family: var(--font-mono);
 }
 
-/* 小号等宽大写标签，例如 "STEP 01"；中文环境下使用无衬线 + 等宽数字，避免空格过宽 */
+/* 小号标签，例如 "STEP 01" / "第 1 步" */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: var(--font-label-tracking);
   text-transform: uppercase;
   color: var(--accent);
   margin: 0 0 12px;
-}
-
-:lang(zh) .eyebrow {
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.03em;
 }
 
 .dot {
@@ -309,8 +319,9 @@ progress {
   padding: 8px 14px;
   border-bottom: 1px solid var(--border);
   background: var(--bg-inset);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-label-size);
   color: var(--muted);
   flex-wrap: wrap;
 }
@@ -339,17 +350,11 @@ progress {
   gap: 10px;
   padding: 10px 16px;
   border-top: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-label-size);
   color: var(--muted);
   flex-wrap: wrap;
-}
-
-:lang(zh) .window-bar,
-:lang(zh) .window-foot {
-  font-family: var(--font-sans);
-  font-variant-numeric: tabular-nums;
-  font-size: 0.8rem;
 }
 
 /* ── 页头 / 页脚 ── */
