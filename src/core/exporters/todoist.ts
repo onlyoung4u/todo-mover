@@ -5,7 +5,7 @@
  * - 每个项目最多 300 个任务行，超出则整个导入失败，因此超出时拆成多个文件
  */
 import { getTranslator, type Translate } from "../../i18n";
-import { describe, toTodoist } from "../model/recurrence";
+import { describe, hasEnd, toTodoist } from "../model/recurrence";
 import type { Task } from "../model/types";
 import { toCsv } from "./csvFormat";
 import { uniqueFileNamer } from "./files";
@@ -47,7 +47,8 @@ function description(task: Task, t: Translate, locale: Locale, todoistDate?: str
   if (task.recurrence) {
     // 重复任务的 DATE 列是重复规则，原截止日期写进描述；无法表达的规则写人读描述
     if (todoistDate && task.dueDate) extra.push(`${t("csv.col.due")}: ${task.dueDate}`);
-    if (!todoistDate)
+    // Todoist 规则无法表达结束日期 / 次数：写出完整描述，避免有限重复变成无限重复
+    if (!todoistDate || hasEnd(task.recurrence))
       extra.push(`${t("csv.col.recurrence")}: ${describe(task.recurrence, locale)}`);
   }
   if (task.isReminderOn && task.reminderAt) {
@@ -72,6 +73,7 @@ export const todoistExporter: Exporter<TodoistOptions> = {
     const warnings: string[] = [];
     const files: ExportFile[] = [];
     const name = uniqueFileNamer();
+    let endedRepeats = 0;
 
     const row = (content: string, desc: string, priority: number, indent: number, date = "") => [
       "task",
@@ -98,6 +100,7 @@ export const todoistExporter: Exporter<TodoistOptions> = {
           if (labels.length) content += ` ${labels.join(" ")}`;
         }
         const recurring = task.recurrence ? toTodoist(task.recurrence) : undefined;
+        if (recurring && hasEnd(task.recurrence!)) endedRepeats++;
         const date = recurring ?? task.dueDate ?? "";
         const priority = task.importance === "high" ? 1 : 4;
 
@@ -122,8 +125,11 @@ export const todoistExporter: Exporter<TodoistOptions> = {
 
       if (chunks.length > 1) {
         warnings.push(
-          `List "${list.name}" has more than ${TODOIST_MAX_TASKS_PER_PROJECT} tasks including sub-tasks, ` +
-            `which is Todoist's per-project limit. It was split into ${chunks.length} files; import each into its own project.`,
+          t("warning.todoistSplit", {
+            list: list.name,
+            max: TODOIST_MAX_TASKS_PER_PROJECT,
+            count: chunks.length,
+          }),
         );
       }
       chunks.forEach((rows, i) => {
@@ -135,6 +141,9 @@ export const todoistExporter: Exporter<TodoistOptions> = {
           mime: "text/csv;charset=utf-8",
         });
       });
+    }
+    if (endedRepeats) {
+      warnings.push(t("warning.recurrenceEnd", { target: "Todoist", count: endedRepeats }));
     }
     return { files, warnings };
   },

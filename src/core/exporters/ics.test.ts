@@ -132,7 +132,7 @@ describe("ics exporter", () => {
     );
     expect(byUid.get("NO_START@todo-mover")!.hasProperty("rrule")).toBe(false);
     expect(result.warnings).toEqual([
-      'Task "周会（每周一、三）": repeat rule has no start date and was left out',
+      "ICS: task “周会（每周一、三）” repeats but has no date to start from, so the repeat was left out.",
     ]);
   });
 

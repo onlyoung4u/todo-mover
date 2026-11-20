@@ -131,6 +131,10 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
         <p class="eyebrow">{t("landing.privacyDetails.eyebrow")}</p>
         <h2>{t("landing.privacyDetails.heading")}</h2>
         <p>{t("landing.privacyDetails.body")}</p>
+        {
+          // SPEC 9 / 15.6：启用 Cloudflare Web Analytics 时必须在隐私说明中写明
+          config.cfAnalyticsToken && <p>{t("landing.privacyDetails.analytics")}</p>
+        }
       </div>
       <div class="card">
         <p class="eyebrow">{t("landing.limits.eyebrow")}</p>

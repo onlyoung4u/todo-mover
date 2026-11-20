@@ -45,26 +45,45 @@ const TEXT_NODE = 3;
 
 class TextBuilder {
   private lines: string[] = [""];
+  /** 当前行目前只有列表符号（"- " / "1. "），还没有正文 */
+  private atMarker = false;
 
   text(s: string) {
     const collapsed = s.replace(/[ \t\r\n\f]+/g, " ");
     const last = this.lines.length - 1;
     const current = this.lines[last]!;
-    // 行首不保留空格
-    this.lines[last] = current + (current.trim() === "" ? collapsed.trimStart() : collapsed);
+    // 行首（或列表符号后）不保留空格
+    const atStart = current.trim() === "" || this.atMarker;
+    const added = atStart ? collapsed.trimStart() : collapsed;
+    this.lines[last] = current + added;
+    if (added) this.atMarker = false;
   }
 
-  /** 原样追加（用于列表符号和缩进） */
+  /** 原样追加（用于缩进和分隔符） */
   raw(s: string) {
     this.lines[this.lines.length - 1] += s;
   }
 
+  /** 列表符号：之后紧跟的块元素（如 <li><p>…</p></li>）不再另起一行 */
+  marker(s: string) {
+    this.raw(s);
+    this.atMarker = true;
+  }
+
+  /** 列表项结束：即使是空的列表项，下一项也要另起一行 */
+  endItem() {
+    this.atMarker = false;
+    this.ensureNewLine();
+  }
+
   /** 如果当前行已有内容，换到新行 */
   ensureNewLine() {
+    if (this.atMarker) return;
     if (this.lines[this.lines.length - 1]!.trim() !== "") this.lines.push("");
   }
 
   newLine() {
+    this.atMarker = false;
     this.lines.push("");
   }
 
@@ -114,12 +133,26 @@ function walk(node: Node, out: TextBuilder, lists: ListContext[]) {
       list.counter += 1;
       marker = `${list.counter}. `;
     }
-    out.raw("  ".repeat(depth) + marker);
+    out.marker("  ".repeat(depth) + marker);
   }
+
+  // 同一行的单元格之间用制表符隔开，避免 <td>A</td><td>B</td> 粘成 "AB"
+  if ((tag === "TD" || tag === "TH") && el.previousElementSibling) out.raw("\t");
 
   for (const child of Array.from(el.childNodes)) walk(child, out, lists);
 
-  if (isBlock) out.ensureNewLine();
+  // 链接保留地址：文字和地址不同时写成 "文字 (地址)"
+  if (tag === "A") {
+    const href = el.getAttribute("href")?.trim() ?? "";
+    const text = (el.textContent ?? "").replace(/\s+/g, " ").trim();
+    const bare = href.replace(/^mailto:/i, "");
+    if (/^(https?:|mailto:)/i.test(href) && text !== href && text !== bare) {
+      out.raw(text ? ` (${bare})` : bare);
+    }
+  }
+
+  if (tag === "LI") out.endItem();
+  else if (isBlock) out.ensureNewLine();
 }
 
 /** 没有 DOMParser 时的简易退化实现：只处理常见标签和实体。 */
@@ -128,6 +161,7 @@ function fallbackHtmlToText(html: string): string {
     .replace(/<(head|script|style)[\s\S]*?<\/\1>/gi, "")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<li[^>]*>/gi, "\n- ")
+    .replace(/<\/t[dh]>\s*(?=<t[dh][\s>])/gi, "\t")
     .replace(/<\/(p|div|li|h[1-6]|tr|ul|ol)>/gi, "\n")
     .replace(/<[^>]+>/g, "")
     .replace(/&nbsp;/g, " ")

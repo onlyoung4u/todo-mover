@@ -1,6 +1,6 @@
 /** Markdown：Obsidian / Logseq / Notion / 任意笔记（SPEC 7.3）。 */
 import { getTranslator, type Translate } from "../../i18n";
-import { describe, toObsidianTasks } from "../model/recurrence";
+import { describe, hasEnd, toObsidianTasks } from "../model/recurrence";
 import type { Task, TodoList } from "../model/types";
 import { uniqueFileNamer } from "./files";
 import type { ExportFile, Exporter } from "./types";
@@ -54,6 +54,10 @@ function taskLine(task: Task, style: MarkdownOptions["style"], t: Translate, loc
   }
 
   const lines = [line];
+  // Obsidian Tasks 不支持 "until" / "for N times"：结束条件写在任务下方，提醒手动停止
+  if (style === "obsidian" && task.recurrence && hasEnd(task.recurrence)) {
+    lines.push(`  > ${t("markdown.recurrenceEnds", { rule: describe(task.recurrence, locale) })}`);
+  }
   for (const step of task.steps) {
     lines.push(`  - [${step.checked ? "x" : " "}] ${oneLine(step.title)}`);
   }
@@ -95,6 +99,13 @@ export const markdownExporter: Exporter<MarkdownOptions> = {
         mime: MIME,
       }));
     }
-    return { files, warnings: [] };
+    const warnings: string[] = [];
+    if (opts.style === "obsidian") {
+      const count = data.lists
+        .flatMap((l) => l.tasks)
+        .filter((task) => task.recurrence && hasEnd(task.recurrence)).length;
+      if (count) warnings.push(t("warning.recurrenceEnd", { target: "Obsidian Tasks", count }));
+    }
+    return { files, warnings };
   },
 };

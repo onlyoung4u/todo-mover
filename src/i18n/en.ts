@@ -1,7 +1,7 @@
 /** 英文文案是所有 key 的来源；其他语言必须提供完全相同的 key（类型检查和单元测试会核对）。 */
 const en = {
   "site.name": "To Do Mover",
-  "site.title": "Export Microsoft To Do — backup & migrate before it shuts down",
+  "site.title": "Export Microsoft To Do — back up & migrate before the apps retire",
   "site.description":
     "Export all your Microsoft To Do lists and tasks to JSON, CSV, Markdown, ICS, Todoist or Things. Runs entirely in your browser; your data never touches our servers.",
 
@@ -27,7 +27,7 @@ const en = {
 
   "export.json.label": "JSON backup",
   "export.json.targets":
-    "A lossless backup. Open it here again later to convert it to any format, even after Microsoft To Do shuts down.",
+    "A lossless backup. Open it here again later to convert it to any format, even after Microsoft To Do is retired.",
   "export.json.losses": "Nothing. Attachments are saved as separate files.",
   "export.csv.label": "CSV spreadsheet",
   "export.csv.targets": "Excel, Numbers, Google Sheets, Notion",
@@ -90,6 +90,28 @@ const en = {
   "markdown.plain.high": " (important)",
   "markdown.plain.low": " (low priority)",
 
+  "markdown.recurrenceEnds":
+    "Repeat: {rule}. Obsidian Tasks can't end a repeat, so stop it by hand.",
+  "warning.recurrenceEnd":
+    "{target}: {count} repeating task(s) end on a date or after a number of times, which {target} can't express. The end is written in each task's notes.",
+  "warning.thingsLongLink":
+    "Things: the link for task “{task}” is very long (mostly its notes) and may not open. If it fails, shorten the notes and export again.",
+  "warning.task": "Task “{task}”: {message}",
+  "warning.list": "List “{list}”: {message}",
+  "warning.unknownStatus": "unknown status “{status}”, exported as not started",
+  "warning.badDateTime": "couldn't read the date “{value}”, left it out",
+  "warning.unknownTimeZone": "unknown time zone “{zone}” for “{value}”, used the date as written",
+  "warning.unknownExportTimeZone": "Unknown export time zone “{zone}”, used UTC instead.",
+  "warning.noRaw":
+    "The original Microsoft data isn't available, so the backup only contains the converted data.",
+  "warning.icsNoRRule":
+    "ICS: the repeat rule of task “{task}” couldn't be converted and was left out.",
+  "warning.icsNoStart":
+    "ICS: task “{task}” repeats but has no date to start from, so the repeat was left out.",
+  "warning.todoistSplit":
+    "Todoist: list “{list}” has more than {max} tasks including sub-tasks, Todoist's per-project limit. It was split into {count} files; import each into its own project.",
+  "warning.thingsNotesCut": "Things: the notes of task “{task}” were cut to {max} characters.",
+  "warning.thingsSteps": "Things: only the first {max} steps of task “{task}” fit.",
   "things.batch": "{name} ({index}/{total})",
 
   "landing.how.heading": "How it works",
@@ -102,6 +124,8 @@ const en = {
   "landing.privacyDetails.heading": "Privacy",
   "landing.privacyDetails.body":
     "This site has no backend. Your tasks are read in your browser, kept only in memory, and sent nowhere except Microsoft's own servers. Sign-in tokens live in session storage and are cleared when you close the tab. The source code is public.",
+  "landing.privacyDetails.analytics":
+    "To count visits, this site uses Cloudflare Web Analytics. It sets no cookies and doesn't see your tasks or anything you enter; it only records anonymous page views.",
   "app.start.heading": "Where should your tasks come from?",
   "app.start.signIn": "Microsoft account",
   "app.start.signInDesc": "Read all your lists directly from Microsoft To Do.",
@@ -110,7 +134,7 @@ const en = {
   "app.start.demoDesc": "Sample lists and tasks. No sign-in needed.",
   "app.start.import": "JSON backup",
   "app.start.importDesc":
-    "A todo-backup.json exported from this site. Works without signing in, even after Microsoft To Do shuts down.",
+    "A todo-backup.json exported from this site. Works without signing in, even after Microsoft To Do is retired.",
   "app.start.chooseFile": "Choose file…",
   "app.import.error.invalidJson": "This file isn't valid JSON.",
   "app.import.error.notBackup": "This file isn't a backup exported by this site.",
@@ -186,7 +210,7 @@ const en = {
   "app.done.follow": "Follow the project for future tools:",
   "guide.json.title": "Keep the JSON backup",
   "guide.json.steps":
-    "Save todo-backup.json somewhere safe, such as your cloud drive.\nTo convert it later, open this site and choose “JSON backup”.\nNo sign-in is needed, so this works even after Microsoft To Do shuts down.",
+    "Save todo-backup.json somewhere safe, such as your cloud drive.\nTo convert it later, open this site and choose “JSON backup”.\nNo sign-in is needed, so this works even after Microsoft To Do is retired.",
   "guide.excel.title": "Excel, Numbers, Google Sheets",
   "guide.excel.steps":
     "Open todo-tasks.csv directly. The file is UTF-8 with a BOM, so non-English text displays correctly.\nIf characters still look garbled in an older Excel, use Data → From Text/CSV and choose UTF-8.\nIn Google Sheets, use File → Import → Upload.",
@@ -262,7 +286,7 @@ const en = {
   "nav.theme": "Switch between light and dark",
   "nav.privacy": "Privacy",
   "footer.local": "Runs entirely in your browser",
-  "landing.eyebrow": "Microsoft To Do shuts down on June 30, 2027 · {days} days left",
+  "landing.eyebrow": "Microsoft To Do apps retire on June 30, 2027 · {days} days left",
   "landing.lead":
     "Export every list, task, step, note and reminder as a complete backup, plus files that Excel, Obsidian, Todoist, Things and calendar apps can import. Everything happens in your browser.",
   "landing.local": "Processed locally",

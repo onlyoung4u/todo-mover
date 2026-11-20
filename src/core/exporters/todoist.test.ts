@@ -43,11 +43,15 @@ describe("todoist exporter", () => {
   });
 
   it("puts recurring rules in DATE and the due date in the description", () => {
-    const { files } = todoistExporter.run(synthetic, defaults, { locale: "en" });
+    const { files, warnings } = todoistExporter.run(synthetic, defaults, { locale: "en" });
     const main = lines(files[0]!.content);
+    // Todoist 的规则无法表达结束日期：完整描述写进备注，避免有限重复变成无限重复
     expect(main).toContain(
-      'task,周会（每周一、三）,Due date: 2026-01-05,4,1,,,"every monday, wednesday",en,Asia/Shanghai',
+      'task,周会（每周一、三）,"Due date: 2026-01-05\nRepeat: Every week on Mon, Wed, until 2026-06-29",4,1,,,"every monday, wednesday",en,Asia/Shanghai',
     );
+    expect(warnings).toEqual([
+      "Todoist: 1 repeating task(s) end on a date or after a number of times, which Todoist can't express. The end is written in each task's notes.",
+    ]);
     expect(main).toContain(
       "task,Monthly review on the first Monday,Due date: 2026-02-02,4,1,,,every first monday,en,Asia/Shanghai",
     );

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import type { Warning } from "./types";
 import {
   formatUtcInZone,
+  isValidTimeZone,
   localToGraphUtc,
   parseGraphDateTime,
   resolveTimeZone,
@@ -11,6 +13,14 @@ import {
 import { WINDOWS_TO_IANA } from "./windowsZones";
 
 const utc = (dateTime: string) => ({ dateTime, timeZone: "UTC" });
+
+describe("isValidTimeZone", () => {
+  it("rejects missing values instead of falling back to the system zone", () => {
+    expect(isValidTimeZone(undefined as unknown as string)).toBe(false);
+    expect(isValidTimeZone("")).toBe(false);
+    expect(isValidTimeZone("Asia/Shanghai")).toBe(true);
+  });
+});
 
 describe("SPEC 6.3 required cases (export time zone Asia/Shanghai)", () => {
   it("due 2019-11-29T16:00:00 UTC → 2019-11-30", () => {
@@ -68,11 +78,14 @@ describe("toLocalDate", () => {
   });
 
   it("falls back to the literal date with a warning for an unknown time zone", () => {
-    const warnings: string[] = [];
+    const warnings: Warning[] = [];
     const value = { dateTime: "2026-05-20T00:00:00.0000000", timeZone: "Atlantis Standard Time" };
     expect(toLocalDate(value, "UTC", warnings)).toBe("2026-05-20");
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toContain("Atlantis Standard Time");
+    expect(warnings[0]).toMatchObject({
+      key: "warning.unknownTimeZone",
+      params: { zone: "Atlantis Standard Time" },
+    });
   });
 
   it("handles DST transitions in the source time zone", () => {
@@ -89,7 +102,7 @@ describe("parseGraphDateTime", () => {
   });
 
   it("warns on garbage input", () => {
-    const warnings: string[] = [];
+    const warnings: Warning[] = [];
     expect(parseGraphDateTime(utc("not a date"), warnings)).toBeUndefined();
     expect(warnings).toHaveLength(1);
   });

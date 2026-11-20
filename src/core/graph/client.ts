@@ -102,24 +102,30 @@ export class GraphClient {
     return url;
   }
 
-  private async send(pathOrUrl: string): Promise<Response> {
+  /**
+   * 发送 GET 请求并用 read 读取响应体。并发名额一直占到响应体读完才释放：
+   * 附件下载时响应头很快返回、内容还在传输，提前释放会让同时传输的附件远超 4 个。
+   */
+  private async send<T>(pathOrUrl: string, read: (response: Response) => Promise<T>): Promise<T> {
     const url = this.resolve(pathOrUrl);
     let refreshed = false;
     for (let attempt = 0; ; attempt++) {
       const token = await this.options.getToken({ forceRefresh: refreshed });
-      let response: Response;
+      let result: { ok: true; value: T } | { ok: false; response: Response };
       try {
-        response = await this.limiter.run(() =>
-          this.fetchImpl(url, {
+        result = await this.limiter.run(async () => {
+          const response = await this.fetchImpl(url, {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
               Prefer: 'outlook.timezone="UTC"',
             },
-          }),
-        );
+          });
+          if (!response.ok) return { ok: false as const, response };
+          return { ok: true as const, value: await read(response) };
+        });
       } catch (networkError) {
-        // 网络错误同样按指数退避重试
+        // 网络错误（包括读取响应体时中断）同样按指数退避重试
         if (attempt >= this.maxRetries) {
           throw new GraphError(0, "network_error", String(networkError));
         }
@@ -127,7 +133,8 @@ export class GraphClient {
         continue;
       }
 
-      if (response.ok) return response;
+      if (result.ok) return result.value;
+      const { response } = result;
 
       if (response.status === 401 && !refreshed) {
         refreshed = true;
@@ -142,9 +149,8 @@ export class GraphClient {
     }
   }
 
-  async getJson<T>(pathOrUrl: string): Promise<T> {
-    const response = await this.send(pathOrUrl);
-    return (await response.json()) as T;
+  getJson<T>(pathOrUrl: string): Promise<T> {
+    return this.send(pathOrUrl, (response) => response.json() as Promise<T>);
   }
 
   /** 读取集合接口的全部分页 */
@@ -159,8 +165,7 @@ export class GraphClient {
     return items;
   }
 
-  async getBinary(pathOrUrl: string): Promise<Uint8Array> {
-    const response = await this.send(pathOrUrl);
-    return new Uint8Array(await response.arrayBuffer());
+  getBinary(pathOrUrl: string): Promise<Uint8Array> {
+    return this.send(pathOrUrl, async (response) => new Uint8Array(await response.arrayBuffer()));
   }
 }

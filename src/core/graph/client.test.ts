@@ -137,6 +137,29 @@ describe("GraphClient", () => {
     expect(peak).toBe(4);
   });
 
+  it("keeps the slot until a slow body has been read", async () => {
+    let reading = 0;
+    let peak = 0;
+    const slowBody = () =>
+      new ReadableStream<Uint8Array>({
+        async start(controller) {
+          reading++;
+          peak = Math.max(peak, reading);
+          controller.enqueue(new Uint8Array([1]));
+          await new Promise((r) => setTimeout(r, 5));
+          controller.enqueue(new Uint8Array([2]));
+          reading--;
+          controller.close();
+        },
+      });
+    const { client } = setup(() => new Response(slowBody()));
+    const results = await Promise.all(
+      Array.from({ length: 8 }, (_, i) => client.getBinary(`/file${i}/$value`)),
+    );
+    expect(results.every((r) => r.length === 2)).toBe(true);
+    expect(peak).toBeLessThanOrEqual(4);
+  });
+
   it("reads binary content", async () => {
     const { client } = setup(() => new Response(new Uint8Array([1, 2, 3])));
     expect(await client.getBinary("/file/$value")).toEqual(new Uint8Array([1, 2, 3]));

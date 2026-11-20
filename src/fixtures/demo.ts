@@ -66,9 +66,9 @@ const DEMO: DemoList[] = [
       {
         id: "DEMO_BACKUP",
         title: {
-          en: "Back up Microsoft To Do before it shuts down",
-          "zh-CN": "在停服前备份 Microsoft To Do",
-          "zh-TW": "在停止服務前備份 Microsoft To Do",
+          en: "Back up Microsoft To Do before the apps retire",
+          "zh-CN": "在应用退役前备份 Microsoft To Do",
+          "zh-TW": "在應用程式退役前備份 Microsoft To Do",
         },
         importance: "high",
         due: "2027-06-01",

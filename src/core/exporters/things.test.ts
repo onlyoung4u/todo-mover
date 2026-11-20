@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { sampleRawData, syntheticRawData } from "../../fixtures";
 import { normalize } from "../model/normalize";
-import { THINGS_BATCH_SIZE, thingsExporter, type ThingsProject, type ThingsTodo } from "./things";
+import {
+  THINGS_BATCH_SIZE,
+  THINGS_MAX_URL_LENGTH,
+  thingsExporter,
+  type ThingsProject,
+  type ThingsTodo,
+} from "./things";
 
 const exportedAt = new Date("2026-11-19T08:00:00Z");
 const sample = normalize(sampleRawData(), { timeZone: "Asia/Shanghai", exportedAt });
@@ -87,6 +93,37 @@ describe("things exporter", () => {
     expect(titles).toEqual(
       Array.from({ length: 125 }, (_, i) => `Bulk task ${String(i + 1).padStart(3, "0")}`),
     );
+  });
+
+  it("also splits by link length, keeping every task in order", () => {
+    const list = synthetic.lists.find((l) => l.name.startsWith("Bulk list"))!;
+    // 每条约 2,000 个中文字符，编码后约 18 KB：一个链接只放得下一条
+    const tasks = list.tasks.slice(0, 6).map((task) => ({ ...task, notes: "长".repeat(2000) }));
+    const data = { ...synthetic, lists: [{ ...list, tasks }] };
+    const result = thingsExporter.run(data, {}, { locale: "en" });
+    expect(result.links).toHaveLength(6);
+    for (const link of result.links!)
+      expect(link.url.length).toBeLessThanOrEqual(THINGS_MAX_URL_LENGTH);
+    expect(result.warnings).toEqual([]);
+    const titles = result.links!.flatMap((l) =>
+      decode(l.url).flatMap((item) =>
+        item.type === "project" ? item.attributes.items : [item as ThingsTodo],
+      ),
+    );
+    expect(titles.map((t) => t.attributes.title)).toEqual(tasks.map((t) => t.title));
+  });
+
+  it("warns when a single task is too long for one link", () => {
+    const list = synthetic.lists[0]!;
+    const tasks = [{ ...list.tasks[0]!, notes: "长".repeat(9000) }];
+    const result = thingsExporter.run(
+      { ...synthetic, lists: [{ ...list, tasks }] },
+      {},
+      { locale: "en" },
+    );
+    expect(result.links).toHaveLength(1);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain(tasks[0]!.title);
   });
 
   it("writes repeat rules, reminders, start dates and links into notes", () => {

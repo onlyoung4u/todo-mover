@@ -6,6 +6,7 @@
  * 再换算到用户选择的导出时区，才能得到正确的日期。
  */
 import type { GraphDateTimeTimeZone } from "../graph/types";
+import type { Warning } from "./types";
 import { WINDOWS_TO_IANA } from "./windowsZones";
 
 const UTC_NAMES = new Set([
@@ -35,6 +36,8 @@ const validZones = new Map<string, boolean>();
 
 /** 是否为当前运行环境能识别的 IANA 时区名。 */
 export function isValidTimeZone(timeZone: string): boolean {
+  // Intl 收到 undefined 时会退回系统时区而不报错，需要先排除
+  if (typeof timeZone !== "string" || !timeZone) return false;
   let ok = validZones.get(timeZone);
   if (ok === undefined) {
     try {
@@ -155,20 +158,21 @@ function formatMinute(w: WallTime): string {
  */
 export function parseGraphDateTime(
   value: GraphDateTimeTimeZone,
-  warnings?: string[],
+  warnings?: Warning[],
 ): ParsedDateTime | undefined {
   const wall = parseWallTime(value.dateTime);
   if (!wall) {
-    warnings?.push(`Unrecognized date-time "${value.dateTime}"`);
+    warnings?.push({ key: "warning.badDateTime", params: { value: value.dateTime } });
     return undefined;
   }
   const zone = resolveTimeZone(value.timeZone ?? "UTC");
   if (zone === "UTC") return { kind: "instant", instant: new Date(wallTimeToUtcMs(wall)) };
   if (zone) return { kind: "instant", instant: zonedWallTimeToInstant(wall, zone) };
 
-  warnings?.push(
-    `Unknown time zone "${value.timeZone}" for "${value.dateTime}"; used the date as written`,
-  );
+  warnings?.push({
+    key: "warning.unknownTimeZone",
+    params: { zone: value.timeZone ?? "", value: value.dateTime },
+  });
   return {
     kind: "local",
     local: `${formatDate(wall)}T${pad(wall.hour)}:${pad(wall.minute)}:${pad(wall.second)}`,
@@ -210,7 +214,7 @@ export function formatUtc(instant: Date): string {
 export function toLocalDate(
   value: GraphDateTimeTimeZone | undefined,
   exportTimeZone: string,
-  warnings?: string[],
+  warnings?: Warning[],
 ): string | undefined {
   if (!value) return undefined;
   const parsed = parseGraphDateTime(value, warnings);
@@ -227,7 +231,7 @@ export function toLocalDate(
 export function toCompletedDate(
   value: GraphDateTimeTimeZone | undefined,
   exportTimeZone: string,
-  warnings?: string[],
+  warnings?: Warning[],
 ): string | undefined {
   if (!value) return undefined;
   const dateTime = value.dateTime.trim();
@@ -239,7 +243,7 @@ export function toCompletedDate(
 export function toReminder(
   value: GraphDateTimeTimeZone | undefined,
   exportTimeZone: string,
-  warnings?: string[],
+  warnings?: Warning[],
 ): { local: string; utc?: string } | undefined {
   if (!value) return undefined;
   const parsed = parseGraphDateTime(value, warnings);

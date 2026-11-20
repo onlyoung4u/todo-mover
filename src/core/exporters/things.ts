@@ -16,6 +16,12 @@ import type { Exporter } from "./types";
 export const THINGS_FILE = "things-import.json";
 /** 每个链接最多包含的 to-do 数 */
 export const THINGS_BATCH_SIZE = 50;
+/**
+ * 每个链接的最大长度（字符）。中文备注经 encodeURIComponent 后膨胀约 9 倍，
+ * 50 条长备注的链接可达数百 KB，点击自定义协议链接时容易打不开或被截断。
+ * 这是保守的经验值，不是 Things 文档给出的上限。
+ */
+export const THINGS_MAX_URL_LENGTH = 32_000;
 const MAX_NOTES = 10_000;
 const MAX_CHECKLIST = 100;
 
@@ -69,11 +75,11 @@ function toThingsTodo(task: Task, t: Translate, locale: Locale, warnings: string
   const completed = task.status === "completed";
   let notes = notesFor(task, t, locale);
   if (notes.length > MAX_NOTES) {
-    warnings.push(`Task "${task.title}": notes were cut to ${MAX_NOTES} characters for Things`);
+    warnings.push(t("warning.thingsNotesCut", { task: task.title, max: MAX_NOTES }));
     notes = notes.slice(0, MAX_NOTES);
   }
   if (task.steps.length > MAX_CHECKLIST) {
-    warnings.push(`Task "${task.title}": only the first ${MAX_CHECKLIST} steps fit in Things`);
+    warnings.push(t("warning.thingsSteps", { task: task.title, max: MAX_CHECKLIST }));
   }
 
   const attributes: ThingsTodo["attributes"] = {
@@ -102,24 +108,41 @@ export function thingsUrl(items: (ThingsProject | ThingsTodo)[]): string {
   return `things:///json?data=${encodeURIComponent(JSON.stringify(items))}`;
 }
 
-function listBatches(list: TodoList, todos: ThingsTodo[], t: Translate) {
+/** 第一批创建项目；之后的批次作为独立 to-do 追加到同名项目中，避免出现多个同名项目 */
+function batchItems(list: TodoList, chunk: ThingsTodo[], first: boolean) {
+  return first
+    ? [{ type: "project" as const, attributes: { title: list.name, items: chunk } }]
+    : chunk.map((todo) => ({ ...todo, attributes: { ...todo.attributes, list: list.name } }));
+}
+
+/** 按"最多 50 条"和"链接不超过 THINGS_MAX_URL_LENGTH"两个条件分批 */
+function listBatches(list: TodoList, todos: ThingsTodo[], t: Translate, warnings: string[]) {
   const chunks: ThingsTodo[][] = [];
-  for (let i = 0; i < todos.length; i += THINGS_BATCH_SIZE) {
-    chunks.push(todos.slice(i, i + THINGS_BATCH_SIZE));
+  let current: ThingsTodo[] = [];
+  for (const todo of todos) {
+    const next = [...current, todo];
+    const tooLong =
+      thingsUrl(batchItems(list, next, chunks.length === 0)).length > THINGS_MAX_URL_LENGTH;
+    if (current.length && (current.length >= THINGS_BATCH_SIZE || tooLong)) {
+      chunks.push(current);
+      current = [todo];
+    } else {
+      current = next;
+    }
   }
-  if (!chunks.length) chunks.push([]);
+  chunks.push(current);
 
   return chunks.map((chunk, i) => {
-    // 第一批创建项目；之后的批次作为独立 to-do 追加到同名项目中，避免出现多个同名项目
-    const items: (ThingsProject | ThingsTodo)[] =
-      i === 0
-        ? [{ type: "project", attributes: { title: list.name, items: chunk } }]
-        : chunk.map((todo) => ({ ...todo, attributes: { ...todo.attributes, list: list.name } }));
+    const url = thingsUrl(batchItems(list, chunk, i === 0));
+    if (url.length > THINGS_MAX_URL_LENGTH) {
+      // 单条任务本身就超长（例如很长的中文备注）：仍然单独生成，但提示可能打不开
+      warnings.push(t("warning.thingsLongLink", { task: chunk[0]?.attributes.title ?? list.name }));
+    }
     const label =
       chunks.length > 1
         ? t("things.batch", { name: list.name, index: i + 1, total: chunks.length })
         : list.name;
-    return { label, url: thingsUrl(items) };
+    return { label, url };
   });
 }
 
@@ -138,7 +161,7 @@ export const thingsExporter: Exporter<Record<string, never>> = {
     for (const list of data.lists) {
       const todos = list.tasks.map((task) => toThingsTodo(task, t, ctx.locale, warnings));
       projects.push({ type: "project", attributes: { title: list.name, items: todos } });
-      links.push(...listBatches(list, todos, t));
+      links.push(...listBatches(list, todos, t, warnings));
     }
 
     return {

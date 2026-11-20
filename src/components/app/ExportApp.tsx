@@ -27,7 +27,15 @@ import { enabledFormats, initialSettings, type Settings } from "./settings";
 import { useMicrosoft } from "./useMicrosoft";
 
 type Source =
-  { kind: "demo" } | { kind: "import"; fileName: string } | { kind: "graph"; profile: Profile };
+  | { kind: "demo" }
+  | {
+      kind: "import";
+      fileName: string;
+      /** 备份记录的来源账号，重新导出时沿用 */
+      account?: Profile;
+      attachmentPaths: Map<string, string>;
+    }
+  | { kind: "graph"; profile: Profile };
 
 type Loaded = {
   source: Source;
@@ -329,8 +337,15 @@ function App() {
         timeZone: settings.timeZone,
         locale,
         formats,
-        account: current.source.kind === "graph" ? current.source.profile : undefined,
+        account:
+          current.source.kind === "graph"
+            ? current.source.profile
+            : current.source.kind === "import"
+              ? current.source.account
+              : undefined,
         incomplete,
+        previousAttachmentPaths:
+          current.source.kind === "import" ? current.source.attachmentPaths : undefined,
         attachmentData: withAttachments ? attachmentStore.current : undefined,
       });
       const download = await packageFiles(output.files);
@@ -427,7 +442,12 @@ function App() {
         // 默认沿用备份导出时选择的时区
         load(
           {
-            source: { kind: "import", fileName },
+            source: {
+              kind: "import",
+              fileName,
+              account: backup.meta.account,
+              attachmentPaths: backup.attachmentPaths,
+            },
             raw: backup.raw,
             failures: [],
             attachmentFailures: [],

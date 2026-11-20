@@ -23,6 +23,34 @@ describe("htmlToText", () => {
     expect(htmlToText("<style>p{}</style><script>alert(1)</script><p>ok</p>")).toBe("ok");
   });
 
+  it("keeps paragraphs inside list items on the marker line", () => {
+    expect(htmlToText("<ul><li><p>First</p></li><li><p>Second</p></li></ul>")).toBe(
+      "- First\n- Second",
+    );
+    expect(htmlToText("<ol><li><div><b>One</b> item</div></li><li></li><li>Three</li></ol>")).toBe(
+      "1. One item\n2.\n3. Three",
+    );
+  });
+
+  it("separates table cells", () => {
+    expect(
+      htmlToText(
+        "<table><tr><th>Name</th><th>Qty</th></tr><tr><td>Milk</td><td>2</td></tr></table>",
+      ),
+    ).toBe("Name\tQty\nMilk\t2");
+  });
+
+  it("keeps link addresses when the text differs", () => {
+    expect(htmlToText('<p>See <a href="https://example.com/a">the doc</a> now</p>')).toBe(
+      "See the doc (https://example.com/a) now",
+    );
+    expect(htmlToText('<a href="https://example.com">https://example.com</a>')).toBe(
+      "https://example.com",
+    );
+    expect(htmlToText('<a href="mailto:a@example.com">a@example.com</a>')).toBe("a@example.com");
+    expect(htmlToText('<a href="javascript:alert(1)">click</a>')).toBe("click");
+  });
+
   it("keeps blank lines from consecutive <br>", () => {
     expect(htmlToText("a<br><br>b")).toBe("a\n\nb");
   });

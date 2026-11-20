@@ -5,10 +5,11 @@ import type {
   GraphTodoTaskList,
   RawData,
 } from "../graph/types";
+import { getTranslator, type Locale, type Translate } from "../../i18n";
 import { TOOL_VERSION } from "../version";
 import { isValidTimeZone, toCompletedDate, toLocalDate, toReminder } from "./dates";
 import { normalizeNotes } from "./html";
-import type { ExportData, Task, TodoList } from "./types";
+import type { ExportData, Task, TodoList, Warning } from "./types";
 
 export type NormalizeOptions = {
   /** 导出时区（IANA） */
@@ -17,6 +18,8 @@ export type NormalizeOptions = {
   exportedAt?: Date;
   account?: ExportData["meta"]["account"];
   incomplete?: ExportData["meta"]["incomplete"];
+  /** warnings 使用的语言，默认英语 */
+  locale?: Locale;
 };
 
 /** 预览页上的筛选条件（SPEC 3.4、7 通用约定）。 */
@@ -40,8 +43,9 @@ function normalizeTask(
   attachments: GraphTaskFileAttachment[] | undefined,
   timeZone: string,
   warnings: string[],
+  t: Translate,
 ): Task {
-  const local: string[] = [];
+  const local: Warning[] = [];
   const reminder = toReminder(raw.reminderDateTime, timeZone, local);
 
   const task: Task = {
@@ -82,8 +86,12 @@ function normalizeTask(
     })),
   };
 
-  if (!STATUSES.has(raw.status)) local.push(`Unknown status "${raw.status}"`);
-  for (const w of local) warnings.push(`Task "${task.title}": ${w}`);
+  if (!STATUSES.has(raw.status)) {
+    local.push({ key: "warning.unknownStatus", params: { status: String(raw.status) } });
+  }
+  for (const w of local) {
+    warnings.push(t("warning.task", { task: task.title, message: t(w.key, w.params) }));
+  }
 
   // 去掉值为 undefined 的可选字段，让 JSON 输出与"字段不存在"一致
   for (const key of Object.keys(task) as (keyof Task)[]) {
@@ -97,12 +105,15 @@ function normalizeList(
   data: RawData,
   timeZone: string,
   warnings: string[],
+  t: Translate,
 ): TodoList {
   const listWarnings: string[] = [];
-  const tasks = (data.tasksByListId[raw.id] ?? []).map((t) =>
-    normalizeTask(t, data.attachmentsByTaskId[t.id], timeZone, listWarnings),
+  const tasks = (data.tasksByListId[raw.id] ?? []).map((task) =>
+    normalizeTask(task, data.attachmentsByTaskId[task.id], timeZone, listWarnings, t),
   );
-  for (const w of listWarnings) warnings.push(`List "${raw.displayName}": ${w}`);
+  for (const w of listWarnings) {
+    warnings.push(t("warning.list", { list: raw.displayName ?? "", message: w }));
+  }
   return {
     id: raw.id,
     name: raw.displayName ?? "",
@@ -115,9 +126,10 @@ function normalizeList(
 
 export function normalize(raw: RawData, options: NormalizeOptions): ExportData {
   const warnings: string[] = [];
+  const t = getTranslator(options.locale ?? "en");
   let timeZone = options.timeZone;
   if (!isValidTimeZone(timeZone)) {
-    warnings.push(`Unknown export time zone "${timeZone}"; used UTC instead`);
+    warnings.push(t("warning.unknownExportTimeZone", { zone: String(timeZone) }));
     timeZone = "UTC";
   }
 
@@ -135,7 +147,7 @@ export function normalize(raw: RawData, options: NormalizeOptions): ExportData {
 
   return {
     meta,
-    lists: raw.lists.map((l) => normalizeList(l, raw, timeZone, warnings)),
+    lists: raw.lists.map((l) => normalizeList(l, raw, timeZone, warnings, t)),
     warnings,
   };
 }

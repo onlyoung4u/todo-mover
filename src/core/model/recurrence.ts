@@ -60,6 +60,14 @@ function occurrences(rec: Recurrence): number | undefined {
   return rec.range.type === "numbered" && n && n > 0 ? n : undefined;
 }
 
+/** 重复是否有结束条件（结束日期或次数）。Todoist 和 Obsidian Tasks 的规则文本都无法表达它。 */
+export function hasEnd(rec: Recurrence): boolean {
+  return Boolean(validEndDate(rec) ?? occurrences(rec));
+}
+
+const validMonth = (m: number | undefined): m is number =>
+  typeof m === "number" && Number.isInteger(m) && m >= 1 && m <= 12;
+
 // ───────────────────────────── RRULE ─────────────────────────────
 
 /** 转为 RRULE 值（不含 "RRULE:" 前缀）。无法表达时返回 undefined。 */
@@ -280,7 +288,9 @@ const ordinal = (n: number) => {
 
 /**
  * Todoist 能识别的英文自然语言（DATE 列）。无法表达时返回 undefined，
- * 调用方把 describe() 的结果写进备注作为降级处理。结束条件不会体现在结果里。
+ * 调用方把 describe() 的结果写进备注作为降级处理。
+ * 结束条件不会体现在结果里：Todoist 文档只给出不带年份的 "until aug 3"，无法可靠表达，
+ * 调用方用 hasEnd() 判断后把完整描述写进备注。
  */
 export function toTodoist(rec: Recurrence): string | undefined {
   const { pattern } = rec;
@@ -302,7 +312,7 @@ export function toTodoist(rec: Recurrence): string | undefined {
       if (n !== 1 || days.length !== 1) return undefined;
       return `every ${pattern.index ?? "first"} ${days[0]}`;
     case "absoluteYearly":
-      if (n !== 1 || !pattern.month || !pattern.dayOfMonth) return undefined;
+      if (n !== 1 || !validMonth(pattern.month) || !pattern.dayOfMonth) return undefined;
       return `every year on ${EN_MONTHS[pattern.month - 1]!.toLowerCase()} ${pattern.dayOfMonth}`;
     default:
       return undefined;
@@ -330,6 +340,7 @@ const FULL_MONTHS = [
 /**
  * Obsidian Tasks 插件 🔁 后面的规则文本（插件按 rrule 的英文语法解析）。
  * 无法表达的部分会退化为更粗的规则，例如 "every year"。
+ * 插件明确不支持 "until 日期" 和 "for N times"，结束条件需由调用方另行写出（见 hasEnd）。
  */
 export function toObsidianTasks(rec: Recurrence): string {
   const { pattern } = rec;
@@ -348,7 +359,7 @@ export function toObsidianTasks(rec: Recurrence): string {
     case "relativeMonthly":
       return every("month") + (days.length === 1 ? ` on the ${nth} ${days[0]}` : "");
     case "absoluteYearly":
-      if (n === 1 && pattern.month && pattern.dayOfMonth) {
+      if (n === 1 && validMonth(pattern.month) && pattern.dayOfMonth) {
         return `every ${FULL_MONTHS[pattern.month - 1]} on the ${ordinal(pattern.dayOfMonth)}`;
       }
       return every("year");

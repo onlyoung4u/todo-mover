@@ -2,7 +2,7 @@ import type { Messages } from "./en";
 
 const zhCN: Messages = {
   "site.name": "To Do 搬家",
-  "site.title": "Microsoft To Do 导出 / 迁移工具 — 停服前备份你的任务",
+  "site.title": "Microsoft To Do 导出 / 迁移工具 — 应用退役前备份你的任务",
   "site.description":
     "把 Microsoft To Do 的全部清单和任务导出为 JSON、CSV、Markdown、ICS、Todoist 或 Things 格式。完全在浏览器本地运行，数据不经过任何服务器。",
 
@@ -28,7 +28,7 @@ const zhCN: Messages = {
 
   "export.json.label": "JSON 完整备份",
   "export.json.targets":
-    "无损备份。以后可以在本站重新打开并转换为任何格式，即使 Microsoft To Do 已经停服。",
+    "无损备份。以后可以在本站重新打开并转换为任何格式，即使 Microsoft To Do 已经退役。",
   "export.json.losses": "不丢失信息。附件另存为单独的文件。",
   "export.csv.label": "CSV 表格",
   "export.csv.targets": "Excel、Numbers、Google 表格、Notion",
@@ -89,6 +89,24 @@ const zhCN: Messages = {
   "markdown.plain.high": "（重要）",
   "markdown.plain.low": "（低优先级）",
 
+  "markdown.recurrenceEnds": "重复：{rule}。Obsidian Tasks 无法设置重复结束，到期后请手动停止。",
+  "warning.recurrenceEnd":
+    "{target}：{count} 个重复任务设有结束日期或次数，{target} 无法表达，已写在任务备注中。",
+  "warning.thingsLongLink":
+    "Things：任务“{task}”的链接很长（主要是备注），可能无法打开。如果失败，请缩短备注后重新导出。",
+  "warning.task": "任务“{task}”：{message}",
+  "warning.list": "清单“{list}”：{message}",
+  "warning.unknownStatus": "未知状态“{status}”，按未开始导出",
+  "warning.badDateTime": "无法识别日期“{value}”，已略过",
+  "warning.unknownTimeZone": "无法识别“{value}”的时区“{zone}”，已按字面日期处理",
+  "warning.unknownExportTimeZone": "无法识别导出时区“{zone}”，已改用 UTC。",
+  "warning.noRaw": "没有微软原始数据，备份中只有转换后的数据。",
+  "warning.icsNoRRule": "ICS：任务“{task}”的重复规则无法转换，已略过。",
+  "warning.icsNoStart": "ICS：任务“{task}”是重复任务，但没有可作为起点的日期，已略过重复规则。",
+  "warning.todoistSplit":
+    "Todoist：清单“{list}”连同子任务超过 {max} 条（Todoist 单个项目的上限），已拆成 {count} 个文件，请分别导入为不同项目。",
+  "warning.thingsNotesCut": "Things：任务“{task}”的备注已截断为 {max} 个字符。",
+  "warning.thingsSteps": "Things：任务“{task}”只保留了前 {max} 个步骤。",
   "things.batch": "{name}（{index}/{total}）",
 
   "landing.how.heading": "使用步骤",
@@ -99,6 +117,8 @@ const zhCN: Messages = {
   "landing.privacyDetails.heading": "隐私",
   "landing.privacyDetails.body":
     "本站没有后端。任务数据在你的浏览器中读取，只保存在内存里，除了微软自己的服务器不会发往任何地方。登录令牌保存在会话存储中，关闭标签页即清除。源代码公开。",
+  "landing.privacyDetails.analytics":
+    "为了统计访问量，本站使用 Cloudflare Web Analytics。它不使用 Cookie，也看不到你的任务和你输入的任何内容，只记录匿名的页面访问。",
   "app.start.heading": "从哪里读取任务？",
   "app.start.signIn": "微软账号",
   "app.start.signInDesc": "直接从 Microsoft To Do 读取全部清单。",
@@ -107,7 +127,7 @@ const zhCN: Messages = {
   "app.start.demoDesc": "内置的样例清单和任务，无需登录。",
   "app.start.import": "JSON 备份",
   "app.start.importDesc":
-    "本站导出的 todo-backup.json。无需登录，即使 Microsoft To Do 停服后也能用。",
+    "本站导出的 todo-backup.json。无需登录，即使 Microsoft To Do 退役后也能用。",
   "app.start.chooseFile": "选择文件…",
   "app.import.error.invalidJson": "这个文件不是有效的 JSON。",
   "app.import.error.notBackup": "这个文件不是本站导出的备份。",
@@ -180,7 +200,7 @@ const zhCN: Messages = {
   "app.done.follow": "关注项目，获取后续工具：",
   "guide.json.title": "保存 JSON 备份",
   "guide.json.steps":
-    "把 todo-backup.json 保存到安全的地方，比如网盘。\n以后要转换格式时，打开本站并选择“JSON 备份”。\n全程不需要登录，即使 Microsoft To Do 停服后也能用。",
+    "把 todo-backup.json 保存到安全的地方，比如网盘。\n以后要转换格式时，打开本站并选择“JSON 备份”。\n全程不需要登录，即使 Microsoft To Do 退役后也能用。",
   "guide.excel.title": "Excel、Numbers、Google 表格",
   "guide.excel.steps":
     "直接打开 todo-tasks.csv。文件是带 BOM 的 UTF-8，中文可以正常显示。\n如果旧版 Excel 仍显示乱码，请使用“数据 → 从文本/CSV”，并选择 UTF-8。\n在 Google 表格中，使用“文件 → 导入 → 上传”。",
@@ -250,7 +270,7 @@ const zhCN: Messages = {
   "nav.theme": "切换浅色 / 深色",
   "nav.privacy": "隐私",
   "footer.local": "完全在浏览器本地运行",
-  "landing.eyebrow": "Microsoft To Do 将于 2027-06-30 停服 · 还剩 {days} 天",
+  "landing.eyebrow": "Microsoft To Do 应用将于 2027-06-30 退役 · 还剩 {days} 天",
   "landing.lead":
     "把全部清单、任务、步骤、备注和提醒导出为完整备份，以及 Excel、Obsidian、Todoist、Things 和日历应用能直接导入的文件。全程在你的浏览器里完成。",
   "landing.local": "仅在本地处理",

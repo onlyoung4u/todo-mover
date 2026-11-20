@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { sampleRawData } from "../../fixtures";
+import { sampleRawData, syntheticRawData } from "../../fixtures";
+import { runExport } from "../export/run";
 import { jsonExporter } from "../exporters/json";
 import { BackupError, parseBackup } from "./backup";
 import { normalize } from "./normalize";
@@ -49,6 +50,55 @@ describe("parseBackup", () => {
     const backup = JSON.parse(backupText);
     delete backup.raw.attachmentsByTaskId;
     expect(parseBackup(JSON.stringify(backup)).raw.attachmentsByTaskId).toEqual({});
+  });
+
+  it("keeps the account and the original attachment paths when exported again", () => {
+    const first = runExport({
+      raw: syntheticRawData(),
+      selection: { includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [{ id: "json", options: {} }],
+      account: { displayName: "Demo User", username: "user@example.com" },
+      attachmentData: new Map([["SYN_ATT_1", new Uint8Array([1])]]),
+    });
+    const parsed = parseBackup(first.files[0]!.content as string);
+    expect(parsed.meta.account).toEqual({ displayName: "Demo User", username: "user@example.com" });
+
+    const again = (previousAttachmentPaths: Map<string, string>) => {
+      const out = runExport({
+        raw: parsed.raw,
+        selection: { includeCompleted: true },
+        timeZone: "UTC",
+        locale: "en",
+        formats: [{ id: "json", options: {} }],
+        account: parsed.meta.account,
+        previousAttachmentPaths,
+      });
+      return JSON.parse(out.files[0]!.content as string);
+    };
+    const second = again(parsed.attachmentPaths);
+    expect(second.meta.account).toEqual(parsed.meta.account);
+    const attachments = second.normalized.lists
+      .flatMap((l: { tasks: { attachments: unknown[] }[] }) => l.tasks)
+      .flatMap((t: { attachments: unknown[] }) => t.attachments);
+    const att1 = attachments.find((a: { id: string }) => a.id === "SYN_ATT_1");
+    // 本次没有附件内容：fileName 为空，原路径保留在 previousFileName
+    expect(att1.fileName).toBeUndefined();
+    expect(att1.previousFileName).toMatch(/^attachments\/.+receipt\.pdf$/);
+    expect(attachments.find((a: { id: string }) => a.id === "SYN_ATT_2").previousFileName).toBe(
+      undefined,
+    );
+
+    // 再导入一次，路径仍然指向最早的 zip
+    const third = parseBackup(JSON.stringify(second));
+    expect(third.attachmentPaths.get("SYN_ATT_1")).toBe(att1.previousFileName);
+  });
+
+  it("only keeps the expected account fields", () => {
+    const backup = JSON.parse(backupText);
+    backup.meta.account = { displayName: "A", username: 42, extra: "x" };
+    expect(parseBackup(JSON.stringify(backup)).meta.account).toEqual({ displayName: "A" });
   });
 
   it("rejects invalid input with a specific code", () => {

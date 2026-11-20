@@ -115,9 +115,9 @@ export const icsExporter: Exporter<Record<string, never>> = {
     const files = data.lists.map((list) => {
       for (const task of list.tasks) {
         if (task.recurrence && !toRRule(task.recurrence)) {
-          warnings.push(`Task "${task.title}": repeat rule could not be converted to RRULE`);
+          warnings.push(t("warning.icsNoRRule", { task: task.title }));
         } else if (task.recurrence && !recurrenceStart(task)) {
-          warnings.push(`Task "${task.title}": repeat rule has no start date and was left out`);
+          warnings.push(t("warning.icsNoStart", { task: task.title }));
         }
       }
       return {

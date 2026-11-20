@@ -81,6 +81,18 @@ describe("normalize (real sample)", () => {
     expect(bad.meta.exportTimeZone).toBe("UTC");
     expect(bad.warnings).toHaveLength(1);
   });
+
+  it("writes warnings in the requested language", () => {
+    const raw = sampleRawData();
+    const task = raw.tasksByListId[raw.lists[0]!.id]![0]!;
+    task.dueDateTime = { dateTime: "2026-05-20T00:00:00.0000000", timeZone: "Atlantis Time" };
+    const zh = normalize(raw, { timeZone: "UTC", exportedAt, locale: "zh-CN" });
+    expect(zh.warnings).toEqual([
+      `清单“${raw.lists[0]!.displayName}”：任务“${task.title}”：无法识别“2026-05-20T00:00:00.0000000”的时区“Atlantis Time”，已按字面日期处理`,
+    ]);
+    const en = normalize(raw, { timeZone: "UTC", exportedAt });
+    expect(en.warnings[0]).toContain("unknown time zone “Atlantis Time”");
+  });
 });
 
 describe("normalize (synthetic)", () => {

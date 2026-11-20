@@ -52,11 +52,16 @@ describe("markdown exporter", () => {
   });
 
   it("renders recurrence, tags, notes and links", () => {
-    const { files } = markdownExporter.run(synthetic, defaults, { locale: "zh-CN" });
+    const { files, warnings } = markdownExporter.run(synthetic, defaults, { locale: "zh-CN" });
     const main = files[0]!.content as string;
+    // Obsidian Tasks 不支持 until：结束条件写在任务下方
     expect(main).toContain(
-      "- [ ] 周会（每周一、三） 🔁 every week on Monday, Wednesday 📅 2026-01-05\n",
+      "- [ ] 周会（每周一、三） 🔁 every week on Monday, Wednesday 📅 2026-01-05\n" +
+        "  > 重复：每周（周一、周三），直到 2026-06-29。Obsidian Tasks 无法设置重复结束，到期后请手动停止。\n",
     );
+    expect(warnings).toEqual([
+      "Obsidian Tasks：1 个重复任务设有结束日期或次数，Obsidian Tasks 无法表达，已写在任务备注中。",
+    ]);
     expect(main).toContain("- [ ] Two categories #工作 #Home-Errands\n");
     expect(main).toContain("- [ ] Low priority someday 🔽\n");
     expect(main).toContain("- [ ] Plan the trip 🛫 2026-04-02 📅 2026-04-10\n");

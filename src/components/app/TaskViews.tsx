@@ -221,12 +221,13 @@ export function TaskDetail({ task, timeZone }: { task?: Task; timeZone: string }
           <ul className="plain-list">
             {task.links.map((l, i) => (
               <li key={l.url ?? i}>
-                {l.url ? (
+                {l.url && /^https?:\/\//i.test(l.url) ? (
                   <a href={l.url} target="_blank" rel="noopener noreferrer">
                     {l.title || l.url}
                   </a>
                 ) : (
-                  l.title
+                  // 只有 http(s) 地址才渲染为链接；备份文件可能被改过，其他协议按文本显示
+                  l.title || l.url
                 )}
                 {l.app && <span className="chip">{l.app}</span>}
               </li>

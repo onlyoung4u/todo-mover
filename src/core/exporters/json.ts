@@ -1,4 +1,5 @@
 /** JSON 完整备份（SPEC 7.1）：{ meta, normalized, raw }，无损，可离线重导。 */
+import { getTranslator } from "../../i18n";
 import type { RawData } from "../graph/types";
 import type { ExportData } from "../model/types";
 import type { Exporter } from "./types";
@@ -19,8 +20,7 @@ export const jsonExporter: Exporter<Record<string, never>> = {
   defaultOptions: {},
   run(data, _opts, ctx) {
     const warnings: string[] = [];
-    if (!ctx.raw)
-      warnings.push("Raw Graph data is not available; the backup only contains normalized data");
+    if (!ctx.raw) warnings.push(getTranslator(ctx.locale)("warning.noRaw"));
     const backup: JsonBackup = { meta: data.meta, normalized: data, raw: ctx.raw ?? null };
     return {
       files: [

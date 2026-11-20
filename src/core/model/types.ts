@@ -1,5 +1,9 @@
 /** 归一化模型（SPEC 6.2）。所有导出器只依赖这里的类型。 */
 import type { GraphPatternedRecurrence } from "../graph/types";
+import type { MessageKey } from "../../i18n";
+
+/** 归一化过程中的问题：先记下文案的 key，按界面语言统一翻译 */
+export type Warning = { key: MessageKey; params?: Record<string, string | number> };
 
 export type Recurrence = GraphPatternedRecurrence;
 
@@ -68,8 +72,13 @@ export type Attachment = {
   name: string;
   size: number;
   contentType: string;
-  /** 附件下载后在 zip 包中的路径（M4） */
+  /** 附件下载后在本次 zip 包中的路径（M4）；有值表示内容包含在本次导出中 */
   fileName?: string;
+  /**
+   * 从 JSON 备份重新导出时：附件在当初那个 zip 包中的路径。
+   * 本次导出不含附件内容，靠它找到原来的文件。
+   */
+  previousFileName?: string;
 };
 
 export type Task = {

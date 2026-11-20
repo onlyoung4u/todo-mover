@@ -1,6 +1,6 @@
 import { describe as suite, expect, it } from "vitest";
 import type { GraphRecurrencePattern, GraphRecurrenceRange } from "../graph/types";
-import { describe, toObsidianTasks, toRRule, toTodoist } from "./recurrence";
+import { describe, hasEnd, toObsidianTasks, toRRule, toTodoist } from "./recurrence";
 import type { Recurrence } from "./types";
 
 const noEnd: GraphRecurrenceRange = {
@@ -149,5 +149,22 @@ suite("toObsidianTasks", () => {
     [yearlyFirstMondayOfMarch, "every year"],
   ])("%#: %s", (input, expected) => {
     expect(toObsidianTasks(input)).toBe(expected);
+  });
+});
+
+suite("malformed and finite rules", () => {
+  it("does not throw on an out-of-range month", () => {
+    for (const month of [0, 13, -1, 1.5]) {
+      const yearly = rec({ type: "absoluteYearly", month, dayOfMonth: 3 });
+      expect(toTodoist(yearly)).toBeUndefined();
+      expect(toObsidianTasks(yearly)).toBe("every year");
+      expect(() => describe(yearly, "en")).not.toThrow();
+    }
+  });
+
+  it("knows when a repeat ends", () => {
+    expect(hasEnd(weeklyMonWed)).toBe(true);
+    expect(hasEnd(rec({}, { type: "numbered", numberOfOccurrences: 5 }))).toBe(true);
+    expect(hasEnd(daily)).toBe(false);
   });
 });

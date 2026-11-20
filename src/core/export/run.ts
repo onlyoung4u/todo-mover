@@ -26,6 +26,8 @@ export type ExportRequest = {
   exportedAt?: Date;
   /** 已下载的附件内容，按附件 ID 索引（只有登录读取并开启"下载附件"时才有） */
   attachmentData?: ReadonlyMap<string, Uint8Array>;
+  /** 从 JSON 备份重导时：附件在原 zip 包中的路径，按附件 ID 索引 */
+  previousAttachmentPaths?: ReadonlyMap<string, string>;
 };
 
 export type ExportOutput = {
@@ -90,9 +92,16 @@ export function runExport(request: ExportRequest): ExportOutput {
     exportedAt: request.exportedAt,
     account: request.account,
     incomplete: request.incomplete,
+    locale: request.locale,
   });
 
   const attachments = request.attachmentData ? attachmentFiles(data, request.attachmentData) : [];
+  if (request.previousAttachmentPaths?.size) {
+    for (const a of data.lists.flatMap((l) => l.tasks.flatMap((t) => t.attachments))) {
+      const previous = request.previousAttachmentPaths.get(a.id);
+      if (previous) a.previousFileName = previous;
+    }
+  }
   const files: ExportFile[] = [];
   const links: ExportOutput["links"] = [];
   const warnings = [...data.warnings];
