@@ -192,12 +192,12 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
       raw: RawData,
       store: Map<string, Uint8Array>,
       scope: AttachmentScope,
-      confirmLarge: (bytes: number) => boolean,
+      confirmLarge: (bytes: number) => Promise<boolean>,
       onProgress: (p: AttachmentProgress) => void,
     ): Promise<{ failures: AttachmentFailure[]; skipped: boolean }> => {
       const { m, g } = need();
       const bytes = m.fetch.attachmentBytes(raw, scope);
-      if (bytes > m.fetch.ATTACHMENT_CONFIRM_BYTES && !confirmLarge(bytes)) {
+      if (bytes > m.fetch.ATTACHMENT_CONFIRM_BYTES && !(await confirmLarge(bytes))) {
         return { failures: [], skipped: true };
       }
       const failures = await m.fetch.downloadAttachments(g, raw, store, scope, onProgress);

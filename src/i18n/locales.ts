@@ -12,7 +12,10 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   "zh-TW": "繁體中文",
 };
 
-/** 记住用户手动选择的语言。这是全站唯一允许写入 localStorage 的数据（SPEC 14.3）。 */
+/**
+ * 记住用户手动选择的语言（SPEC 14.3）。localStorage 里只有两项偏好：
+ * 这里的语言，以及浅色 / 深色主题（todo-mover:theme）。任务数据和登录信息都不会写入。
+ */
 export const LOCALE_STORAGE_KEY = "todo-mover:locale";
 
 export function isLocale(value: string): value is Locale {

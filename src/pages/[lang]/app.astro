@@ -15,7 +15,7 @@ const t = getTranslator(lang);
   <Header lang={lang} path="/app/" />
   <main class="container">
     <ExportApp client:only="react" locale={lang}>
-      <p slot="fallback" class="muted app-loading">
+      <p slot="fallback" class="muted">
         {t("app.loading")}
       </p>
     </ExportApp>

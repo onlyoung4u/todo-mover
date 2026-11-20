@@ -118,6 +118,13 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
 
   return (
     <div className="formats">
+      {/* SPEC 3.5：TickTick / 滴答清单用户的提示放在格式卡片区顶部 */}
+      <p className="ticktick-tip">
+        {t("app.formats.ticktick")}{" "}
+        <a href={ticktickHelp} target="_blank" rel="noopener noreferrer">
+          {t("app.formats.ticktickLink")}
+        </a>
+      </p>
       <div className="format-grid">
         {EXPORTER_ORDER.map((id) => {
           const exporter = EXPORTERS[id];
@@ -158,12 +165,6 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
           );
         })}
       </div>
-      <p className="ticktick-tip">
-        {t("app.formats.ticktick")}{" "}
-        <a href={ticktickHelp} target="_blank" rel="noopener noreferrer">
-          {t("app.formats.ticktickLink")}
-        </a>
-      </p>
     </div>
   );
 }

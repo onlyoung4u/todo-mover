@@ -24,8 +24,6 @@ const zhCN: Messages = {
   "notFound.title": "页面不存在",
   "notFound.back": "返回首页",
 
-  "auth.redirecting": "正在完成登录…",
-
   "export.json.label": "JSON 完整备份",
   "export.json.targets":
     "无损备份。以后可以在本站重新打开并转换为任何格式，即使 Microsoft To Do 已经退役。",
@@ -122,7 +120,6 @@ const zhCN: Messages = {
   "app.start.heading": "从哪里读取任务？",
   "app.start.signIn": "微软账号",
   "app.start.signInDesc": "直接从 Microsoft To Do 读取全部清单。",
-  "app.start.signInSoon": "登录功能即将上线。现在可以先看演示，或打开 JSON 备份。",
   "app.start.demo": "演示",
   "app.start.demoDesc": "内置的样例清单和任务，无需登录。",
   "app.start.import": "JSON 备份",
@@ -144,13 +141,7 @@ const zhCN: Messages = {
   "app.lists.shared": "共享",
   "app.lists.empty": "没有任务",
   "app.preview.noList": "选择一个清单以预览其中的任务。",
-  "app.preview.steps": "步骤 {done}/{total}",
-  "app.preview.due": "截止 {date}",
-  "app.preview.reminder": "提醒 {time}",
-  "app.preview.attachments": "附件 {count} 个",
-  "app.preview.links": "关联链接 {count} 个",
   "app.preview.important": "重要",
-  "app.options.heading": "选项",
   "app.options.includeCompleted": "包含已完成的任务",
   "app.options.timeZone": "导出时区",
   "app.options.timeZoneHelp":
@@ -161,12 +152,10 @@ const zhCN: Messages = {
   "app.options.attachmentsDenied": "微软不允许这个账号读取附件。",
   "app.limits.heading": "微软接口不提供以下内容：",
   "app.limits.text": "“我的一天”（临时视图）和清单分组。所有清单都会平铺导出。",
-  "app.formats.heading": "格式",
   "app.formats.ticktick":
     "要迁移到滴答清单 / TickTick？推荐直接使用它们自带的“从 Microsoft To Do 导入”，本工具的 JSON 备份可作为保险。",
   "app.formats.ticktickLink": "官方帮助",
   "app.formats.recommended": "推荐",
-  "app.formats.targets": "适用于",
   "app.formats.losses": "会丢失",
   "app.formats.appleOnly": "仅适用于 macOS / iOS。",
   "opt.csv.formulaGuard": "Excel 公式注入防护（以 = + - @ 开头的单元格前加 '）",
@@ -184,7 +173,6 @@ const zhCN: Messages = {
   "app.export.summary": "已选 {lists} 个清单 · {tasks} 个任务 · {formats} 种格式",
   "app.export.failed": "生成文件时出错，请重试。",
   "app.done.heading": "导出完成",
-  "app.done.downloaded": "已下载 {file}。",
   "app.done.downloadAgain": "再次下载",
   "app.done.backToPreview": "返回修改选项",
   "app.done.things.heading": "在 Things 中打开",
@@ -253,6 +241,8 @@ const zhCN: Messages = {
   "app.attachments.metadata": "正在检查附件 {done}/{total}…",
   "app.attachments.downloading": "正在下载附件 {done}/{total}…",
   "app.attachments.confirm": "附件总共约 {size} MB，确定全部下载吗？",
+  "app.attachments.confirmYes": "全部下载",
+  "app.attachments.confirmNo": "不下载附件",
   "app.attachments.skipped": "按你的选择，没有下载附件。附件名称仍记录在 JSON 备份中。",
   "app.attachments.failed": "任务“{task}”的附件“{name}”下载失败（{reason}）。",
   "app.attachments.denied":

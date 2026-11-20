@@ -39,3 +39,6 @@ pnpm-debug.log*
 # 本地导出的真实数据（不要提交）
 export/
 m1-samples/
+
+# Claude Code 本地设置
+.claude/

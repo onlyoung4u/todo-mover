@@ -73,8 +73,8 @@ function TaskRow({
               <Meta icon={<PaperclipIcon />}>{task.attachments.length || null}</Meta>
             )}
             {task.links.length > 0 && <Meta icon={<LinkIcon />}>{task.links.length}</Meta>}
-            {task.categories.map((c) => (
-              <span key={c} className="tag">
+            {task.categories.map((c, i) => (
+              <span key={i} className="tag">
                 {c}
               </span>
             ))}
@@ -182,8 +182,8 @@ export function TaskDetail({ task, timeZone }: { task?: Task; timeZone: string }
         {task.categories.length > 0 && (
           <Field label={t("csv.col.categories")}>
             <span className="tags">
-              {task.categories.map((c) => (
-                <span key={c} className="tag">
+              {task.categories.map((c, i) => (
+                <span key={i} className="tag">
                   {c}
                 </span>
               ))}
@@ -220,7 +220,7 @@ export function TaskDetail({ task, timeZone }: { task?: Task; timeZone: string }
           <h4>{t("csv.col.links")}</h4>
           <ul className="plain-list">
             {task.links.map((l, i) => (
-              <li key={l.url ?? i}>
+              <li key={i}>
                 {l.url && /^https?:\/\//i.test(l.url) ? (
                   <a href={l.url} target="_blank" rel="noopener noreferrer">
                     {l.title || l.url}

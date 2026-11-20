@@ -24,8 +24,6 @@ const zhTW: Messages = {
   "notFound.title": "找不到頁面",
   "notFound.back": "返回首頁",
 
-  "auth.redirecting": "正在完成登入…",
-
   "export.json.label": "JSON 完整備份",
   "export.json.targets":
     "無損備份。之後可以在本站重新開啟並轉換為任何格式，即使 Microsoft To Do 已經退役。",
@@ -122,7 +120,6 @@ const zhTW: Messages = {
   "app.start.heading": "從哪裡讀取工作？",
   "app.start.signIn": "Microsoft 帳戶",
   "app.start.signInDesc": "直接從 Microsoft To Do 讀取所有清單。",
-  "app.start.signInSoon": "登入功能即將推出。目前可以先看示範，或開啟 JSON 備份。",
   "app.start.demo": "示範",
   "app.start.demoDesc": "內建的範例清單與工作，無需登入。",
   "app.start.import": "JSON 備份",
@@ -144,13 +141,7 @@ const zhTW: Messages = {
   "app.lists.shared": "共用",
   "app.lists.empty": "沒有工作",
   "app.preview.noList": "選擇一個清單以預覽其中的工作。",
-  "app.preview.steps": "步驟 {done}/{total}",
-  "app.preview.due": "到期 {date}",
-  "app.preview.reminder": "提醒 {time}",
-  "app.preview.attachments": "附件 {count} 個",
-  "app.preview.links": "連結 {count} 個",
   "app.preview.important": "重要",
-  "app.options.heading": "選項",
   "app.options.includeCompleted": "包含已完成的工作",
   "app.options.timeZone": "匯出時區",
   "app.options.timeZoneHelp":
@@ -161,12 +152,10 @@ const zhTW: Messages = {
   "app.options.attachmentsDenied": "Microsoft 不允許這個帳戶讀取附件。",
   "app.limits.heading": "Microsoft 介面不提供以下內容：",
   "app.limits.text": "「我的一天」（暫時檢視）與清單群組。所有清單都會平鋪匯出。",
-  "app.formats.heading": "格式",
   "app.formats.ticktick":
     "要遷移到 TickTick / 滴答清單？建議直接使用它們內建的「從 Microsoft To Do 匯入」，本工具的 JSON 備份可作為保險。",
   "app.formats.ticktickLink": "官方說明",
   "app.formats.recommended": "推薦",
-  "app.formats.targets": "適用於",
   "app.formats.losses": "會遺失",
   "app.formats.appleOnly": "僅適用於 macOS / iOS。",
   "opt.csv.formulaGuard": "Excel 公式注入防護（以 = + - @ 開頭的儲存格前加 '）",
@@ -184,7 +173,6 @@ const zhTW: Messages = {
   "app.export.summary": "已選 {lists} 個清單 · {tasks} 項工作 · {formats} 種格式",
   "app.export.failed": "產生檔案時發生錯誤，請再試一次。",
   "app.done.heading": "匯出完成",
-  "app.done.downloaded": "已下載 {file}。",
   "app.done.downloadAgain": "再次下載",
   "app.done.backToPreview": "返回修改選項",
   "app.done.things.heading": "在 Things 中開啟",
@@ -254,6 +242,8 @@ const zhTW: Messages = {
   "app.attachments.metadata": "正在檢查附件 {done}/{total}…",
   "app.attachments.downloading": "正在下載附件 {done}/{total}…",
   "app.attachments.confirm": "附件總共約 {size} MB，確定全部下載嗎？",
+  "app.attachments.confirmYes": "全部下載",
+  "app.attachments.confirmNo": "不下載附件",
   "app.attachments.skipped": "依你的選擇，沒有下載附件。附件名稱仍記錄在 JSON 備份中。",
   "app.attachments.failed": "工作「{task}」的附件「{name}」下載失敗（{reason}）。",
   "app.attachments.denied":

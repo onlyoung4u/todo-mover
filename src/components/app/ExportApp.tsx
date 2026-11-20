@@ -16,6 +16,7 @@ import type { Incomplete } from "../../core/model/types";
 import { demoRawData } from "../../fixtures";
 import type { Locale } from "../../i18n";
 import "./app.css";
+import { ConfirmDialog } from "./ConfirmDialog";
 import { DoneScreen, type DoneResult } from "./DoneScreen";
 import { PreviewScreen, type ExportError } from "./PreviewScreen";
 import { ReadingScreen } from "./ReadingScreen";
@@ -90,6 +91,11 @@ function App() {
   const [busy, setBusy] = useState<string>();
   const [exportError, setExportError] = useState<ExportError>();
   const [done, setDone] = useState<{ result: DoneResult; download: Download }>();
+  /** 等待用户回答的确认框（目前只用于附件总量超过 200MB 时） */
+  const [confirmation, setConfirmation] = useState<{
+    message: string;
+    resolve: (confirmed: boolean) => void;
+  }>();
   const [thingsAvailable] = useState(isAppleDevice);
   /** 已下载的附件内容（按附件 ID），重复导出时不再下载 */
   const attachmentStore = useRef(new Map<string, Uint8Array>());
@@ -103,6 +109,10 @@ function App() {
     setExportError(undefined);
     setView("preview");
     window.scrollTo(0, 0);
+  }
+
+  function askConfirmation(message: string): Promise<boolean> {
+    return new Promise((resolve) => setConfirmation({ message, resolve }));
   }
 
   /** 统一处理登录 / 读取错误：用户取消登录时静默返回 */
@@ -287,7 +297,8 @@ function App() {
           current.raw,
           attachmentStore.current,
           scope,
-          (bytes) => window.confirm(t("app.attachments.confirm", { size: Math.round(bytes / MB) })),
+          (bytes) =>
+            askConfirmation(t("app.attachments.confirm", { size: Math.round(bytes / MB) })),
           progress("app.attachments.downloading"),
         );
         contentFailures = failures;
@@ -396,24 +407,37 @@ function App() {
               name: source.profile.displayName || source.profile.username || "",
             });
     return (
-      <PreviewScreen
-        raw={loaded.raw}
-        sourceLabel={sourceLabel}
-        settings={settings}
-        thingsAvailable={thingsAvailable}
-        attachmentsAvailable={source.kind === "graph"}
-        failedListIds={loaded.failures.map((f) => f.listId)}
-        attachmentsDenied={loaded.attachmentsDenied}
-        onGrantAttachments={grantForAttachments}
-        busy={busy}
-        onChange={setSettings}
-        onExport={handleExport}
-        onBack={() => setView("start")}
-        onSignOut={source.kind === "graph" ? signOut : undefined}
-        onRetryFailed={retryFailed}
-        error={exportError}
-        onSignInAgain={signInAgain}
-      />
+      <>
+        <PreviewScreen
+          raw={loaded.raw}
+          sourceLabel={sourceLabel}
+          settings={settings}
+          thingsAvailable={thingsAvailable}
+          attachmentsAvailable={source.kind === "graph"}
+          failedListIds={loaded.failures.map((f) => f.listId)}
+          attachmentsDenied={loaded.attachmentsDenied}
+          onGrantAttachments={grantForAttachments}
+          busy={busy}
+          onChange={setSettings}
+          onExport={handleExport}
+          onBack={() => setView("start")}
+          onSignOut={source.kind === "graph" ? signOut : undefined}
+          onRetryFailed={retryFailed}
+          error={exportError}
+          onSignInAgain={signInAgain}
+        />
+        {confirmation && (
+          <ConfirmDialog
+            message={confirmation.message}
+            confirmLabel={t("app.attachments.confirmYes")}
+            cancelLabel={t("app.attachments.confirmNo")}
+            onAnswer={(confirmed) => {
+              setConfirmation(undefined);
+              confirmation.resolve(confirmed);
+            }}
+          />
+        )}
+      </>
     );
   }
 

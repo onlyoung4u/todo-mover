@@ -43,7 +43,10 @@ export async function fetchProfile(client: GraphClient): Promise<Profile> {
   return { displayName: me.displayName, username: me.mail || me.userPrincipalName };
 }
 
-/** 记录 $expand 能否合并展开（SPEC 13 #2 待验证），同一次会话内只探测一次 */
+/**
+ * 记录 $expand 能否合并展开，同一次会话内只探测一次。
+ * SPEC 13 #2 已确认个人账号可以合并展开；返回 400 时的退化逻辑保留作兜底。
+ */
 type ExpandState = { combined: boolean };
 
 /**

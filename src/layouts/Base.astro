@@ -18,8 +18,9 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 const abs = (p: string) => new URL(p, site).href;
 
 const canonical = lang && path ? abs(`/${lang}${path}`) : abs(Astro.url.pathname);
+// noindex 的页面（如 /[lang]/app/）不进搜索结果，也就不需要语言互链
 const alternates =
-  lang && path ? LOCALES.map((l) => ({ hreflang: l, href: abs(`/${l}${path}`) })) : [];
+  lang && path && !noindex ? LOCALES.map((l) => ({ hreflang: l, href: abs(`/${l}${path}`) })) : [];
 ---
 
 <!doctype html>

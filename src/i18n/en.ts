@@ -23,8 +23,6 @@ const en = {
   "notFound.title": "Page not found",
   "notFound.back": "Back to home",
 
-  "auth.redirecting": "Completing sign-in…",
-
   "export.json.label": "JSON backup",
   "export.json.targets":
     "A lossless backup. Open it here again later to convert it to any format, even after Microsoft To Do is retired.",
@@ -129,7 +127,6 @@ const en = {
   "app.start.heading": "Where should your tasks come from?",
   "app.start.signIn": "Microsoft account",
   "app.start.signInDesc": "Read all your lists directly from Microsoft To Do.",
-  "app.start.signInSoon": "Sign-in is coming soon. For now, try the demo or open a JSON backup.",
   "app.start.demo": "Demo",
   "app.start.demoDesc": "Sample lists and tasks. No sign-in needed.",
   "app.start.import": "JSON backup",
@@ -153,13 +150,7 @@ const en = {
   "app.lists.shared": "Shared",
   "app.lists.empty": "No tasks",
   "app.preview.noList": "Select a list to preview its tasks.",
-  "app.preview.steps": "Steps {done}/{total}",
-  "app.preview.due": "Due {date}",
-  "app.preview.reminder": "Reminder {time}",
-  "app.preview.attachments": "Attachments: {count}",
-  "app.preview.links": "Links: {count}",
   "app.preview.important": "Important",
-  "app.options.heading": "Options",
   "app.options.includeCompleted": "Include completed tasks",
   "app.options.timeZone": "Export time zone",
   "app.options.timeZoneHelp":
@@ -170,12 +161,10 @@ const en = {
   "app.options.attachmentsDenied": "Microsoft doesn't allow this account to read attachments.",
   "app.limits.heading": "Not available from Microsoft:",
   "app.limits.text": "My Day (a temporary view) and list groups. All lists are exported flat.",
-  "app.formats.heading": "Formats",
   "app.formats.ticktick":
     "Moving to TickTick or 滴答清单? Their built-in “Import from Microsoft To Do” is the easiest route. Keep the JSON backup from here as a safety net.",
   "app.formats.ticktickLink": "Official help",
   "app.formats.recommended": "Recommended",
-  "app.formats.targets": "Works with",
   "app.formats.losses": "What gets lost",
   "app.formats.appleOnly": "Only for macOS and iOS.",
   "opt.csv.formulaGuard":
@@ -194,7 +183,6 @@ const en = {
   "app.export.summary": "Lists: {lists} · Tasks: {tasks} · Formats: {formats}",
   "app.export.failed": "Something went wrong while creating the files. Please try again.",
   "app.done.heading": "Your export is ready",
-  "app.done.downloaded": "Downloaded {file}.",
   "app.done.downloadAgain": "Download again",
   "app.done.backToPreview": "Back to options",
   "app.done.things.heading": "Open in Things",
@@ -267,6 +255,8 @@ const en = {
   "app.attachments.metadata": "Checking attachments {done}/{total}…",
   "app.attachments.downloading": "Downloading attachments {done}/{total}…",
   "app.attachments.confirm": "The attachments add up to about {size} MB. Download all of them?",
+  "app.attachments.confirmYes": "Download all",
+  "app.attachments.confirmNo": "Skip attachments",
   "app.attachments.skipped":
     "Attachments were not downloaded, as you chose. Their names are still listed in the JSON backup.",
   "app.attachments.failed":

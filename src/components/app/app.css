@@ -16,12 +16,7 @@
   flex: none;
 }
 
-.hint {
-  font-size: 0.8rem;
-  color: var(--subtle);
-  margin: 8px 0 0;
-}
-
+/* .hint 的基础样式在 global.css */
 .hint.block {
   display: block;
   margin-top: 2px;
@@ -32,6 +27,29 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+}
+
+.confirm-dialog {
+  max-width: min(440px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  color: var(--fg);
+  box-shadow: var(--shadow);
+}
+
+.confirm-dialog::backdrop {
+  background: rgb(0 0 0 / 35%);
+}
+
+.confirm-dialog p {
+  margin: 0 0 16px;
+}
+
+.confirm-dialog .button-row {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .link-button {
@@ -94,9 +112,8 @@
   margin: 0;
 }
 
+/* .local 的基础样式在 global.css；工具页里带锁图标，用更小的间距和强调色 */
 .local {
-  display: inline-flex;
-  align-items: center;
   gap: 6px;
   color: var(--accent);
 }
@@ -659,7 +676,7 @@
 }
 
 .ticktick-tip {
-  margin: 16px 0 0;
+  margin: 0 0 16px;
   font-size: 0.85rem;
   color: var(--muted);
 }

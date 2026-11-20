@@ -105,8 +105,9 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
           <h2>{t("app.done.things.heading")}</h2>
           <p className="hint">{t("app.done.things.hint")}</p>
           <ul className="things-links">
-            {result.links.map((link) => (
-              <li key={link.url}>
+            {result.links.map((link, i) => (
+              // 两个同名空清单会生成相同的链接，用序号区分
+              <li key={i}>
                 <span>{link.label}</span>
                 <a className="button small" href={link.url}>
                   {t("app.done.things.open")}
@@ -121,8 +122,8 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
         <details className="card warnings">
           <summary>{t("app.done.warnings", { count: result.warnings.length })}</summary>
           <ul>
-            {result.warnings.map((w) => (
-              <li key={w}>{w}</li>
+            {result.warnings.map((w, i) => (
+              <li key={i}>{w}</li>
             ))}
           </ul>
         </details>
