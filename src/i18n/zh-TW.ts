@@ -101,6 +101,8 @@ const zhTW: Messages = {
   "warning.noRaw": "沒有 Microsoft 原始資料，備份中只有轉換後的資料。",
   "warning.icsNoRRule": "ICS：工作「{task}」的重複規則無法轉換，已略過。",
   "warning.icsNoStart": "ICS：工作「{task}」是重複工作，但沒有可作為起點的日期，已略過重複規則。",
+  "warning.icsStartAdjusted":
+    "ICS：重複工作「{task}」的起點日期（{from}）不在重複規則內，已對齊到 {to}（原日期已記入描述）。",
   "warning.todoistSplit":
     "Todoist：清單「{list}」連同子工作超過 {max} 項（Todoist 單一專案的上限），已拆成 {count} 個檔案，請分別匯入為不同專案。",
   "warning.thingsNotesCut": "Things：工作「{task}」的備註已截斷為 {max} 個字元。",

@@ -4,7 +4,7 @@
  */
 import { cleanGraphObject } from "../graph/clean";
 import type { RawData } from "../graph/types";
-import type { ExportData } from "./types";
+import type { ExportData, Incomplete } from "./types";
 
 export type BackupErrorCode = "invalidJson" | "notBackup" | "noRawData" | "newerSchema";
 
@@ -43,6 +43,45 @@ function attachmentPaths(normalized: unknown): Map<string, string> {
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
+function cleanIncomplete(value: unknown): Incomplete | undefined {
+  if (!isObject(value)) return undefined;
+  const out: Incomplete = {};
+  if (Array.isArray(value.lists)) {
+    const lists = value.lists
+      .filter(
+        (l): l is { id: string; name: string } =>
+          isObject(l) && typeof l.id === "string" && typeof l.name === "string",
+      )
+      .map(({ id, name }) => ({ id, name }));
+    if (lists.length) out.lists = lists;
+  }
+  if (Array.isArray(value.attachmentMetadata)) {
+    const meta = value.attachmentMetadata
+      .filter(
+        (m): m is { listId: string; taskId: string; taskTitle: string } =>
+          isObject(m) &&
+          typeof m.listId === "string" &&
+          typeof m.taskId === "string" &&
+          typeof m.taskTitle === "string",
+      )
+      .map(({ listId, taskId, taskTitle }) => ({ listId, taskId, taskTitle }));
+    if (meta.length) out.attachmentMetadata = meta;
+  }
+  if (Array.isArray(value.attachmentContent)) {
+    const content = value.attachmentContent
+      .filter(
+        (c): c is { taskId: string; attachmentId: string; name: string } =>
+          isObject(c) &&
+          typeof c.taskId === "string" &&
+          typeof c.attachmentId === "string" &&
+          typeof c.name === "string",
+      )
+      .map(({ taskId, attachmentId, name }) => ({ taskId, attachmentId, name }));
+    if (content.length) out.attachmentContent = content;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function isRawData(v: unknown): v is RawData {
   if (!isObject(v) || !Array.isArray(v.lists) || !isObject(v.tasksByListId)) return false;
   const listsOk = v.lists.every(
@@ -78,6 +117,9 @@ export function parseBackup(text: string): ParsedBackup {
     if (typeof account.username === "string") clean.username = account.username;
     if (clean.displayName || clean.username) meta.account = clean;
   }
+  const incomplete = cleanIncomplete(meta.incomplete);
+  delete meta.incomplete;
+  if (incomplete) meta.incomplete = incomplete;
   if (typeof meta.schemaVersion === "number" && meta.schemaVersion > 1) {
     throw new BackupError("newerSchema");
   }

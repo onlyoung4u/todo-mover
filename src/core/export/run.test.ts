@@ -145,7 +145,7 @@ describe("attachment file names", () => {
 });
 
 describe("incomplete exports", () => {
-  it("records what could not be read in the JSON backup", () => {
+  it("records what could not be read in the JSON backup and prunes empty arrays", () => {
     const out = runExport({
       raw: syntheticRawData(),
       selection: { includeCompleted: true },
@@ -156,13 +156,60 @@ describe("incomplete exports", () => {
       incomplete: {
         lists: [{ id: "L_FAILED", name: "Failed list" }],
         attachmentMetadata: [],
+        attachmentContent: [],
       },
     });
     const backup = JSON.parse(out.files[0]!.content as string);
     expect(backup.meta.incomplete).toEqual({
       lists: [{ id: "L_FAILED", name: "Failed list" }],
-      attachmentMetadata: [],
     });
+  });
+
+  it("filters task-level incomplete records to the selected tasks while keeping failed lists", () => {
+    const out = runExport({
+      raw: syntheticRawData(),
+      selection: { listIds: ["SYN_LIST_SHARED"], includeCompleted: false },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("json")],
+      exportedAt,
+      incomplete: {
+        lists: [{ id: "L_FAILED", name: "Failed list" }],
+        attachmentMetadata: [
+          { listId: "SYN_LIST_MAIN", taskId: "SYN_ATTACHMENT", taskTitle: "Secret task" },
+          { listId: "SYN_LIST_SHARED", taskId: "SYN_SHARED_1", taskTitle: "牛奶" },
+        ],
+        attachmentContent: [
+          { taskId: "SYN_ATTACHMENT", attachmentId: "SYN_ATT_1", name: "secret.pdf" },
+          { taskId: "SYN_SHARED_1", attachmentId: "ATT_OK", name: "shared.jpg" },
+        ],
+      },
+    });
+    const backup = JSON.parse(out.files[0]!.content as string);
+    expect(backup.meta.incomplete).toEqual({
+      lists: [{ id: "L_FAILED", name: "Failed list" }],
+      attachmentMetadata: [{ listId: "SYN_LIST_SHARED", taskId: "SYN_SHARED_1", taskTitle: "牛奶" }],
+      attachmentContent: [{ taskId: "SYN_SHARED_1", attachmentId: "ATT_OK", name: "shared.jpg" }],
+    });
+
+    // 若筛选后任务级失败全被排除且无失败清单，则完全不写 meta.incomplete
+    const clean = runExport({
+      raw: syntheticRawData(),
+      selection: { listIds: ["SYN_LIST_FLAGGED"], includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("json")],
+      exportedAt,
+      incomplete: {
+        attachmentMetadata: [
+          { listId: "SYN_LIST_MAIN", taskId: "SYN_ATTACHMENT", taskTitle: "Secret task" },
+        ],
+        attachmentContent: [
+          { taskId: "SYN_ATTACHMENT", attachmentId: "SYN_ATT_1", name: "secret.pdf" },
+        ],
+      },
+    });
+    expect(JSON.parse(clean.files[0]!.content as string).meta).not.toHaveProperty("incomplete");
   });
 
   it("leaves meta.incomplete out when nothing is missing", () => {

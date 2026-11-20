@@ -106,6 +106,8 @@ const en = {
     "ICS: the repeat rule of task “{task}” couldn't be converted and was left out.",
   "warning.icsNoStart":
     "ICS: task “{task}” repeats but has no date to start from, so the repeat was left out.",
+  "warning.icsStartAdjusted":
+    "ICS: the start date of repeating task “{task}” ({from}) didn't match its repeat rule, so it was aligned to {to} (the original date is noted in the description).",
   "warning.todoistSplit":
     "Todoist: list “{list}” has more than {max} tasks including sub-tasks, Todoist's per-project limit. It was split into {count} files; import each into its own project.",
   "warning.thingsNotesCut": "Things: the notes of task “{task}” were cut to {max} characters.",

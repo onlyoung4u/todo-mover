@@ -48,6 +48,9 @@ describe("AuthSession.getToken", () => {
     const calls = { silent: 0, forced: 0, popup: 0 };
     const pca = {
       getActiveAccount: () => ({ homeAccountId: "a", username: "user@example.com" }),
+      setActiveAccount: () => {},
+      clearCache: async () => {},
+      loginPopup: async () => ({ account: { homeAccountId: "b", username: "other@example.com" } }),
       acquireTokenSilent: async ({ forceRefresh }: { forceRefresh?: boolean }) => {
         calls.silent++;
         if (forceRefresh) calls.forced++;
@@ -89,5 +92,16 @@ describe("AuthSession.getToken", () => {
     const tokens = await Promise.all(Array.from({ length: 5 }, () => s.getToken()));
     expect(calls.popup).toBe(1);
     expect(new Set(tokens)).toEqual(new Set(["popup-1"]));
+  });
+
+  it("resets the forced-refresh cooldown after signOut", async () => {
+    vi.useFakeTimers();
+    const { s, calls } = session();
+    await s.getToken({ forceRefresh: true });
+    expect(calls.forced).toBe(1);
+    await s.signOut();
+    await s.signInPopup();
+    expect(await s.getToken({ forceRefresh: true })).toBe("fresh-2");
+    expect(calls.forced).toBe(2);
   });
 });

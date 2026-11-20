@@ -101,6 +101,8 @@ const zhCN: Messages = {
   "warning.noRaw": "没有微软原始数据，备份中只有转换后的数据。",
   "warning.icsNoRRule": "ICS：任务“{task}”的重复规则无法转换，已略过。",
   "warning.icsNoStart": "ICS：任务“{task}”是重复任务，但没有可作为起点的日期，已略过重复规则。",
+  "warning.icsStartAdjusted":
+    "ICS：重复任务“{task}”的起点日期（{from}）不在重复规则内，已对齐到 {to}（原日期已记入描述）。",
   "warning.todoistSplit":
     "Todoist：清单“{list}”连同子任务超过 {max} 条（Todoist 单个项目的上限），已拆成 {count} 个文件，请分别导入为不同项目。",
   "warning.thingsNotesCut": "Things：任务“{task}”的备注已截断为 {max} 个字符。",

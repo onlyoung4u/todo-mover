@@ -30,6 +30,10 @@ describe("htmlToText", () => {
     expect(htmlToText("<ol><li><div><b>One</b> item</div></li><li></li><li>Three</li></ol>")).toBe(
       "1. One item\n2.\n3. Three",
     );
+    expect(htmlToText("<ul><li><ul><li>Nested</li></ul></li></ul>")).toBe("-\n  - Nested");
+    expect(htmlToText('<ul><li><a href="https://example.com"></a><p>Next</p></li></ul>')).toBe(
+      "- https://example.com\nNext",
+    );
   });
 
   it("separates table cells", () => {

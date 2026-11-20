@@ -8,7 +8,7 @@ import { uniqueFileNamer } from "../exporters/files";
 import type { ExportFile, ExporterId } from "../exporters/types";
 import type { RawData } from "../graph/types";
 import { normalize, selectRaw, type Selection } from "../model/normalize";
-import type { ExportData } from "../model/types";
+import type { ExportData, Incomplete } from "../model/types";
 
 export type FormatRequest = {
   [K in ExporterId]: { id: K; options: (typeof EXPORTERS)[K]["defaultOptions"] };
@@ -85,13 +85,34 @@ function attachmentFiles(data: ExportData, store: ReadonlyMap<string, Uint8Array
   return files;
 }
 
+/**
+ * 按本次实际导出的任务裁剪 incomplete 记录：
+ * - lists 记录当初没读到的清单（不在 raw 中），原样保留；
+ * - attachmentMetadata / attachmentContent 只保留属于本次已选任务的条目，
+ *   避免离线重导部分清单或排除已完成任务时带出未选任务的标题和附件名。
+ * 空数组字段一并去掉；全部为空时返回 undefined。
+ */
+function scopeIncomplete(incomplete: Incomplete | undefined, raw: RawData): Incomplete | undefined {
+  if (!incomplete) return undefined;
+  const taskIds = new Set(
+    Object.values(raw.tasksByListId).flatMap((tasks) => tasks.map((t) => t.id)),
+  );
+  const out: Incomplete = {};
+  if (incomplete.lists?.length) out.lists = incomplete.lists;
+  const meta = incomplete.attachmentMetadata?.filter((m) => taskIds.has(m.taskId));
+  if (meta?.length) out.attachmentMetadata = meta;
+  const content = incomplete.attachmentContent?.filter((c) => taskIds.has(c.taskId));
+  if (content?.length) out.attachmentContent = content;
+  return Object.keys(out).length ? out : undefined;
+}
+
 export function runExport(request: ExportRequest): ExportOutput {
   const raw = selectRaw(request.raw, request.selection);
   const data = normalize(raw, {
     timeZone: request.timeZone,
     exportedAt: request.exportedAt,
     account: request.account,
-    incomplete: request.incomplete,
+    incomplete: scopeIncomplete(request.incomplete, raw),
     locale: request.locale,
   });
 

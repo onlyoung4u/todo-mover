@@ -95,10 +95,24 @@ describe("parseBackup", () => {
     expect(third.attachmentPaths.get("SYN_ATT_1")).toBe(att1.previousFileName);
   });
 
-  it("only keeps the expected account fields", () => {
+  it("only keeps the expected account and incomplete fields", () => {
     const backup = JSON.parse(backupText);
     backup.meta.account = { displayName: "A", username: 42, extra: "x" };
-    expect(parseBackup(JSON.stringify(backup)).meta.account).toEqual({ displayName: "A" });
+    backup.meta.incomplete = {
+      lists: [{ id: "L1", name: "Failed", extra: 1 }, { id: 99 }],
+      attachmentMetadata: [
+        { listId: "L2", taskId: "T1", taskTitle: "Task" },
+        { listId: "L2", taskId: 123 },
+      ],
+      attachmentContent: [{ taskId: "T1", attachmentId: "A1", name: "a.pdf" }, "bad"],
+    };
+    const parsed = parseBackup(JSON.stringify(backup));
+    expect(parsed.meta.account).toEqual({ displayName: "A" });
+    expect(parsed.meta.incomplete).toEqual({
+      lists: [{ id: "L1", name: "Failed" }],
+      attachmentMetadata: [{ listId: "L2", taskId: "T1", taskTitle: "Task" }],
+      attachmentContent: [{ taskId: "T1", attachmentId: "A1", name: "a.pdf" }],
+    });
   });
 
   it("rejects invalid input with a specific code", () => {

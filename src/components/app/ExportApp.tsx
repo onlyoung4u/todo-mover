@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { config } from "../../config";
 import { runExport } from "../../core/export/run";
 import { packageFiles } from "../../core/export/zip";
@@ -10,7 +10,7 @@ import type {
 } from "../../core/graph/fetchAll";
 import { tasksMissingAttachmentMetadata, type AttachmentScope } from "../../core/graph/scope";
 import type { RawData } from "../../core/graph/types";
-import type { ParsedBackup } from "../../core/model/backup";
+import { parseBackup } from "../../core/model/backup";
 import { defaultTimeZone, isValidTimeZone } from "../../core/model/dates";
 import type { Incomplete } from "../../core/model/types";
 import { demoRawData } from "../../fixtures";
@@ -99,20 +99,65 @@ function App() {
   const [thingsAvailable] = useState(isAppleDevice);
   /** 已下载的附件内容（按附件 ID），重复导出时不再下载 */
   const attachmentStore = useRef(new Map<string, Uint8Array>());
+  /**
+   * 当前会话 / 数据源的版本号。离开预览、切换数据源、退出登录或组件卸载时递增，
+   * 让在途的读取 / 导出 / 重试 / 授权在迟到返回时静默失效，不触发下载也不覆盖界面。
+   */
+  const sessionGen = useRef(0);
+  const pendingConfirm = useRef<((confirmed: boolean) => void) | undefined>(undefined);
 
-  const microsoft = useMicrosoft(config.msalClientId, () => void startReading());
+  useEffect(
+    () => () => {
+      sessionGen.current++;
+      const resolve = pendingConfirm.current;
+      pendingConfirm.current = undefined;
+      resolve?.(false);
+    },
+    [],
+  );
+
+  const microsoft = useMicrosoft(config.msalClientId, () => {
+    if (sessionGen.current === 0 && view === "start") void startReading();
+  });
+
+  function invalidate() {
+    sessionGen.current++;
+    setAuthError(undefined);
+    setBusy(undefined);
+    setExportError(undefined);
+    const resolve = pendingConfirm.current;
+    pendingConfirm.current = undefined;
+    setConfirmation(undefined);
+    resolve?.(false);
+  }
 
   function load(next: Loaded, timeZone = defaultTimeZone()) {
+    invalidate();
     setLoaded(next);
     const failed = new Set(next.failures.map((f) => f.listId));
     setSettings(initialSettings(next.raw, timeZone, failed));
-    setExportError(undefined);
+    setDone(undefined);
     setView("preview");
     window.scrollTo(0, 0);
   }
 
+  function backToStart() {
+    invalidate();
+    setView("start");
+  }
+
   function askConfirmation(message: string): Promise<boolean> {
-    return new Promise((resolve) => setConfirmation({ message, resolve }));
+    return new Promise((resolve) => {
+      pendingConfirm.current = resolve;
+      setConfirmation({
+        message,
+        resolve: (confirmed) => {
+          pendingConfirm.current = undefined;
+          setConfirmation(undefined);
+          resolve(confirmed);
+        },
+      });
+    });
   }
 
   /** 统一处理登录 / 读取错误：用户取消登录时静默返回 */
@@ -134,21 +179,28 @@ function App() {
   }
 
   async function signInAgain() {
+    const gen = sessionGen.current;
     setExportError(undefined);
     try {
       await microsoft.signIn();
     } catch (e) {
-      showError(e);
+      if (sessionGen.current === gen) showError(e);
     }
   }
 
   async function startReading() {
+    invalidate();
+    const gen = sessionGen.current;
+    const isCurrent = () => sessionGen.current === gen;
     setAuthError(undefined);
     setProgress(undefined);
     setView("reading");
     try {
       const { raw, profile, failures, attachmentFailures, attachmentsDenied } =
-        await microsoft.read(setProgress);
+        await microsoft.read((p) => {
+          if (isCurrent()) setProgress(p);
+        });
+      if (!isCurrent()) return;
       attachmentStore.current = new Map();
       load({
         source: { kind: "graph", profile },
@@ -158,101 +210,171 @@ function App() {
         attachmentsDenied: attachmentsDenied ? "readOnly" : undefined,
       });
     } catch (e) {
+      if (!isCurrent()) return;
       setAuthError(handleError(e));
       setView("start");
     }
   }
 
   async function signInAndRead() {
+    const gen = ++sessionGen.current;
     setAuthError(undefined);
     try {
       await microsoft.signIn();
     } catch (e) {
-      setAuthError(handleError(e));
+      if (sessionGen.current === gen) setAuthError(handleError(e));
       return;
     }
+    if (sessionGen.current !== gen) return;
     await startReading();
   }
 
+  async function signInWithRedirect() {
+    const gen = ++sessionGen.current;
+    setAuthError(undefined);
+    try {
+      await microsoft.signInRedirect();
+    } catch (e) {
+      if (sessionGen.current === gen) setAuthError(handleError(e));
+    }
+  }
+
+  async function requestReadWriteAndRead() {
+    const gen = ++sessionGen.current;
+    setAuthError(undefined);
+    try {
+      await microsoft.requestReadWrite();
+    } catch (e) {
+      if (sessionGen.current === gen) setAuthError(handleError(e));
+      return;
+    }
+    if (sessionGen.current !== gen) return;
+    await startReading();
+  }
+
+  async function importFile(file: File): Promise<void> {
+    const gen = ++sessionGen.current;
+    let text: string;
+    try {
+      text = await file.text();
+    } catch (e) {
+      if (sessionGen.current !== gen) return;
+      throw e;
+    }
+    if (sessionGen.current !== gen) return;
+    const backup = parseBackup(text);
+    // 默认沿用备份导出时选择的时区
+    load(
+      {
+        source: {
+          kind: "import",
+          fileName: file.name,
+          account: backup.meta.account,
+          attachmentPaths: backup.attachmentPaths,
+        },
+        raw: backup.raw,
+        failures: [],
+        attachmentFailures: [],
+        importedIncomplete: backup.meta.incomplete,
+      },
+      isValidTimeZone(backup.meta.exportTimeZone) ? backup.meta.exportTimeZone : defaultTimeZone(),
+    );
+  }
+
   async function signOut() {
-    await microsoft.signOut();
+    invalidate();
     if (loaded?.source.kind === "graph") {
       setLoaded(undefined);
       setSettings(undefined);
       setDone(undefined);
-      setExportError(undefined);
       attachmentStore.current = new Map();
     }
     setView("start");
+    await microsoft.signOut();
   }
 
   /** 只读权限读不到附件时，由用户主动授予读写权限，再补读附件信息 */
   async function grantForAttachments() {
     if (!loaded) return;
+    const gen = sessionGen.current;
+    const isCurrent = () => sessionGen.current === gen;
+    const base = loaded;
     setBusy(t("app.attachments.granting"));
     setExportError(undefined);
     try {
-      const { attachmentFailures, denied } = await microsoft.grantAndReadAttachments(loaded.raw);
+      const { attachmentFailures, denied } = await microsoft.grantAndReadAttachments(base.raw);
+      if (!isCurrent()) return;
       setLoaded({
-        ...loaded,
-        raw: { ...loaded.raw },
+        ...base,
+        raw: { ...base.raw },
         attachmentFailures: mergeAttachmentFailures(
-          loaded.raw,
-          loaded.attachmentFailures,
+          base.raw,
+          base.attachmentFailures,
           attachmentFailures,
         ),
         attachmentsDenied: denied ? "readWrite" : undefined,
       });
     } catch (e) {
-      showError(e);
+      if (isCurrent()) showError(e);
     } finally {
-      setBusy(undefined);
+      if (isCurrent()) setBusy(undefined);
     }
   }
 
   /** 只重试读取失败的清单，已读取的数据保留 */
   async function retryFailed() {
     if (!loaded || !settings) return;
-    const ids = loaded.failures.map((f) => f.listId);
+    const gen = sessionGen.current;
+    const isCurrent = () => sessionGen.current === gen;
+    const base = loaded;
+    const ids = base.failures.map((f) => f.listId);
     setBusy(t("app.read.retrying"));
     setExportError(undefined);
     try {
       const { failures, attachmentFailures, denied } = await microsoft.retryLists(
-        loaded.raw,
+        base.raw,
         ids,
         () => {},
-        { skipAttachments: Boolean(loaded.attachmentsDenied) },
+        { skipAttachments: Boolean(base.attachmentsDenied) },
       );
+      if (!isCurrent()) return;
       const recovered = ids.filter((id) => !failures.some((f) => f.listId === id));
       setLoaded({
-        ...loaded,
-        raw: { ...loaded.raw },
+        ...base,
+        raw: { ...base.raw },
         failures,
         attachmentFailures: mergeAttachmentFailures(
-          loaded.raw,
-          loaded.attachmentFailures,
+          base.raw,
+          base.attachmentFailures,
           attachmentFailures,
         ),
-        attachmentsDenied: loaded.attachmentsDenied ?? (denied ? "readOnly" : undefined),
+        attachmentsDenied: base.attachmentsDenied ?? (denied ? "readOnly" : undefined),
       });
-      setSettings({
-        ...settings,
-        selectedListIds: loaded.raw.lists
-          .map((l) => l.id)
-          .filter((id) => settings.selectedListIds.includes(id) || recovered.includes(id)),
-      });
+      setSettings((prev) =>
+        prev
+          ? {
+              ...prev,
+              selectedListIds: base.raw.lists
+                .map((l) => l.id)
+                .filter((id) => prev.selectedListIds.includes(id) || recovered.includes(id)),
+            }
+          : prev,
+      );
     } catch (e) {
-      showError(e);
+      if (isCurrent()) showError(e);
     } finally {
-      setBusy(undefined);
+      if (isCurrent()) setBusy(undefined);
     }
   }
 
   async function handleExport() {
     if (!loaded || !settings) return;
+    const gen = sessionGen.current;
+    const isCurrent = () => sessionGen.current === gen;
     setBusy(t("app.export.working"));
     setExportError(undefined);
     let current = loaded;
+    const store = attachmentStore.current;
     try {
       const warnings: string[] = [];
       const graph = current.source.kind === "graph";
@@ -262,8 +384,9 @@ function App() {
       const scope: AttachmentScope = { listIds, includeCompleted: settings.includeCompleted };
       const progress =
         (key: "app.attachments.metadata" | "app.attachments.downloading") =>
-        (p: { done: number; total: number }) =>
-          setBusy(t(key, { done: p.done, total: p.total }));
+        (p: { done: number; total: number }) => {
+          if (isCurrent()) setBusy(t(key, { done: p.done, total: p.total }));
+        };
 
       // 即使不下载附件内容，JSON 备份也需要附件名称和大小：先补读缺失的附件信息。
       // 已知被拒时不再请求（会再触发一轮 401），直接记为缺失。
@@ -277,6 +400,7 @@ function App() {
           scope,
           progress("app.attachments.metadata"),
         );
+        if (!isCurrent()) return;
         current = {
           ...current,
           raw: { ...current.raw },
@@ -295,12 +419,13 @@ function App() {
       if (withAttachments) {
         const { failures, skipped } = await microsoft.downloadAttachments(
           current.raw,
-          attachmentStore.current,
+          store,
           scope,
           (bytes) =>
             askConfirmation(t("app.attachments.confirm", { size: Math.round(bytes / MB) })),
           progress("app.attachments.downloading"),
         );
+        if (!isCurrent()) return;
         contentFailures = failures;
         if (skipped) warnings.push(t("app.attachments.skipped"));
       }
@@ -357,9 +482,10 @@ function App() {
         incomplete,
         previousAttachmentPaths:
           current.source.kind === "import" ? current.source.attachmentPaths : undefined,
-        attachmentData: withAttachments ? attachmentStore.current : undefined,
+        attachmentData: withAttachments ? store : undefined,
       });
       const download = await packageFiles(output.files);
+      if (!isCurrent()) return;
       downloadFile(download.name, download.data, download.mime);
       setDone({
         download,
@@ -373,9 +499,9 @@ function App() {
       setView("done");
       window.scrollTo(0, 0);
     } catch (e) {
-      showError(e, t("app.export.failed"));
+      if (isCurrent()) showError(e, t("app.export.failed"));
     } finally {
-      setBusy(undefined);
+      if (isCurrent()) setBusy(undefined);
     }
   }
 
@@ -420,7 +546,7 @@ function App() {
           busy={busy}
           onChange={setSettings}
           onExport={handleExport}
-          onBack={() => setView("start")}
+          onBack={backToStart}
           onSignOut={source.kind === "graph" ? signOut : undefined}
           onRetryFailed={retryFailed}
           error={exportError}
@@ -431,10 +557,7 @@ function App() {
             message={confirmation.message}
             confirmLabel={t("app.attachments.confirmYes")}
             cancelLabel={t("app.attachments.confirmNo")}
-            onAnswer={(confirmed) => {
-              setConfirmation(undefined);
-              confirmation.resolve(confirmed);
-            }}
+            onAnswer={confirmation.resolve}
           />
         )}
       </>
@@ -448,40 +571,12 @@ function App() {
       error={authError}
       highlight={mode === "import" || mode === "signin" ? mode : undefined}
       onSignIn={signInAndRead}
-      onSignInRedirect={() =>
-        microsoft.signInRedirect().catch((e: unknown) => setAuthError(handleError(e)))
-      }
+      onSignInRedirect={signInWithRedirect}
       onReadAgain={startReading}
       onSignOut={signOut}
-      onRequestReadWrite={async () => {
-        try {
-          await microsoft.requestReadWrite();
-          await startReading();
-        } catch (e) {
-          setAuthError(handleError(e));
-        }
-      }}
+      onRequestReadWrite={requestReadWriteAndRead}
       onDemo={() => load(demo(locale))}
-      onImport={(backup: ParsedBackup, fileName) =>
-        // 默认沿用备份导出时选择的时区
-        load(
-          {
-            source: {
-              kind: "import",
-              fileName,
-              account: backup.meta.account,
-              attachmentPaths: backup.attachmentPaths,
-            },
-            raw: backup.raw,
-            failures: [],
-            attachmentFailures: [],
-            importedIncomplete: backup.meta.incomplete,
-          },
-          isValidTimeZone(backup.meta.exportTimeZone)
-            ? backup.meta.exportTimeZone
-            : defaultTimeZone(),
-        )
-      }
+      onImportFile={importFile}
     />
   );
 }

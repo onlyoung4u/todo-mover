@@ -109,6 +109,7 @@ export class AuthSession {
     try {
       const result = await this.pca.loginPopup({ scopes: this.scopes, prompt: "select_account" });
       this.pca.setActiveAccount(result.account);
+      this.refreshedAt = -Infinity;
       return result.account;
     } catch (e) {
       throw classifyAuthError(e);
@@ -190,6 +191,7 @@ export class AuthSession {
       });
       this.pca.setActiveAccount(result.account);
       this.scopes = READ_WRITE_SCOPES;
+      this.refreshedAt = -Infinity;
     } catch (e) {
       throw classifyAuthError(e);
     }
@@ -200,5 +202,6 @@ export class AuthSession {
     await this.pca.clearCache();
     this.pca.setActiveAccount(null);
     this.scopes = READ_SCOPES;
+    this.refreshedAt = -Infinity;
   }
 }

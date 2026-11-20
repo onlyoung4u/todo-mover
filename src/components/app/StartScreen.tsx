@@ -1,5 +1,5 @@
-import { useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { BackupError, parseBackup, type ParsedBackup } from "../../core/model/backup";
+import { useEffect, useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { BackupError } from "../../core/model/backup";
 import type { MessageKey } from "../../i18n";
 import { errorText, type UiError } from "./errors";
 import { useI18n } from "./i18n";
@@ -18,7 +18,7 @@ type Props = {
   onSignOut: () => void;
   onRequestReadWrite: () => void;
   onDemo: () => void;
-  onImport: (backup: ParsedBackup, fileName: string) => void;
+  onImportFile: (file: File) => Promise<void>;
 };
 
 const IMPORT_ERRORS: Record<BackupError["code"], MessageKey> = {
@@ -38,7 +38,7 @@ function MicrosoftEntry({
   onReadAgain,
   onSignOut,
   onRequestReadWrite,
-}: Omit<Props, "onDemo" | "onImport">) {
+}: Omit<Props, "onDemo" | "onImportFile">) {
   const { t } = useI18n();
   const name = account?.name || account?.username;
 
@@ -105,25 +105,38 @@ function MicrosoftEntry({
 
 export function StartScreen(props: Props) {
   const { t } = useI18n();
-  const { highlight, onDemo, onImport } = props;
+  const { highlight, onDemo, onImportFile } = props;
   const fileInput = useRef<HTMLInputElement>(null);
   const fileInputId = useId();
+  const mounted = useRef(true);
+  const readSeq = useRef(0);
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
 
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   async function readFile(file: File | undefined) {
     if (!file) return;
+    const seq = ++readSeq.current;
+    const isCurrent = () => mounted.current && readSeq.current === seq;
     setError(undefined);
     setBusy(true);
     try {
-      onImport(parseBackup(await file.text()), file.name);
+      await onImportFile(file);
     } catch (e) {
-      setError(
-        t(e instanceof BackupError ? IMPORT_ERRORS[e.code] : "app.import.error.invalidJson"),
-      );
+      if (isCurrent()) {
+        setError(
+          t(e instanceof BackupError ? IMPORT_ERRORS[e.code] : "app.import.error.invalidJson"),
+        );
+      }
     } finally {
-      setBusy(false);
+      if (isCurrent()) setBusy(false);
     }
   }
 

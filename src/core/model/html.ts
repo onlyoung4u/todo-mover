@@ -118,6 +118,8 @@ function walk(node: Node, out: TextBuilder, lists: ListContext[]) {
   if (isBlock) out.ensureNewLine();
 
   if (tag === "UL" || tag === "OL") {
+    // 空列表项下直接嵌套子列表（<li><ul>...</ul></li>）时，先把外层列表项换到下一行
+    if (lists.length > 0) out.endItem();
     lists.push({ ordered: tag === "OL", counter: 0 });
     for (const child of Array.from(el.childNodes)) walk(child, out, lists);
     lists.pop();
@@ -147,7 +149,8 @@ function walk(node: Node, out: TextBuilder, lists: ListContext[]) {
     const text = (el.textContent ?? "").replace(/\s+/g, " ").trim();
     const bare = href.replace(/^mailto:/i, "");
     if (/^(https?:|mailto:)/i.test(href) && text !== href && text !== bare) {
-      out.raw(text ? ` (${bare})` : bare);
+      if (text) out.raw(` (${bare})`);
+      else out.text(bare);
     }
   }
 
