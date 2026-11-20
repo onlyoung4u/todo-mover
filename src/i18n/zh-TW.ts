@@ -137,6 +137,8 @@ const zhTW: Messages = {
     "請選擇你平常使用 To Do 時所在的時區。到期日依此時區計算，選錯可能差一天。",
   "app.options.attachments": "下載附件",
   "app.options.attachmentsUnavailable": "僅在使用 Microsoft 帳戶登入後可用。",
+  "app.options.attachmentsNeedGrant": "需要先點選上方按鈕授予權限，才能讀取附件。",
+  "app.options.attachmentsDenied": "Microsoft 不允許這個帳戶讀取附件。",
   "app.limits.heading": "Microsoft 介面不提供以下內容：",
   "app.limits.text": "「我的一天」（暫時檢視）與清單群組。所有清單都會平鋪匯出。",
   "app.formats.heading": "格式",
@@ -224,6 +226,7 @@ const zhTW: Messages = {
   "app.error.popupBlocked":
     "瀏覽器封鎖了登入快顯視窗。請允許本站的快顯視窗後重試，或改為在目前頁面登入。",
   "app.error.sessionExpired": "登入已過期，請重新登入。已讀取的資料會保留。",
+  "app.error.signInAgain": "重新登入",
   "app.error.forbidden":
     "Microsoft 拒絕以唯讀權限讀取你的工作。你可以改為授予讀寫權限，本站仍然只讀取資料，不會修改任何內容。",
   "app.error.network": "無法連線至 Microsoft 伺服器，請檢查網路後重試。",

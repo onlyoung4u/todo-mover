@@ -689,6 +689,20 @@
   color: var(--muted);
 }
 
+.export-bar .inline-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.export-bar .inline-error p {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
 /* ── 完成页 ── */
 
 .done-screen {

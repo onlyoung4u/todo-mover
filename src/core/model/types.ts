@@ -13,10 +13,24 @@ export type ExportData = {
     /** IANA，如 "Asia/Shanghai" */
     exportTimeZone: string;
     account?: { displayName?: string; username?: string };
+    /**
+     * 本次导出缺少的部分（登录读取时部分失败）。只有不完整时才出现，
+     * 用来事后区分"读取失败"和"本来就是空的"。
+     */
+    incomplete?: Incomplete;
   };
   lists: TodoList[];
   /** 读取或转换过程中的非致命问题 */
   warnings: string[];
+};
+
+export type Incomplete = {
+  /** 读取失败、没有包含在本次导出中的清单 */
+  lists?: { id: string; name: string }[];
+  /** 任务已导出，但附件信息（有哪些附件）没有读到 */
+  attachmentMetadata?: { listId: string; taskId: string; taskTitle: string }[];
+  /** 附件信息已读到，但附件内容下载失败、没有放进压缩包 */
+  attachmentContent?: { taskId: string; attachmentId: string; name: string }[];
 };
 
 export type TodoList = {

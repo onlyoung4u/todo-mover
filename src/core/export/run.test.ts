@@ -2,7 +2,7 @@ import JSZip from "jszip";
 import { describe, expect, it } from "vitest";
 import { sampleAndSyntheticRawData, sampleRawData, syntheticRawData } from "../../fixtures";
 import { EXPORTERS, EXPORTER_ORDER } from "../exporters";
-import { runExport, type FormatRequest } from "./run";
+import { runExport, splitExtension, type FormatRequest } from "./run";
 import { makeZip, packageFiles, zipFileName } from "./zip";
 
 const exportedAt = new Date("2026-11-19T08:00:00Z");
@@ -111,6 +111,71 @@ describe("runExport with attachments", () => {
       attachmentData: new Map([["SYN_ATT_1", new Uint8Array([1])]]),
     });
     expect(out.files.map((f) => f.path)).toEqual(["todo-tasks.csv"]);
+  });
+});
+
+describe("attachment file names", () => {
+  it("splits safe extensions only", () => {
+    expect(splitExtension("receipt.pdf")).toEqual({ stem: "receipt", extension: ".pdf" });
+    expect(splitExtension("archive.tar.gz")).toEqual({ stem: "archive.tar", extension: ".gz" });
+    expect(splitExtension("no extension")).toEqual({ stem: "no extension", extension: "" });
+    expect(splitExtension(".env")).toEqual({ stem: ".env", extension: "" });
+    // 换行和路径分隔符不会被当成扩展名，也不会抛异常
+    expect(splitExtension("line\nbreak.txt")).toEqual({ stem: "line\nbreak", extension: ".txt" });
+    expect(splitExtension("foo.a/b")).toEqual({ stem: "foo.a/b", extension: "" });
+  });
+
+  it("never writes outside the attachment folder", () => {
+    const raw = syntheticRawData();
+    raw.attachmentsByTaskId.SYN_ATTACHMENT![0]!.name = "evil\n.a/../../b";
+    const out = runExport({
+      raw,
+      selection: { includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("csv")],
+      exportedAt,
+      attachmentData: new Map([["SYN_ATT_1", new Uint8Array([1])]]),
+    });
+    const path = out.files.find((f) => f.path.startsWith("attachments/"))!.path;
+    const segments = path.split("/");
+    expect(segments).toHaveLength(3);
+    expect(segments).not.toContain("..");
+  });
+});
+
+describe("incomplete exports", () => {
+  it("records what could not be read in the JSON backup", () => {
+    const out = runExport({
+      raw: syntheticRawData(),
+      selection: { includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("json")],
+      exportedAt,
+      incomplete: {
+        lists: [{ id: "L_FAILED", name: "Failed list" }],
+        attachmentMetadata: [],
+      },
+    });
+    const backup = JSON.parse(out.files[0]!.content as string);
+    expect(backup.meta.incomplete).toEqual({
+      lists: [{ id: "L_FAILED", name: "Failed list" }],
+      attachmentMetadata: [],
+    });
+  });
+
+  it("leaves meta.incomplete out when nothing is missing", () => {
+    const out = runExport({
+      raw: syntheticRawData(),
+      selection: { includeCompleted: true },
+      timeZone: "UTC",
+      locale: "en",
+      formats: [fmt("json")],
+      exportedAt,
+      incomplete: { lists: [], attachmentMetadata: [], attachmentContent: [] },
+    });
+    expect(JSON.parse(out.files[0]!.content as string).meta).not.toHaveProperty("incomplete");
   });
 });
 

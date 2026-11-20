@@ -11,6 +11,7 @@ import type * as FetchModule from "../../core/graph/fetchAll";
 import type {
   AttachmentFailure,
   AttachmentProgress,
+  AttachmentScope,
   FetchProgress,
   ListFailure,
   Profile,
@@ -26,9 +27,14 @@ export type ReadResult = {
   raw: RawData;
   profile: Profile;
   failures: ListFailure[];
+  /** 附件信息读取失败的任务（含权限不足以外的原因，例如 500） */
+  attachmentFailures: AttachmentFailure[];
   /** 读取附件元数据时被微软以权限不足拒绝 */
   attachmentsDenied: boolean;
 };
+
+/** 附件信息读取的结果：哪些任务失败，以及是否因为权限不足 */
+export type MetadataResult = { attachmentFailures: AttachmentFailure[]; denied: boolean };
 
 type Modules = {
   auth: typeof AuthModule;
@@ -122,57 +128,79 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
       m.fetch.fetchTodoData(g, onProgress),
     ]);
     const attachmentsDenied = attachmentFailures.some((f) => m.fetch.isAccessDenied(f.error));
-    return { raw, profile, failures, attachmentsDenied };
+    return { raw, profile, failures, attachmentFailures, attachmentsDenied };
   }, []);
 
   /**
-   * 只读权限读取附件被拒时：增量授权 Tasks.ReadWrite，再重新读取缺失的附件元数据（raw 原地更新）。
-   * 返回授权后是否仍然被拒。
+   * 补读缺失的附件元数据（raw 原地更新）。已读到的任务不会重复请求。
+   * 导出前调用：即使不下载附件内容，JSON 备份也需要附件名称和大小。
    */
-  const grantAndReadAttachments = useCallback(async (raw: RawData): Promise<boolean> => {
-    const { m, g, s } = need();
-    await s.requestReadWrite();
-    const failures = await m.fetch.fetchAttachmentMetadata(g, raw);
-    return failures.some((f) => m.fetch.isAccessDenied(f.error));
-  }, []);
-
-  /** 只重试读取失败的清单；raw 会被原地更新 */
-  const retryLists = useCallback(
-    async (raw: RawData, listIds: string[], onProgress: (p: FetchProgress) => void) => {
+  const readAttachmentMetadata = useCallback(
+    async (
+      raw: RawData,
+      scope?: AttachmentScope,
+      onProgress?: (p: AttachmentProgress) => void,
+    ): Promise<MetadataResult> => {
       const { m, g } = need();
-      const lists = raw.lists.filter((l) => listIds.includes(l.id));
-      const failures = await m.fetch.fetchTasksForLists(g, raw, lists, onProgress);
-      // 补读这些清单的附件元数据；失败时导出前会再次尝试并报告
-      await m.fetch.fetchAttachmentMetadata(g, raw, listIds);
-      return failures;
+      const attachmentFailures = await m.fetch.fetchAttachmentMetadata(g, raw, scope, onProgress);
+      return {
+        attachmentFailures,
+        denied: attachmentFailures.some((f) => m.fetch.isAccessDenied(f.error)),
+      };
     },
     [],
   );
 
   /**
-   * 读取附件元数据和内容。总量超过 200MB 时先调用 confirmLarge，返回 false 则不下载内容。
+   * 只读权限读取附件被拒时：增量授权 Tasks.ReadWrite，再重新读取缺失的附件元数据（raw 原地更新）。
+   * denied 表示授权后仍然被拒。
    */
-  const fetchAttachments = useCallback(
+  const grantAndReadAttachments = useCallback(
+    async (raw: RawData): Promise<MetadataResult> => {
+      await need().s.requestReadWrite();
+      return readAttachmentMetadata(raw);
+    },
+    [readAttachmentMetadata],
+  );
+
+  /** 只重试读取失败的清单；raw 会被原地更新。同时补读这些清单的附件元数据。 */
+  const retryLists = useCallback(
+    async (
+      raw: RawData,
+      listIds: string[],
+      onProgress: (p: FetchProgress) => void,
+      { skipAttachments = false }: { skipAttachments?: boolean } = {},
+    ): Promise<{ failures: ListFailure[] } & MetadataResult> => {
+      const { m, g } = need();
+      const lists = raw.lists.filter((l) => listIds.includes(l.id));
+      const failures = await m.fetch.fetchTasksForLists(g, raw, lists, onProgress);
+      // 已知附件读取被拒时不再请求，避免又一轮 401
+      const metadata = skipAttachments
+        ? { attachmentFailures: [], denied: false }
+        : await readAttachmentMetadata(raw, { listIds });
+      return { failures, ...metadata };
+    },
+    [readAttachmentMetadata],
+  );
+
+  /**
+   * 下载附件内容（元数据需已读到）。总量超过 200MB 时先调用 confirmLarge，返回 false 则不下载。
+   * scope 与导出的勾选一致：没勾选的清单、不导出的已完成任务，它们的附件不下载也不计入总量。
+   */
+  const downloadAttachments = useCallback(
     async (
       raw: RawData,
       store: Map<string, Uint8Array>,
-      listIds: readonly string[],
+      scope: AttachmentScope,
       confirmLarge: (bytes: number) => boolean,
-      onProgress: (phase: "metadata" | "content", p: AttachmentProgress) => void,
+      onProgress: (p: AttachmentProgress) => void,
     ): Promise<{ failures: AttachmentFailure[]; skipped: boolean }> => {
       const { m, g } = need();
-      const failures = await m.fetch.fetchAttachmentMetadata(g, raw, listIds, (p) =>
-        onProgress("metadata", p),
-      );
-      const bytes = m.fetch.attachmentBytes(raw, listIds);
+      const bytes = m.fetch.attachmentBytes(raw, scope);
       if (bytes > m.fetch.ATTACHMENT_CONFIRM_BYTES && !confirmLarge(bytes)) {
-        return { failures, skipped: true };
+        return { failures: [], skipped: true };
       }
-      failures.push(
-        ...(await m.fetch.downloadAttachments(g, raw, store, listIds, (p) =>
-          onProgress("content", p),
-        )),
-      );
+      const failures = await m.fetch.downloadAttachments(g, raw, store, scope, onProgress);
       return { failures, skipped: false };
     },
     [],
@@ -185,8 +213,9 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
     signOut,
     requestReadWrite,
     read,
+    readAttachmentMetadata,
     grantAndReadAttachments,
     retryLists,
-    fetchAttachments,
+    downloadAttachments,
   };
 }

@@ -13,8 +13,11 @@ import {
 } from "@azure/msal-browser";
 
 export const READ_SCOPES = ["User.Read", "Tasks.Read"];
-/** 【待验证】若 Tasks.Read 读取返回 403，再以增量授权方式申请（SPEC 5.2） */
+/** 个人账号仅授 Tasks.Read 时读取附件返回 401（SPEC 13 #13），此时再以增量授权方式申请 */
 export const READ_WRITE_SCOPES = ["User.Read", "Tasks.ReadWrite"];
+
+/** 强制刷新 token 后的这段时间内，不再重复强制刷新 */
+export const REFRESH_DEDUPE_MS = 30_000;
 
 export type AuthErrorKind =
   /** 组织禁止用户自行授权第三方应用 */
@@ -117,8 +120,35 @@ export class AuthSession {
     await this.pca.loginRedirect({ scopes: this.scopes, prompt: "select_account" });
   }
 
-  /** 先静默获取，失败再弹窗（SPEC 5.2） */
-  async getToken({ forceRefresh = false }: { forceRefresh?: boolean } = {}): Promise<string> {
+  /** 进行中的强制刷新：并发请求同时收到 401 时共用一次刷新 */
+  private refreshing?: Promise<string>;
+  /** 进行中的弹窗：静默获取同时失败时只弹一个窗口 */
+  private interactive?: Promise<string>;
+  /** 上次强制刷新完成的时间；刚刷新过就不再重复刷新，直接用缓存里的新 token */
+  private refreshedAt = -Infinity;
+
+  /**
+   * 先静默获取，失败再弹窗（SPEC 5.2）。
+   * forceRefresh 用于 Graph 返回 401 后重试：并发的强制刷新合并为一次，
+   * 刷新后 REFRESH_DEDUPE_MS 内的强制刷新请求直接返回缓存中的 token。
+   * 这样只读权限下大量附件请求被拒时，不会反复向微软刷新 token 或连续弹窗。
+   */
+  getToken({ forceRefresh = false }: { forceRefresh?: boolean } = {}): Promise<string> {
+    if (!forceRefresh || Date.now() - this.refreshedAt < REFRESH_DEDUPE_MS) {
+      return this.acquire(false);
+    }
+    this.refreshing ??= this.acquire(true)
+      .then((token) => {
+        this.refreshedAt = Date.now();
+        return token;
+      })
+      .finally(() => {
+        this.refreshing = undefined;
+      });
+    return this.refreshing;
+  }
+
+  private async acquire(forceRefresh: boolean): Promise<string> {
     const account = this.account;
     if (!account) throw new SignInError("interactionRequired", "Not signed in");
     try {
@@ -132,13 +162,23 @@ export class AuthSession {
       if (!(e instanceof InteractionRequiredAuthError) && !(e instanceof BrowserAuthError)) {
         throw classifyAuthError(e);
       }
-      try {
-        const result = await this.pca.acquireTokenPopup({ scopes: this.scopes, account });
-        return result.accessToken;
-      } catch (popupError) {
-        throw classifyAuthError(popupError);
-      }
+      return this.popup(account);
     }
+  }
+
+  private popup(account: AccountInfo): Promise<string> {
+    this.interactive ??= this.pca
+      .acquireTokenPopup({ scopes: this.scopes, account })
+      .then(
+        (result) => result.accessToken,
+        (popupError: unknown) => {
+          throw classifyAuthError(popupError);
+        },
+      )
+      .finally(() => {
+        this.interactive = undefined;
+      });
+    return this.interactive;
   }
 
   /** 增量授权 Tasks.ReadWrite（仅在 Tasks.Read 读取被拒时由用户主动触发） */

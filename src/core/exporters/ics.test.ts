@@ -96,6 +96,56 @@ describe("ics exporter", () => {
     );
   });
 
+  it("gives every recurring task a DTSTART that the rule expands from", () => {
+    const files = [...sampleFiles, ...syntheticResult.files];
+    for (const file of files) {
+      for (const todo of parse(file.content as string).getAllSubcomponents("vtodo")) {
+        if (todo.hasProperty("rrule")) expect(todo.hasProperty("dtstart")).toBe(true);
+      }
+    }
+
+    // 周会：每周一、三，截止日期（上海时区）2026-01-05，2026-06-29 结束
+    const weekly = todos(syntheticResult.files[0]!.content as string).get("SYN_WEEKLY@todo-mover")!;
+    expect(weekly.getFirstPropertyValue("dtstart")!.toString()).toBe("2026-01-05");
+    const event = new ICAL.Event(weekly);
+    const it = event.iterator();
+    const dates: string[] = [];
+    for (let next = it.next(); next; next = it.next()) dates.push(next.toString());
+    expect(dates.slice(0, 4)).toEqual(["2026-01-05", "2026-01-07", "2026-01-12", "2026-01-14"]);
+    expect(dates.at(-1)).toBe("2026-06-29");
+    expect(dates).toHaveLength(51);
+  });
+
+  it("falls back to the rule's own start date, and drops a rule with no start at all", () => {
+    const task = synthetic.lists[0]!.tasks.find((x) => x.id === "SYN_WEEKLY")!;
+    const noDue = { ...task, dueDate: undefined };
+    const noStart = {
+      ...noDue,
+      id: "NO_START",
+      recurrence: { ...task.recurrence!, range: { ...task.recurrence!.range, startDate: "" } },
+    };
+    const data = { ...synthetic, lists: [{ ...synthetic.lists[0]!, tasks: [noDue, noStart] }] };
+    const result = icsExporter.run(data, {}, { locale: "en" });
+    const byUid = todos(result.files[0]!.content as string);
+    expect(byUid.get("SYN_WEEKLY@todo-mover")!.getFirstPropertyValue("dtstart")!.toString()).toBe(
+      "2026-01-05",
+    );
+    expect(byUid.get("NO_START@todo-mover")!.hasProperty("rrule")).toBe(false);
+    expect(result.warnings).toEqual([
+      'Task "周会（每周一、三）": repeat rule has no start date and was left out',
+    ]);
+  });
+
+  it("writes COMPLETED only for completed tasks", () => {
+    const task = { ...synthetic.lists[0]!.tasks[0]!, status: "notStarted" as const };
+    const data = {
+      ...synthetic,
+      lists: [{ ...synthetic.lists[0]!, tasks: [{ ...task, completedDate: "2026-01-01" }] }],
+    };
+    const content = icsExporter.run(data, {}, { locale: "en" }).files[0]!.content as string;
+    expect(content).not.toContain("COMPLETED:");
+  });
+
   it("puts links of flagged e-mails in the description", () => {
     const flagged = todos(syntheticResult.files[1]!.content as string).get(
       "SYN_FLAGGED_1@todo-mover",

@@ -5,7 +5,14 @@ import { LockIcon } from "./icons";
 /** 读取进度："清单 3/12，任务 240 条…"（SPEC 3.3） */
 export function ReadingScreen({ progress }: { progress?: FetchProgress }) {
   const { t } = useI18n();
-  const ratio = progress && progress.listsTotal ? progress.listsDone / progress.listsTotal : 0;
+  const attachments = progress?.attachments;
+  const ratio = attachments
+    ? attachments.total
+      ? attachments.done / attachments.total
+      : 1
+    : progress && progress.listsTotal
+      ? progress.listsDone / progress.listsTotal
+      : 0;
   return (
     <section className="start" aria-live="polite">
       <p className="eyebrow">
@@ -30,13 +37,15 @@ export function ReadingScreen({ progress }: { progress?: FetchProgress }) {
         <div className="reading-body">
           <progress max={1} value={progress ? ratio : undefined} />
           <p className="mono">
-            {progress
-              ? t("app.read.progress", {
-                  done: progress.listsDone,
-                  total: progress.listsTotal,
-                  tasks: progress.tasks,
-                })
-              : t("app.read.starting")}
+            {attachments
+              ? t("app.attachments.metadata", { done: attachments.done, total: attachments.total })
+              : progress
+                ? t("app.read.progress", {
+                    done: progress.listsDone,
+                    total: progress.listsTotal,
+                    tasks: progress.tasks,
+                  })
+                : t("app.read.starting")}
           </p>
         </div>
       </div>

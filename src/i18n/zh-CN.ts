@@ -137,6 +137,8 @@ const zhCN: Messages = {
     "请选择你平时使用 To Do 时所在的时区。截止日期按这个时区计算，选错可能差一天。",
   "app.options.attachments": "下载附件",
   "app.options.attachmentsUnavailable": "仅在使用微软账号登录后可用。",
+  "app.options.attachmentsNeedGrant": "需要先点击上方按钮授予权限，才能读取附件。",
+  "app.options.attachmentsDenied": "微软不允许这个账号读取附件。",
   "app.limits.heading": "微软接口不提供以下内容：",
   "app.limits.text": "“我的一天”（临时视图）和清单分组。所有清单都会平铺导出。",
   "app.formats.heading": "格式",
@@ -223,6 +225,7 @@ const zhCN: Messages = {
   "app.error.popupBlocked":
     "浏览器拦截了登录弹窗。请允许本站弹出窗口后重试，或改为在当前页面登录。",
   "app.error.sessionExpired": "登录已过期，请重新登录。已读取的数据会保留。",
+  "app.error.signInAgain": "重新登录",
   "app.error.forbidden":
     "微软拒绝以只读权限读取你的任务。你可以改为授予读写权限，本站仍然只读取数据，不会修改任何内容。",
   "app.error.network": "无法连接微软服务器，请检查网络后重试。",

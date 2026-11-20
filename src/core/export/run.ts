@@ -21,6 +21,8 @@ export type ExportRequest = {
   locale: Locale;
   formats: FormatRequest[];
   account?: ExportData["meta"]["account"];
+  /** 读取不完整的部分，写入 meta.incomplete（JSON 备份里可以查到） */
+  incomplete?: ExportData["meta"]["incomplete"];
   exportedAt?: Date;
   /** 已下载的附件内容，按附件 ID 索引（只有登录读取并开启"下载附件"时才有） */
   attachmentData?: ReadonlyMap<string, Uint8Array>;
@@ -43,6 +45,16 @@ const FOLDER: Record<ExporterId, string> = {
 };
 
 /**
+ * 拆出文件扩展名。扩展名只接受字母、数字、下划线和连字符，
+ * 其余（含路径分隔符、换行等）都留在主名里，由 sanitizeFileName 清洗。
+ */
+export function splitExtension(name: string): { stem: string; extension: string } {
+  const m = /\.[A-Za-z0-9_-]{1,10}$/.exec(name);
+  if (!m || m.index === 0) return { stem: name, extension: "" };
+  return { stem: name.slice(0, m.index), extension: m[0] };
+}
+
+/**
  * 附件放在 zip 包的 attachments/<清单名>/<任务标题>-<附件名>（SPEC 7.1），
  * 同时把路径写入归一化数据的 fileName，JSON 备份里就能找到对应文件。
  */
@@ -58,8 +70,8 @@ function attachmentFiles(data: ExportData, store: ReadonlyMap<string, Uint8Array
     const fileName = uniqueFileNamer();
     for (const { task, a } of withData) {
       // 扩展名单独保留，重名序号加在扩展名之前
-      const m = /^(.*?)(\.[^.\s]{1,10})?$/.exec(a.name)!;
-      const path = `attachments/${folder}/${fileName(`${task.title}-${m[1]}`, m[2] ?? "")}`;
+      const { stem, extension } = splitExtension(a.name);
+      const path = `attachments/${folder}/${fileName(`${task.title}-${stem}`, extension)}`;
       a.fileName = path;
       files.push({
         path,
@@ -77,6 +89,7 @@ export function runExport(request: ExportRequest): ExportOutput {
     timeZone: request.timeZone,
     exportedAt: request.exportedAt,
     account: request.account,
+    incomplete: request.incomplete,
   });
 
   const attachments = request.attachmentData ? attachmentFiles(data, request.attachmentData) : [];

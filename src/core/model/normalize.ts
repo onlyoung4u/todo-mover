@@ -16,6 +16,7 @@ export type NormalizeOptions = {
   /** 默认为当前时间 */
   exportedAt?: Date;
   account?: ExportData["meta"]["account"];
+  incomplete?: ExportData["meta"]["incomplete"];
 };
 
 /** 预览页上的筛选条件（SPEC 3.4、7 通用约定）。 */
@@ -128,6 +129,9 @@ export function normalize(raw: RawData, options: NormalizeOptions): ExportData {
     exportTimeZone: timeZone,
   };
   if (options.account) meta.account = options.account;
+  if (options.incomplete && Object.values(options.incomplete).some((v) => v?.length)) {
+    meta.incomplete = options.incomplete;
+  }
 
   return {
     meta,

@@ -4,6 +4,7 @@
  */
 import { cleanGraphObject } from "./clean";
 import { GraphError, type GraphClient } from "./client";
+import { tasksWithAttachments, type AttachmentScope, type TaskRef } from "./scope";
 import type {
   GraphChecklistItem,
   GraphLinkedResource,
@@ -17,6 +18,8 @@ export type FetchProgress = {
   listsDone: number;
   listsTotal: number;
   tasks: number;
+  /** 清单读完后检查附件信息的进度 */
+  attachments?: AttachmentProgress;
 };
 
 export type ListFailure = { listId: string; listName: string; error: unknown };
@@ -155,7 +158,10 @@ export async function fetchTodoData(
   const lists = cleanGraphObject(await client.getAll<GraphTodoTaskList>("/me/todo/lists"));
   const raw: RawData = { lists, tasksByListId: {}, attachmentsByTaskId: {} };
   const failures = await fetchTasksForLists(client, raw, lists, onProgress);
-  const attachmentFailures = await fetchAttachmentMetadata(client, raw);
+  const tasks = Object.values(raw.tasksByListId).reduce((n, t) => n + t.length, 0);
+  const attachmentFailures = await fetchAttachmentMetadata(client, raw, undefined, (p) =>
+    onProgress?.({ listsDone: lists.length, listsTotal: lists.length, tasks, attachments: p }),
+  );
   return { raw, failures, attachmentFailures };
 }
 
@@ -175,56 +181,66 @@ export type AttachmentFailure = {
   listId: string;
   taskId: string;
   taskTitle: string;
+  /** 下载内容失败时才有：失败的是哪个附件 */
+  attachmentId?: string;
   attachmentName?: string;
   error: unknown;
 };
 
-type TaskRef = { listId: string; task: GraphTodoTask };
+export type { AttachmentScope } from "./scope";
 
-function tasksWithAttachments(raw: RawData, listIds?: readonly string[]): TaskRef[] {
-  const wanted = listIds ? new Set(listIds) : undefined;
-  return raw.lists
-    .filter((l) => !wanted || wanted.has(l.id))
-    .flatMap((l) =>
-      (raw.tasksByListId[l.id] ?? [])
-        .filter((t) => t.hasAttachments)
-        .map((task) => ({ listId: l.id, task })),
-    );
-}
-
-/** 读取附件元数据，写入 raw.attachmentsByTaskId。只请求 hasAttachments 为真的任务。 */
+/**
+ * 读取附件元数据，写入 raw.attachmentsByTaskId。只请求 hasAttachments 为真且尚未读到的任务。
+ * 先单独请求第一个任务探测权限：被拒（只读权限下个人账号必然 401）时其余任务不再请求，
+ * 直接以同一个错误记为失败，避免 N 个任务各自触发一轮 401 和 token 刷新。
+ */
 export async function fetchAttachmentMetadata(
   client: GraphClient,
   raw: RawData,
-  listIds?: readonly string[],
+  scope?: AttachmentScope,
   onProgress?: (p: AttachmentProgress) => void,
 ): Promise<AttachmentFailure[]> {
-  const refs = tasksWithAttachments(raw, listIds).filter(
+  const refs = tasksWithAttachments(raw, scope).filter(
     ({ task }) => !raw.attachmentsByTaskId[task.id],
   );
   const failures: AttachmentFailure[] = [];
   let done = 0;
-  onProgress?.({ done, total: refs.length });
-  await Promise.all(
-    refs.map(async ({ listId, task }) => {
-      try {
-        raw.attachmentsByTaskId[task.id] = cleanGraphObject(
-          await client.getAll<GraphTaskFileAttachment>(
-            `/me/todo/lists/${enc(listId)}/tasks/${enc(task.id)}/attachments`,
-          ),
-        );
-      } catch (error) {
-        failures.push({ listId, taskId: task.id, taskTitle: task.title, error });
-      } finally {
-        onProgress?.({ done: ++done, total: refs.length });
-      }
-    }),
-  );
+  const report = () => onProgress?.({ done, total: refs.length });
+  report();
+
+  const read = async ({ listId, task }: TaskRef) => {
+    try {
+      raw.attachmentsByTaskId[task.id] = cleanGraphObject(
+        await client.getAll<GraphTaskFileAttachment>(
+          `/me/todo/lists/${enc(listId)}/tasks/${enc(task.id)}/attachments`,
+        ),
+      );
+    } catch (error) {
+      failures.push({ listId, taskId: task.id, taskTitle: task.title, error });
+      return error;
+    } finally {
+      done++;
+      report();
+    }
+  };
+
+  const [first, ...rest] = refs;
+  if (!first) return failures;
+  const probeError = await read(first);
+  if (isAccessDenied(probeError)) {
+    for (const { listId, task } of rest) {
+      failures.push({ listId, taskId: task.id, taskTitle: task.title, error: probeError });
+    }
+    done = refs.length;
+    report();
+    return failures;
+  }
+  await Promise.all(rest.map(read));
   return failures;
 }
 
-export function attachmentBytes(raw: RawData, listIds?: readonly string[]): number {
-  return tasksWithAttachments(raw, listIds)
+export function attachmentBytes(raw: RawData, scope?: AttachmentScope): number {
+  return tasksWithAttachments(raw, scope)
     .flatMap(({ task }) => raw.attachmentsByTaskId[task.id] ?? [])
     .reduce((n, a) => n + (a.size ?? 0), 0);
 }
@@ -237,10 +253,10 @@ export async function downloadAttachments(
   client: GraphClient,
   raw: RawData,
   store: Map<string, Uint8Array>,
-  listIds?: readonly string[],
+  scope?: AttachmentScope,
   onProgress?: (p: AttachmentProgress) => void,
 ): Promise<AttachmentFailure[]> {
-  const items = tasksWithAttachments(raw, listIds).flatMap(({ listId, task }) =>
+  const items = tasksWithAttachments(raw, scope).flatMap(({ listId, task }) =>
     (raw.attachmentsByTaskId[task.id] ?? [])
       .filter((a) => !store.has(a.id))
       .map((attachment) => ({ listId, task, attachment })),
@@ -262,6 +278,7 @@ export async function downloadAttachments(
           listId,
           taskId: task.id,
           taskTitle: task.title,
+          attachmentId: attachment.id,
           attachmentName: attachment.name,
           error,
         });

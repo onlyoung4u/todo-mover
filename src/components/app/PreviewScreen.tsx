@@ -10,6 +10,9 @@ import { useI18n } from "./i18n";
 import { DownloadIcon, LockIcon } from "./icons";
 import type { FormatState, Settings } from "./settings";
 
+/** 预览页底部的错误提示；登录过期时提供"重新登录" */
+export type ExportError = { text: string; signInAgain?: boolean };
+
 type Props = {
   raw: RawData;
   sourceLabel: string;
@@ -28,6 +31,8 @@ type Props = {
   onBack: () => void;
   onSignOut?: () => void;
   onRetryFailed: () => void;
+  error?: ExportError;
+  onSignInAgain: () => void;
 };
 
 export function PreviewScreen({
@@ -45,6 +50,8 @@ export function PreviewScreen({
   onBack,
   onSignOut,
   onRetryFailed,
+  error,
+  onSignInAgain,
 }: Props) {
   const { t } = useI18n();
   const tzId = useId();
@@ -82,7 +89,8 @@ export function PreviewScreen({
   const selectedTask = focusedList?.tasks.find((x) => x.id === selectedTaskId);
   const totalTasks = preview.lists.reduce((n, l) => n + l.tasks.length, 0);
 
-  const selected = new Set(settings.selectedListIds);
+  const failedSet = new Set(failedListIds);
+  const selected = new Set(settings.selectedListIds.filter((id) => !failedSet.has(id)));
   const selectedTasks = preview.lists
     .filter((l) => selected.has(l.id))
     .reduce((n, l) => n + l.tasks.length, 0);
@@ -94,6 +102,16 @@ export function PreviewScreen({
     : !formatCount
       ? t("app.export.noFormat")
       : undefined;
+
+  // 附件读取被拒时不能下载：只读权限要先授权（上方有按钮），授权后仍被拒则无法下载
+  const canDownloadAttachments = attachmentsAvailable && !attachmentsDenied;
+  const attachmentsHint = !attachmentsAvailable
+    ? t("app.options.attachmentsUnavailable")
+    : attachmentsDenied === "readOnly"
+      ? t("app.options.attachmentsNeedGrant")
+      : attachmentsDenied === "readWrite"
+        ? t("app.options.attachmentsDenied")
+        : undefined;
 
   const set = (patch: Partial<Settings>) => onChange({ ...settings, ...patch });
   const setFormat = <K extends ExporterId>(id: K, patch: Partial<FormatState[K]>) =>
@@ -181,15 +199,21 @@ export function PreviewScreen({
               setFocused(id);
               setSelectedTaskId(undefined);
             }}
-            onToggle={(id, checked) =>
+            onToggle={(id, checked) => {
+              // 读取失败的清单不能勾选：导出后会变成"空清单"，和本来就空的清单分不清
+              if (checked && failedSet.has(id)) return;
               set({
                 selectedListIds: checked
                   ? raw.lists.map((l) => l.id).filter((x) => x === id || selected.has(x))
                   : settings.selectedListIds.filter((x) => x !== id),
-              })
-            }
+              });
+            }}
             onSelectAll={(checked) =>
-              set({ selectedListIds: checked ? raw.lists.map((l) => l.id) : [] })
+              set({
+                selectedListIds: checked
+                  ? raw.lists.map((l) => l.id).filter((id) => !failedSet.has(id))
+                  : [],
+              })
             }
           />
           <TaskList
@@ -236,18 +260,16 @@ export function PreviewScreen({
               />
               {t("app.options.includeCompleted")}
             </label>
-            <label className={`option${attachmentsAvailable ? "" : " disabled"}`}>
+            <label className={`option${canDownloadAttachments ? "" : " disabled"}`}>
               <input
                 type="checkbox"
-                checked={attachmentsAvailable && settings.downloadAttachments}
-                disabled={!attachmentsAvailable}
+                checked={canDownloadAttachments && settings.downloadAttachments}
+                disabled={!canDownloadAttachments}
                 onChange={(e) => set({ downloadAttachments: e.target.checked })}
               />
               <span>
                 {t("app.options.attachments")}
-                {!attachmentsAvailable && (
-                  <span className="hint block">{t("app.options.attachmentsUnavailable")}</span>
-                )}
+                {attachmentsHint && <span className="hint block">{attachmentsHint}</span>}
               </span>
             </label>
           </div>
@@ -266,6 +288,21 @@ export function PreviewScreen({
       </section>
 
       <div className="export-bar">
+        {error && (
+          <div className="inline-error" role="alert">
+            <p>{error.text}</p>
+            {error.signInAgain && (
+              <button
+                type="button"
+                className="button small"
+                disabled={Boolean(busy)}
+                onClick={onSignInAgain}
+              >
+                {t("app.error.signInAgain")}
+              </button>
+            )}
+          </div>
+        )}
         <div className="export-bar-inner">
           <p aria-live="polite">
             {busy ??

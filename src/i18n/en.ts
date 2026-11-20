@@ -142,6 +142,8 @@ const en = {
     "Choose the time zone you usually used Microsoft To Do in. Due dates are calculated in this time zone, so a wrong choice can shift them by a day.",
   "app.options.attachments": "Download attachments",
   "app.options.attachmentsUnavailable": "Only available after signing in with Microsoft.",
+  "app.options.attachmentsNeedGrant": "Grant the permission above first to read attachments.",
+  "app.options.attachmentsDenied": "Microsoft doesn't allow this account to read attachments.",
   "app.limits.heading": "Not available from Microsoft:",
   "app.limits.text": "My Day (a temporary view) and list groups. All lists are exported flat.",
   "app.formats.heading": "Formats",
@@ -233,6 +235,7 @@ const en = {
     "Your browser blocked the sign-in pop-up. Allow pop-ups for this site and try again, or sign in in this tab instead.",
   "app.error.sessionExpired":
     "Your sign-in has expired. Please sign in again; data that was already read is kept.",
+  "app.error.signInAgain": "Sign in again",
   "app.error.forbidden":
     "Microsoft refused to share your tasks with the read-only permission. You can grant the read/write permission instead; this site still only reads and never changes anything.",
   "app.error.network": "Couldn't reach Microsoft. Check your connection and try again.",

@@ -20,6 +20,7 @@ type Options = {
   /** 读取附件元数据时返回这个状态码（真实情况：个人账号只读权限下返回 401 accessDenied） */
   failingAttachments?: number;
   pageSize?: number;
+  getToken?: (o?: { forceRefresh?: boolean }) => Promise<string>;
 };
 
 const CONTEXT = "https://graph.microsoft.com/v1.0/$metadata#users('user%40example.com')/todo/lists";
@@ -118,7 +119,11 @@ function fakeGraph(options: Options = {}) {
     return respond({ error: { code: "NotFound", message: path } }, 404);
   }) as typeof globalThis.fetch;
 
-  const client = new GraphClient({ getToken: async () => "token", fetch, sleep: async () => {} });
+  const client = new GraphClient({
+    getToken: options.getToken ?? (async () => "token"),
+    fetch,
+    sleep: async () => {},
+  });
   return { client, requests };
 }
 
@@ -134,7 +139,7 @@ describe("fetchTodoData", () => {
     expect(raw.tasksByListId.SYN_LIST_MAIN).toHaveLength(14);
     // 125 条任务按每页 50 条分 3 页读取
     expect(requests.filter((r) => r.includes("SYN_LIST_BULK/tasks"))).toHaveLength(3);
-    expect(progress.at(-1)).toEqual({ listsDone: 4, listsTotal: 4, tasks: 142 });
+    expect(progress.at(-1)).toMatchObject({ listsDone: 4, listsTotal: 4, tasks: 142 });
   });
 
   it("keeps raw objects but strips @odata.context (including nested ones) and graph tips", async () => {
@@ -215,7 +220,7 @@ describe("attachments", () => {
       "photo: 1/2.jpg",
     ]);
     expect(attachmentBytes(raw)).toBe(12345 + 204800);
-    expect(attachmentBytes(raw, ["SYN_LIST_BULK"])).toBe(0);
+    expect(attachmentBytes(raw, { listIds: ["SYN_LIST_BULK"] })).toBe(0);
 
     // 导出时再次调用不会重复请求
     graph.requests.length = 0;
@@ -240,6 +245,64 @@ describe("attachments", () => {
     const healthy = fakeGraph();
     expect(await fetchAttachmentMetadata(healthy.client, raw)).toEqual([]);
     expect(raw.attachmentsByTaskId.SYN_ATTACHMENT).toHaveLength(2);
+  });
+
+  it("stops after the first access-denied answer instead of asking for every task", async () => {
+    const { raw } = await fetchTodoData(fakeGraph().client);
+    raw.attachmentsByTaskId = {};
+    for (const task of raw.tasksByListId.SYN_LIST_MAIN!) task.hasAttachments = true;
+
+    let refreshes = 0;
+    const denied = fakeGraph({
+      failingAttachments: 401,
+      getToken: async ({ forceRefresh } = {}) => {
+        if (forceRefresh) refreshes++;
+        return "token";
+      },
+    });
+    const client = denied.client;
+    const progress: { done: number; total: number }[] = [];
+    const failures = await fetchAttachmentMetadata(client, raw, undefined, (p) => progress.push(p));
+    // 只请求了第一个任务：一次原始请求 + 刷新 token 后的一次重试
+    expect(denied.requests.filter((r) => r.endsWith("/attachments"))).toHaveLength(2);
+    expect(refreshes).toBe(1);
+    expect(failures).toHaveLength(14);
+    expect(failures.every((f) => isAccessDenied(f.error))).toBe(true);
+    expect(progress.at(-1)).toEqual({ done: 14, total: 14 });
+  });
+
+  it("skips completed tasks and unselected lists when told to", async () => {
+    const graph = fakeGraph();
+    const { raw } = await fetchTodoData(graph.client);
+    raw.attachmentsByTaskId = {};
+    const completed = raw.tasksByListId.SYN_LIST_MAIN!.find((t) => t.id === "SYN_COMPLETED")!;
+    completed.hasAttachments = true;
+
+    graph.requests.length = 0;
+    await fetchAttachmentMetadata(graph.client, raw, { includeCompleted: false });
+    expect(graph.requests).toEqual([
+      "/v1.0/me/todo/lists/SYN_LIST_MAIN/tasks/SYN_ATTACHMENT/attachments",
+    ]);
+    graph.requests.length = 0;
+    await fetchAttachmentMetadata(graph.client, raw, { listIds: ["SYN_LIST_BULK"] });
+    expect(graph.requests).toEqual([]);
+
+    raw.attachmentsByTaskId.SYN_COMPLETED = [
+      { id: "DONE_ATT", name: "done.txt", size: 999, contentType: "text/plain" },
+    ] as never;
+    const store = new Map<string, Uint8Array>();
+    graph.requests.length = 0;
+    await downloadAttachments(graph.client, raw, store, { includeCompleted: false });
+    expect(store.has("DONE_ATT")).toBe(false);
+    expect(graph.requests.some((r) => r.includes("DONE_ATT"))).toBe(false);
+    expect(attachmentBytes(raw, { includeCompleted: false })).toBe(12345 + 204800);
+    expect(attachmentBytes(raw)).toBe(12345 + 204800 + 999);
+  });
+
+  it("reports attachment progress after the lists are read", async () => {
+    const progress: FetchProgress[] = [];
+    await fetchTodoData(fakeGraph().client, (p) => progress.push(p));
+    expect(progress.at(-1)).toMatchObject({ attachments: { done: 1, total: 1 } });
   });
 
   it("downloads contents, records failures and skips what is already stored", async () => {

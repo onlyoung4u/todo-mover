@@ -2,15 +2,22 @@ import { useRef, useState } from "react";
 import { config } from "../../config";
 import { runExport } from "../../core/export/run";
 import { packageFiles } from "../../core/export/zip";
-import type { FetchProgress, ListFailure, Profile } from "../../core/graph/fetchAll";
+import type {
+  AttachmentFailure,
+  FetchProgress,
+  ListFailure,
+  Profile,
+} from "../../core/graph/fetchAll";
+import { tasksMissingAttachmentMetadata, type AttachmentScope } from "../../core/graph/scope";
 import type { RawData } from "../../core/graph/types";
 import type { ParsedBackup } from "../../core/model/backup";
 import { defaultTimeZone, isValidTimeZone } from "../../core/model/dates";
+import type { Incomplete } from "../../core/model/types";
 import { demoRawData } from "../../fixtures";
 import type { Locale } from "../../i18n";
 import "./app.css";
 import { DoneScreen, type DoneResult } from "./DoneScreen";
-import { PreviewScreen } from "./PreviewScreen";
+import { PreviewScreen, type ExportError } from "./PreviewScreen";
 import { ReadingScreen } from "./ReadingScreen";
 import { StartScreen } from "./StartScreen";
 import { downloadFile, isAppleDevice } from "./browser";
@@ -26,9 +33,24 @@ type Loaded = {
   source: Source;
   raw: RawData;
   failures: ListFailure[];
+  /** 附件信息读取失败的任务（只保留仍然缺失的，用于提示原因） */
+  attachmentFailures: AttachmentFailure[];
   /** 读取附件被拒："readOnly" 可以尝试授予读写权限；"readWrite" 授权后仍被拒 */
   attachmentsDenied?: "readOnly" | "readWrite";
+  /** 打开的 JSON 备份本身就不完整（导出时记录在 meta.incomplete） */
+  importedIncomplete?: Incomplete;
 };
+
+/** 合并附件信息的失败记录：新结果覆盖旧的，已经读到的任务去掉 */
+function mergeAttachmentFailures(
+  raw: RawData,
+  previous: AttachmentFailure[],
+  next: AttachmentFailure[],
+): AttachmentFailure[] {
+  const byTask = new Map(previous.map((f) => [f.taskId, f]));
+  for (const f of next) byTask.set(f.taskId, f);
+  return [...byTask.values()].filter((f) => !raw.attachmentsByTaskId[f.taskId]);
+}
 
 type Download = { name: string; data: string | Uint8Array; mime: string };
 
@@ -39,6 +61,7 @@ const demo = (locale: Locale): Loaded => ({
   source: { kind: "demo" },
   raw: demoRawData(locale, defaultTimeZone()),
   failures: [],
+  attachmentFailures: [],
 });
 
 const MB = 1024 * 1024;
@@ -57,7 +80,7 @@ function App() {
   const [progress, setProgress] = useState<FetchProgress>();
   const [authError, setAuthError] = useState<UiError>();
   const [busy, setBusy] = useState<string>();
-  const [exportError, setExportError] = useState<string>();
+  const [exportError, setExportError] = useState<ExportError>();
   const [done, setDone] = useState<{ result: DoneResult; download: Download }>();
   const [thingsAvailable] = useState(isAppleDevice);
   /** 已下载的附件内容（按附件 ID），重复导出时不再下载 */
@@ -82,17 +105,38 @@ function App() {
     return ui;
   }
 
+  /** 预览页上的操作出错：登录过期时提供就地重新登录，已读取的数据保留 */
+  function showError(error: unknown, fallback?: string) {
+    const ui = handleError(error);
+    if (!ui) return;
+    setExportError({
+      text: ui.kind === "other" && fallback ? fallback : errorText(ui, t),
+      signInAgain: ui.kind === "sessionExpired" && loaded?.source.kind === "graph",
+    });
+  }
+
+  async function signInAgain() {
+    setExportError(undefined);
+    try {
+      await microsoft.signIn();
+    } catch (e) {
+      showError(e);
+    }
+  }
+
   async function startReading() {
     setAuthError(undefined);
     setProgress(undefined);
     setView("reading");
     try {
-      const { raw, profile, failures, attachmentsDenied } = await microsoft.read(setProgress);
+      const { raw, profile, failures, attachmentFailures, attachmentsDenied } =
+        await microsoft.read(setProgress);
       attachmentStore.current = new Map();
       load({
         source: { kind: "graph", profile },
         raw,
         failures,
+        attachmentFailures,
         attachmentsDenied: attachmentsDenied ? "readOnly" : undefined,
       });
     } catch (e) {
@@ -117,6 +161,8 @@ function App() {
     if (loaded?.source.kind === "graph") {
       setLoaded(undefined);
       setSettings(undefined);
+      setDone(undefined);
+      setExportError(undefined);
       attachmentStore.current = new Map();
     }
     setView("start");
@@ -128,15 +174,19 @@ function App() {
     setBusy(t("app.attachments.granting"));
     setExportError(undefined);
     try {
-      const stillDenied = await microsoft.grantAndReadAttachments(loaded.raw);
+      const { attachmentFailures, denied } = await microsoft.grantAndReadAttachments(loaded.raw);
       setLoaded({
         ...loaded,
         raw: { ...loaded.raw },
-        attachmentsDenied: stillDenied ? "readWrite" : undefined,
+        attachmentFailures: mergeAttachmentFailures(
+          loaded.raw,
+          loaded.attachmentFailures,
+          attachmentFailures,
+        ),
+        attachmentsDenied: denied ? "readWrite" : undefined,
       });
     } catch (e) {
-      const ui = handleError(e);
-      if (ui) setExportError(errorText(ui, t));
+      showError(e);
     } finally {
       setBusy(undefined);
     }
@@ -149,9 +199,24 @@ function App() {
     setBusy(t("app.read.retrying"));
     setExportError(undefined);
     try {
-      const failures = await microsoft.retryLists(loaded.raw, ids, () => {});
+      const { failures, attachmentFailures, denied } = await microsoft.retryLists(
+        loaded.raw,
+        ids,
+        () => {},
+        { skipAttachments: Boolean(loaded.attachmentsDenied) },
+      );
       const recovered = ids.filter((id) => !failures.some((f) => f.listId === id));
-      setLoaded({ ...loaded, raw: { ...loaded.raw }, failures });
+      setLoaded({
+        ...loaded,
+        raw: { ...loaded.raw },
+        failures,
+        attachmentFailures: mergeAttachmentFailures(
+          loaded.raw,
+          loaded.attachmentFailures,
+          attachmentFailures,
+        ),
+        attachmentsDenied: loaded.attachmentsDenied ?? (denied ? "readOnly" : undefined),
+      });
       setSettings({
         ...settings,
         selectedListIds: loaded.raw.lists
@@ -159,8 +224,7 @@ function App() {
           .filter((id) => settings.selectedListIds.includes(id) || recovered.includes(id)),
       });
     } catch (e) {
-      const ui = handleError(e);
-      if (ui) setExportError(errorText(ui, t));
+      showError(e);
     } finally {
       setBusy(undefined);
     }
@@ -170,48 +234,103 @@ function App() {
     if (!loaded || !settings) return;
     setBusy(t("app.export.working"));
     setExportError(undefined);
+    let current = loaded;
     try {
       const warnings: string[] = [];
-      const withAttachments = loaded.source.kind === "graph" && settings.downloadAttachments;
-      if (withAttachments) {
-        const { failures, skipped } = await microsoft.fetchAttachments(
-          loaded.raw,
-          attachmentStore.current,
-          settings.selectedListIds,
-          (bytes) => window.confirm(t("app.attachments.confirm", { size: Math.round(bytes / MB) })),
-          (phase, p) =>
-            setBusy(
-              t(phase === "metadata" ? "app.attachments.metadata" : "app.attachments.downloading", {
-                done: p.done,
-                total: p.total,
-              }),
-            ),
+      const graph = current.source.kind === "graph";
+      const failedIds = new Set(current.failures.map((f) => f.listId));
+      // 读取失败的清单不能被勾选；这里再兜底一次，避免把它们当成空清单写进备份
+      const listIds = settings.selectedListIds.filter((id) => !failedIds.has(id));
+      const scope: AttachmentScope = { listIds, includeCompleted: settings.includeCompleted };
+      const progress =
+        (key: "app.attachments.metadata" | "app.attachments.downloading") =>
+        (p: { done: number; total: number }) =>
+          setBusy(t(key, { done: p.done, total: p.total }));
+
+      // 即使不下载附件内容，JSON 备份也需要附件名称和大小：先补读缺失的附件信息。
+      // 已知被拒时不再请求（会再触发一轮 401），直接记为缺失。
+      if (
+        graph &&
+        !current.attachmentsDenied &&
+        tasksMissingAttachmentMetadata(current.raw, scope).length
+      ) {
+        const { attachmentFailures, denied } = await microsoft.readAttachmentMetadata(
+          current.raw,
+          scope,
+          progress("app.attachments.metadata"),
         );
-        if (skipped) warnings.push(t("app.attachments.skipped"));
-        for (const f of failures) {
-          const reason = failureReason(f.error);
-          warnings.push(
-            f.attachmentName === undefined
-              ? t("app.attachments.metadataFailed", { task: f.taskTitle, reason })
-              : t("app.attachments.failed", { task: f.taskTitle, name: f.attachmentName, reason }),
-          );
-        }
+        current = {
+          ...current,
+          raw: { ...current.raw },
+          attachmentFailures: mergeAttachmentFailures(
+            current.raw,
+            current.attachmentFailures,
+            attachmentFailures,
+          ),
+          attachmentsDenied: denied ? "readOnly" : undefined,
+        };
+        setLoaded(current);
       }
-      for (const f of loaded.failures)
+
+      const withAttachments = graph && settings.downloadAttachments && !current.attachmentsDenied;
+      let contentFailures: AttachmentFailure[] = [];
+      if (withAttachments) {
+        const { failures, skipped } = await microsoft.downloadAttachments(
+          current.raw,
+          attachmentStore.current,
+          scope,
+          (bytes) => window.confirm(t("app.attachments.confirm", { size: Math.round(bytes / MB) })),
+          progress("app.attachments.downloading"),
+        );
+        contentFailures = failures;
+        if (skipped) warnings.push(t("app.attachments.skipped"));
+      }
+
+      const missingMetadata = graph ? tasksMissingAttachmentMetadata(current.raw, scope) : [];
+      const reasons = new Map(current.attachmentFailures.map((f) => [f.taskId, f.error]));
+      for (const m of missingMetadata) {
+        const error = reasons.get(m.taskId);
+        warnings.push(
+          t("app.attachments.metadataFailed", {
+            task: m.taskTitle,
+            reason: error === undefined ? "—" : failureReason(error),
+          }),
+        );
+      }
+      for (const f of contentFailures) {
+        warnings.push(
+          t("app.attachments.failed", {
+            task: f.taskTitle,
+            name: f.attachmentName ?? "",
+            reason: failureReason(f.error),
+          }),
+        );
+      }
+      for (const f of current.failures)
         warnings.push(t("app.read.listFailed", { name: f.listName }));
+
+      const incomplete: Incomplete | undefined = graph
+        ? {
+            lists: current.failures.map((f) => ({ id: f.listId, name: f.listName })),
+            attachmentMetadata: missingMetadata,
+            attachmentContent: contentFailures.map((f) => ({
+              taskId: f.taskId,
+              attachmentId: f.attachmentId ?? "",
+              name: f.attachmentName ?? "",
+            })),
+          }
+        : current.importedIncomplete;
 
       setBusy(t("app.export.working"));
       const formats = enabledFormats(settings.formats, thingsAvailable);
       const output = runExport({
-        raw: loaded.raw,
-        selection: {
-          listIds: settings.selectedListIds,
-          includeCompleted: settings.includeCompleted,
-        },
+        raw: current.raw,
+        selection: { listIds, includeCompleted: settings.includeCompleted },
         timeZone: settings.timeZone,
         locale,
         formats,
-        account: loaded.source.kind === "graph" ? loaded.source.profile : undefined,
+        account: current.source.kind === "graph" ? current.source.profile : undefined,
+        incomplete,
         attachmentData: withAttachments ? attachmentStore.current : undefined,
       });
       const download = await packageFiles(output.files);
@@ -222,14 +341,13 @@ function App() {
           fileName: download.name,
           formats: formats.map((f) => f.id),
           links: output.links,
-          warnings: [...warnings, ...output.warnings],
+          warnings: [...new Set([...warnings, ...output.warnings])],
         },
       });
       setView("done");
       window.scrollTo(0, 0);
     } catch (e) {
-      const ui = handleError(e);
-      setExportError(ui && ui.kind !== "other" ? errorText(ui, t) : t("app.export.failed"));
+      showError(e, t("app.export.failed"));
     } finally {
       setBusy(undefined);
     }
@@ -263,29 +381,24 @@ function App() {
               name: source.profile.displayName || source.profile.username || "",
             });
     return (
-      <>
-        <PreviewScreen
-          raw={loaded.raw}
-          sourceLabel={sourceLabel}
-          settings={settings}
-          thingsAvailable={thingsAvailable}
-          attachmentsAvailable={source.kind === "graph"}
-          failedListIds={loaded.failures.map((f) => f.listId)}
-          attachmentsDenied={loaded.attachmentsDenied}
-          onGrantAttachments={grantForAttachments}
-          busy={busy}
-          onChange={setSettings}
-          onExport={handleExport}
-          onBack={() => setView("start")}
-          onSignOut={source.kind === "graph" ? signOut : undefined}
-          onRetryFailed={retryFailed}
-        />
-        {exportError && (
-          <p className="error" role="alert">
-            {exportError}
-          </p>
-        )}
-      </>
+      <PreviewScreen
+        raw={loaded.raw}
+        sourceLabel={sourceLabel}
+        settings={settings}
+        thingsAvailable={thingsAvailable}
+        attachmentsAvailable={source.kind === "graph"}
+        failedListIds={loaded.failures.map((f) => f.listId)}
+        attachmentsDenied={loaded.attachmentsDenied}
+        onGrantAttachments={grantForAttachments}
+        busy={busy}
+        onChange={setSettings}
+        onExport={handleExport}
+        onBack={() => setView("start")}
+        onSignOut={source.kind === "graph" ? signOut : undefined}
+        onRetryFailed={retryFailed}
+        error={exportError}
+        onSignInAgain={signInAgain}
+      />
     );
   }
 
@@ -296,7 +409,9 @@ function App() {
       error={authError}
       highlight={mode === "import" || mode === "signin" ? mode : undefined}
       onSignIn={signInAndRead}
-      onSignInRedirect={() => void microsoft.signInRedirect()}
+      onSignInRedirect={() =>
+        microsoft.signInRedirect().catch((e: unknown) => setAuthError(handleError(e)))
+      }
       onReadAgain={startReading}
       onSignOut={signOut}
       onRequestReadWrite={async () => {
@@ -311,7 +426,13 @@ function App() {
       onImport={(backup: ParsedBackup, fileName) =>
         // 默认沿用备份导出时选择的时区
         load(
-          { source: { kind: "import", fileName }, raw: backup.raw, failures: [] },
+          {
+            source: { kind: "import", fileName },
+            raw: backup.raw,
+            failures: [],
+            attachmentFailures: [],
+            importedIncomplete: backup.meta.incomplete,
+          },
           isValidTimeZone(backup.meta.exportTimeZone)
             ? backup.meta.exportTimeZone
             : defaultTimeZone(),

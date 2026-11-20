@@ -48,7 +48,8 @@ export function ListSidebar({
             <li key={list.id} className={list.id === focused ? "focused" : undefined}>
               <input
                 type="checkbox"
-                checked={selectedSet.has(list.id)}
+                checked={!isFailed && selectedSet.has(list.id)}
+                disabled={isFailed}
                 onChange={(e) => onToggle(list.id, e.target.checked)}
                 aria-label={list.name}
               />
