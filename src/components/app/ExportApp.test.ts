@@ -419,4 +419,41 @@ describe("ExportApp integration", () => {
     expect(container.textContent).toContain("newer-backup.json");
     expect(container.textContent).not.toContain("older-backup.json");
   });
+
+  it("does not render empty format-options for JSON and pre-selects the first task in preview", async () => {
+    await mountAndSignIn();
+
+    // 默认已勾选 JSON，但不应出现空的 .format-options 分割区
+    expect(container.querySelectorAll(".format-options").length).toBe(0);
+
+    // 勾选 Markdown 后应出现其子选项区
+    act(() => checkboxByLabel("Markdown").click());
+    expect(container.querySelectorAll(".format-options").length).toBe(1);
+
+    // 默认应选中首条任务，右侧详情栏不为空
+    expect(container.querySelector(".detail-pane.pane-empty")).toBeNull();
+    expect(container.querySelector(".detail-title")?.textContent).toBeTruthy();
+
+    // 取消勾选 Markdown 后导出单文件 JSON，登录态完成页应带有 revoke-card 样式类
+    act(() => checkboxByLabel("Markdown").click());
+    await act(async () => {
+      buttonByText("导出").click();
+    });
+    await flush();
+    expect(container.querySelector(".done-screen .revoke-card")).not.toBeNull();
+  });
+
+  it("renders a focused single-entry card for ?mode=import and can expand to all sources", async () => {
+    history.replaceState(null, "", "/zh-CN/app/?mode=import");
+    act(() => {
+      root!.render(createElement(ExportApp, { locale: "zh-CN" }));
+    });
+
+    expect(container.querySelector(".entry-focused.dropzone")).not.toBeNull();
+    expect(container.querySelector(".entry-grid")).toBeNull();
+
+    act(() => buttonByText("或选择其他数据来源").click());
+    expect(container.querySelector(".entry-grid")).not.toBeNull();
+    expect(container.querySelector(".entry-focused")).toBeNull();
+  });
 });

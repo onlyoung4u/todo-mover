@@ -275,6 +275,7 @@ const zhCN: Messages = {
   "landing.limits.heading": "微软接口拿不到的内容",
   "app.start.eyebrow": "第 1 步 · 选择数据来源",
   "app.start.dropHint": "也可以把文件拖到这里。",
+  "app.start.otherSources": "或选择其他数据来源",
   "app.read.eyebrow": "正在读取",
   "app.window.stats": "{lists} 个清单 · {tasks} 个任务",
   "app.detail.empty": "选择一个任务查看详情。",
@@ -282,11 +283,15 @@ const zhCN: Messages = {
   "app.detail.attachmentsUnknown": "这个任务有附件，但无法读取附件信息。",
   "app.export.eyebrow": "导出",
   "app.export.heading": "选择格式和选项",
+  "app.export.jumpToOptions": "选择格式与选项",
   "app.done.eyebrow": "第 3 步 · 完成",
   "app.done.downloadedLabel": "已下载",
   "app.done.guidesEyebrow": "下一步",
   "app.preview.eyebrow": "第 2 步 · 检查并导出",
   "app.preview.heading": "检查你的任务",
+  "app.preview.tabTasks": "任务",
+  "app.preview.tabDetail": "详情",
+  "app.preview.backToTasks": "返回任务列表",
 };
 
 export default zhCN;

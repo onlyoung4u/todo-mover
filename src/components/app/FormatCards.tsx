@@ -39,17 +39,19 @@ function FormatOptions({
     case "csv": {
       const o = formats.csv.options;
       return (
-        <Check
-          label="opt.csv.formulaGuard"
-          checked={o.formulaGuard}
-          onChange={(v) => onOptions("csv", { formulaGuard: v })}
-        />
+        <div className="format-options">
+          <Check
+            label="opt.csv.formulaGuard"
+            checked={o.formulaGuard}
+            onChange={(v) => onOptions("csv", { formulaGuard: v })}
+          />
+        </div>
       );
     }
     case "markdown": {
       const o = formats.markdown.options;
       return (
-        <>
+        <div className="format-options">
           <fieldset className="option-group">
             <legend>{t("opt.markdown.style")}</legend>
             {(["obsidian", "plain"] as const).map((style) => (
@@ -69,13 +71,13 @@ function FormatOptions({
             checked={o.singleFile}
             onChange={(v) => onOptions("markdown", { singleFile: v })}
           />
-        </>
+        </div>
       );
     }
     case "todoist": {
       const o = formats.todoist.options;
       return (
-        <>
+        <div className="format-options">
           <Check
             label="opt.todoist.includeCompleted"
             checked={o.includeCompleted}
@@ -91,7 +93,7 @@ function FormatOptions({
             checked={o.categoriesAsLabels}
             onChange={(v) => onOptions("todoist", { categoriesAsLabels: v })}
           />
-        </>
+        </div>
       );
     }
     default:
@@ -156,11 +158,7 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
                   <span className="mono">{t("app.formats.losses")}</span> {t(exporter.losses)}
                 </p>
               )}
-              {enabled && (
-                <div className="format-options">
-                  <FormatOptions id={id} formats={formats} onOptions={onOptions} />
-                </div>
-              )}
+              {enabled && <FormatOptions id={id} formats={formats} onOptions={onOptions} />}
             </div>
           );
         })}

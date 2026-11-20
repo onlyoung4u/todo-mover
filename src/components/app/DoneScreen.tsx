@@ -70,6 +70,7 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
     locale === "zh-CN"
       ? "https://help.dida365.com/"
       : "https://help.ticktick.com/articles/7055781405648748544";
+  const guides = guidesFor(result.formats, ticktickLink);
 
   return (
     <section className="done-screen">
@@ -131,8 +132,8 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
 
       <p className="eyebrow section-eyebrow">{t("app.done.guidesEyebrow")}</p>
       <h2>{t("app.done.guides")}</h2>
-      <div className="guides">
-        {guidesFor(result.formats, ticktickLink).map((g) => (
+      <div className={`guides${guides.length === 4 ? " guides-even" : ""}`}>
+        {guides.map((g) => (
           <div key={g.title} className="card guide">
             <h3>{t(g.title)}</h3>
             <ol>
@@ -152,7 +153,7 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
       </div>
 
       {signedIn && (
-        <div className="card">
+        <div className="card revoke-card">
           <h2>{t("app.done.revoke.heading")}</h2>
           <p>
             {t("app.done.revoke.personal")}{" "}

@@ -1,21 +1,96 @@
 ---
 import Base from "../layouts/Base.astro";
+import Logo from "../components/landing/Logo.astro";
 import { LOCALES, LOCALE_NAMES, MESSAGES, localizedPath } from "../i18n";
 ---
 
 <Base title={`404 · ${MESSAGES.en["site.name"]}`} noindex>
-  <main class="container">
-    <h1>404</h1>
-    <ul>
-      {LOCALES.map((l) => (
-        <li lang={l}>
-          {MESSAGES[l]["notFound.title"]} ·{" "}
-          <a href={localizedPath(l)} hreflang={l}>
-            {MESSAGES[l]["notFound.back"]}
-          </a>{" "}
-          <span class="muted">({LOCALE_NAMES[l]})</span>
-        </li>
-      ))}
-    </ul>
+  <main class="container gate">
+    <div class="window gate-card">
+      <div class="window-bar">
+        <span class="window-dots" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="chip">404</span>
+        <span class="spacer"></span>
+        <Logo size={18} />
+      </div>
+      <div class="gate-body">
+        <p class="eyebrow">
+          <span class="dot"></span>
+          404
+        </p>
+        <h1>{MESSAGES.en["notFound.title"]}</h1>
+        <ul class="gate-list">
+          {LOCALES.map((l) => (
+            <li lang={l}>
+              <a class="gate-link" href={localizedPath(l)} hreflang={l}>
+                <span>
+                  <strong>{MESSAGES[l]["notFound.back"]}</strong>
+                  <span class="gate-sub">{MESSAGES[l]["notFound.title"]}</span>
+                </span>
+                <span class="chip">{LOCALE_NAMES[l]}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   </main>
 </Base>
+
+<style>
+  .gate {
+    display: grid;
+    place-items: center;
+    padding-top: 64px;
+    padding-bottom: 64px;
+  }
+  .gate-card {
+    width: 100%;
+    max-width: 520px;
+  }
+  .gate-body {
+    padding: 28px 24px;
+  }
+  .gate-body h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    margin-bottom: 20px;
+  }
+  .gate-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gate-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-inset);
+    color: var(--fg);
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      background 0.15s;
+  }
+  .gate-link:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--fg);
+  }
+  .gate-sub {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+</style>

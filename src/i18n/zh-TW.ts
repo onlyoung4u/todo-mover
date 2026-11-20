@@ -276,6 +276,7 @@ const zhTW: Messages = {
   "landing.limits.heading": "Microsoft 介面拿不到的內容",
   "app.start.eyebrow": "第 1 步 · 選擇資料來源",
   "app.start.dropHint": "也可以把檔案拖曳到這裡。",
+  "app.start.otherSources": "或選擇其他資料來源",
   "app.read.eyebrow": "正在讀取",
   "app.window.stats": "{lists} 個清單 · {tasks} 項工作",
   "app.detail.empty": "選擇一項工作查看詳細資料。",
@@ -283,11 +284,15 @@ const zhTW: Messages = {
   "app.detail.attachmentsUnknown": "這個工作有附件，但無法讀取附件資訊。",
   "app.export.eyebrow": "匯出",
   "app.export.heading": "選擇格式與選項",
+  "app.export.jumpToOptions": "選擇格式與選項",
   "app.done.eyebrow": "第 3 步 · 完成",
   "app.done.downloadedLabel": "已下載",
   "app.done.guidesEyebrow": "下一步",
   "app.preview.eyebrow": "第 2 步 · 檢查並匯出",
   "app.preview.heading": "檢查你的工作",
+  "app.preview.tabTasks": "工作",
+  "app.preview.tabDetail": "詳細資料",
+  "app.preview.backToTasks": "返回工作清單",
 };
 
 export default zhTW;

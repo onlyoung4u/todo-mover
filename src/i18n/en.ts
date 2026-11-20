@@ -291,6 +291,7 @@ const en = {
   "landing.limits.heading": "What Microsoft doesn't provide",
   "app.start.eyebrow": "Step 1 · Choose where your tasks come from",
   "app.start.dropHint": "Or drop the file here.",
+  "app.start.otherSources": "Or choose another source",
   "app.read.eyebrow": "Reading",
   "app.window.stats": "{lists} lists · {tasks} tasks",
   "app.detail.empty": "Select a task to see its details.",
@@ -298,11 +299,15 @@ const en = {
   "app.detail.attachmentsUnknown": "This task has attachments, but their details couldn't be read.",
   "app.export.eyebrow": "Export",
   "app.export.heading": "Choose formats and options",
+  "app.export.jumpToOptions": "Choose formats",
   "app.done.eyebrow": "Step 3 · Done",
   "app.done.downloadedLabel": "Downloaded",
   "app.done.guidesEyebrow": "Next",
   "app.preview.eyebrow": "Step 2 · Review and export",
   "app.preview.heading": "Review your tasks",
+  "app.preview.tabTasks": "Tasks",
+  "app.preview.tabDetail": "Details",
+  "app.preview.backToTasks": "Back to tasks",
 } as const;
 
 export type MessageKey = keyof typeof en;

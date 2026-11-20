@@ -71,7 +71,7 @@ export function ListSidebar({
                   </span>
                 )}
               </button>
-              <span className="count mono">{count.total}</span>
+              <span className="count mono">{list.tasks.length}</span>
             </li>
           );
         })}

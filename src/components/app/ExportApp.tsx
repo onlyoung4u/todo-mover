@@ -77,7 +77,7 @@ const MB = 1024 * 1024;
 
 function App() {
   const { t, locale } = useI18n();
-  const [mode] = useState(() => new URLSearchParams(location.search).get("mode"));
+  const [mode, setMode] = useState(() => new URLSearchParams(location.search).get("mode"));
   // 从落地页点"先看演示"进来时直接打开演示数据
   const [loaded, setLoaded] = useState<Loaded | undefined>(() =>
     mode === "demo" ? demo(locale) : undefined,
@@ -143,6 +143,7 @@ function App() {
 
   function backToStart() {
     invalidate();
+    setMode(null);
     setView("start");
   }
 
@@ -570,6 +571,7 @@ function App() {
       account={account}
       error={authError}
       highlight={mode === "import" || mode === "signin" ? mode : undefined}
+      onClearHighlight={() => setMode(null)}
       onSignIn={signInAndRead}
       onSignInRedirect={signInWithRedirect}
       onReadAgain={startReading}

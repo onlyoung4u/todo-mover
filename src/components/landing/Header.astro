@@ -96,6 +96,8 @@ const app = localizedPath(lang, "/app/");
 <style>
   .locale-switch {
     display: inline-flex;
+    flex-shrink: 0;
+    white-space: nowrap;
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
@@ -112,5 +114,10 @@ const app = localizedPath(lang, "/app/");
   .locale-switch a[aria-current="true"] {
     background: var(--bg-inset);
     color: var(--fg);
+  }
+  @media (max-width: 640px) {
+    .locale-switch a {
+      padding: 3px 6px;
+    }
   }
 </style>

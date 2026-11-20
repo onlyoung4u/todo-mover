@@ -57,6 +57,7 @@ export function PreviewScreen({
   const tzId = useId();
   const [focused, setFocused] = useState(raw.lists[0]?.id);
   const [selectedTaskId, setSelectedTaskId] = useState<string>();
+  const [mobilePane, setMobilePane] = useState<"lists" | "tasks" | "detail">("lists");
   const zones = useMemo(() => timeZoneOptions(settings.timeZone), [settings.timeZone]);
 
   // 预览显示所有清单（不受勾选影响），但遵循"包含已完成"和导出时区
@@ -86,7 +87,8 @@ export function PreviewScreen({
   );
 
   const focusedList = preview.lists.find((l) => l.id === focused);
-  const selectedTask = focusedList?.tasks.find((x) => x.id === selectedTaskId);
+  const selectedTask =
+    focusedList?.tasks.find((x) => x.id === selectedTaskId) ?? focusedList?.tasks[0];
   const totalTasks = preview.lists.reduce((n, l) => n + l.tasks.length, 0);
 
   const failedSet = new Set(failedListIds);
@@ -188,7 +190,40 @@ export function PreviewScreen({
           </div>
         )}
 
-        <div className="viewer-panes">
+        <div className="viewer-tabs" role="tablist" aria-label={t("app.preview.heading")}>
+          <button
+            type="button"
+            role="tab"
+            className="viewer-tab"
+            aria-selected={mobilePane === "lists"}
+            onClick={() => setMobilePane("lists")}
+          >
+            {t("app.lists.heading")} ({selected.size}/{preview.lists.length})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            className="viewer-tab"
+            aria-selected={mobilePane === "tasks"}
+            onClick={() => setMobilePane("tasks")}
+          >
+            <span className="viewer-tab-name">
+              {focusedList?.name ?? t("app.preview.tabTasks")}
+            </span>{" "}
+            ({focusedList?.tasks.length ?? 0})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            className="viewer-tab"
+            aria-selected={mobilePane === "detail"}
+            onClick={() => setMobilePane("detail")}
+          >
+            {t("app.preview.tabDetail")}
+          </button>
+        </div>
+
+        <div className="viewer-panes" data-mobile-pane={mobilePane}>
           <ListSidebar
             lists={preview.lists}
             counts={counts}
@@ -198,6 +233,7 @@ export function PreviewScreen({
             onFocus={(id) => {
               setFocused(id);
               setSelectedTaskId(undefined);
+              setMobilePane("tasks");
             }}
             onToggle={(id, checked) => {
               // 读取失败的清单不能勾选：导出后会变成"空清单"，和本来就空的清单分不清
@@ -218,10 +254,17 @@ export function PreviewScreen({
           />
           <TaskList
             list={focusedList}
-            selectedTaskId={selectedTaskId}
-            onSelect={setSelectedTaskId}
+            selectedTaskId={selectedTask?.id}
+            onSelect={(id) => {
+              setSelectedTaskId(id);
+              setMobilePane("detail");
+            }}
           />
-          <TaskDetail task={selectedTask} timeZone={settings.timeZone} />
+          <TaskDetail
+            task={selectedTask}
+            timeZone={settings.timeZone}
+            onBack={() => setMobilePane("tasks")}
+          />
         </div>
 
         <div className="window-foot">
@@ -304,15 +347,22 @@ export function PreviewScreen({
           </div>
         )}
         <div className="export-bar-inner">
-          <p aria-live="polite">
-            {busy ??
-              blocker ??
-              t("app.export.summary", {
-                lists: selected.size,
-                tasks: selectedTasks,
-                formats: formatCount,
-              })}
-          </p>
+          <div className="export-bar-summary">
+            <p aria-live="polite">
+              {busy ??
+                blocker ??
+                t("app.export.summary", {
+                  lists: selected.size,
+                  tasks: selectedTasks,
+                  formats: formatCount,
+                })}
+            </p>
+            {!busy && (
+              <a className="export-jump" href="#export-heading">
+                {t("app.export.jumpToOptions")} ↓
+              </a>
+            )}
+          </div>
           <button
             type="button"
             className="button primary"

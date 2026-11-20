@@ -134,9 +134,30 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-export function TaskDetail({ task, timeZone }: { task?: Task; timeZone: string }) {
+export function TaskDetail({
+  task,
+  timeZone,
+  onBack,
+}: {
+  task?: Task;
+  timeZone: string;
+  onBack?: () => void;
+}) {
   const { t, locale } = useI18n();
-  if (!task) return <div className="pane detail-pane pane-empty">{t("app.detail.empty")}</div>;
+  if (!task) {
+    return (
+      <div className="pane detail-pane pane-empty">
+        <div>
+          {onBack && (
+            <button type="button" className="mobile-back link-button" onClick={onBack}>
+              ← {t("app.preview.backToTasks")}
+            </button>
+          )}
+          <p>{t("app.detail.empty")}</p>
+        </div>
+      </div>
+    );
+  }
 
   const utc = (iso: string) => {
     const ms = Date.parse(iso.replace(/(\.\d{3})\d+/, "$1"));
@@ -147,6 +168,11 @@ export function TaskDetail({ task, timeZone }: { task?: Task; timeZone: string }
 
   return (
     <section className="pane detail-pane" aria-label={task.title}>
+      {onBack && (
+        <button type="button" className="mobile-back link-button" onClick={onBack}>
+          ← {t("app.preview.backToTasks")}
+        </button>
+      )}
       <div className="detail-status">
         <span className={`chip${task.status === "completed" ? " accent" : ""}`}>
           {t(`status.${task.status}`)}

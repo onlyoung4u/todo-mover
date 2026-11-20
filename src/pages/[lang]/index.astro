@@ -56,28 +56,38 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
           <div class="entry primary">
             <h2>{t("app.start.signIn")}</h2>
             <p class="muted">{t("app.start.signInDesc")}</p>
-            {config.msalClientId ? (
-              <a class="button primary" href={`${appPath}?mode=signin`}>
-                {t("landing.signIn")}
-              </a>
-            ) : (
-              <span class="button primary" aria-disabled="true">
-                {t("landing.signIn")}
-              </span>
-            )}
-            {!config.msalClientId && <p class="hint">{t("landing.noClientId")}</p>}
+            <div class="entry-action">
+              {config.msalClientId ? (
+                <a class="button primary" href={`${appPath}?mode=signin`}>
+                  {t("landing.signIn")}
+                </a>
+              ) : (
+                <span class="button primary" aria-disabled="true">
+                  {t("landing.signIn")}
+                </span>
+              )}
+            </div>
+            <div class="entry-foot">
+              {!config.msalClientId && <p class="hint">{t("landing.noClientId")}</p>}
+            </div>
           </div>
           <div class="entry">
             <h2>{t("app.start.demo")}</h2>
             <p class="muted">{t("app.start.demoDesc")}</p>
-            <a class="button" href={`${appPath}?mode=demo`}>
-              {t("landing.demo")}
-            </a>
+            <div class="entry-action">
+              <a class="button" href={`${appPath}?mode=demo`}>
+                {t("landing.demo")}
+              </a>
+            </div>
+            <div class="entry-foot"></div>
           </div>
           <a class="entry dropzone" href={`${appPath}?mode=import`}>
             <h2>{t("app.start.import")}</h2>
             <p class="muted">{t("app.start.importDesc")}</p>
-            <span class="chip">todo-backup.json</span>
+            <span class="entry-action">
+              <span class="chip">todo-backup.json</span>
+            </span>
+            <span class="entry-foot"></span>
           </a>
         </div>
         <div class="window-foot">
@@ -217,6 +227,10 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
     font-size: 0.75rem;
     color: var(--subtle);
     margin-right: 4px;
+  }
+  :global(:lang(zh)) .loss .mono {
+    font-family: var(--font-sans);
+    font-weight: 550;
   }
   .two-col {
     display: grid;
