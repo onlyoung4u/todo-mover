@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import Header from "../../components/landing/Header.astro";
 import Footer from "../../components/landing/Footer.astro";
 import ExportApp from "../../components/app/ExportApp";
 import { getLocaleStaticPaths, getTranslator, type Locale } from "../../i18n";
@@ -11,9 +12,10 @@ const t = getTranslator(lang);
 ---
 
 <Base lang={lang} title={`${t("app.title")} · ${t("site.name")}`} path="/app/" noindex>
-  <main class="container wide">
+  <Header lang={lang} path="/app/" />
+  <main class="container">
     <ExportApp client:only="react" locale={lang}>
-      <p slot="fallback" class="muted">
+      <p slot="fallback" class="muted app-loading">
         {t("app.loading")}
       </p>
     </ExportApp>

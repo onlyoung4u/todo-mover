@@ -122,6 +122,18 @@ describe("normalize (synthetic)", () => {
       "receipt.pdf",
       "photo: 1/2.jpg",
     ]);
+    expect(tasks.get("SYN_ATTACHMENT")!.hasAttachments).toBe(true);
+    expect(tasks.get("SYN_WEEKLY")).not.toHaveProperty("hasAttachments");
+  });
+
+  it("keeps hasAttachments when the attachment metadata couldn't be read", () => {
+    const raw = syntheticRawData();
+    raw.attachmentsByTaskId = {};
+    const task = normalize(raw, { timeZone: "UTC" })
+      .lists.flatMap((l) => l.tasks)
+      .find((t) => t.id === "SYN_ATTACHMENT")!;
+    expect(task.hasAttachments).toBe(true);
+    expect(task.attachments).toEqual([]);
   });
 
   it("parses Windows time zone names without warnings", () => {

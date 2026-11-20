@@ -17,8 +17,10 @@ describe("messages", () => {
 
 describe("getTranslator", () => {
   it("substitutes params", () => {
-    expect(getTranslator("zh-CN")("landing.countdown", { days: 42 })).toBe("还剩 42 天");
-    expect(getTranslator("en")("landing.countdown", { days: 1 })).toBe("1 days left");
+    expect(getTranslator("zh-CN")("app.window.stats", { lists: 2, tasks: 42 })).toBe(
+      "2 个清单 · 42 个任务",
+    );
+    expect(getTranslator("en")("landing.stepLabel", { n: "01" })).toBe("Step 01");
   });
 });
 

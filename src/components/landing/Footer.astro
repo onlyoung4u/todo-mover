@@ -1,4 +1,5 @@
 ---
+import Logo from "./Logo.astro";
 import { LOCALES, LOCALE_NAMES, getTranslator, localizedPath, type Locale } from "../../i18n";
 import { config, donateUrlFor } from "../../config";
 
@@ -15,30 +16,37 @@ const donateUrl = donateUrlFor(lang);
 
 <footer class="footer">
   <div class="container">
-    <p class="muted">{t("footer.disclaimer")}</p>
-    <nav class="links">
-      <a href={config.repoUrl} rel="noopener">
-        {t("footer.source")}
+    <div class="footer-top">
+      <a class="brand small" href={localizedPath(lang)}>
+        <Logo size={22} />
+        <span>{t("site.name")}</span>
       </a>
-      {donateUrl && (
-        <a href={donateUrl} rel="noopener">
-          {t("footer.donate")}
+      <nav class="links">
+        <a href={config.repoUrl} rel="noopener">
+          {t("footer.source")}
         </a>
-      )}
-    </nav>
-    <nav class="locales" aria-label={t("footer.language")}>
-      {LOCALES.map((l) => (
-        <a
-          href={localizedPath(l, path)}
-          hreflang={l}
-          lang={l}
-          data-locale={l}
-          aria-current={l === lang ? "page" : undefined}
-        >
-          {LOCALE_NAMES[l]}
-        </a>
-      ))}
-    </nav>
+        {donateUrl && (
+          <a href={donateUrl} rel="noopener">
+            {t("footer.donate")}
+          </a>
+        )}
+        <span class="locales" aria-label={t("footer.language")}>
+          {LOCALES.map((l) => (
+            <a
+              href={localizedPath(l, path)}
+              hreflang={l}
+              lang={l}
+              data-locale={l}
+              aria-current={l === lang ? "page" : undefined}
+            >
+              {LOCALE_NAMES[l]}
+            </a>
+          ))}
+        </span>
+      </nav>
+    </div>
+    <p class="disclaimer">{t("footer.disclaimer")}</p>
+    <p class="license mono">AGPL-3.0 · {t("footer.local")}</p>
   </div>
 </footer>
 
@@ -48,21 +56,48 @@ const donateUrl = donateUrlFor(lang);
 
 <style>
   .footer {
-    margin-top: 64px;
-    padding: 24px 0;
+    margin-top: 96px;
+    padding: 32px 0 40px;
     border-top: 1px solid var(--border);
     font-size: 0.875rem;
+    color: var(--muted);
+  }
+  .footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .brand.small {
+    font-size: 1rem;
   }
   .links,
   .locales {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 16px;
-    margin-top: 8px;
+  }
+  .links a {
+    color: var(--muted);
+  }
+  .links a:hover {
+    color: var(--fg);
   }
   .locales a[aria-current="page"] {
     color: var(--fg);
     text-decoration: none;
     font-weight: 600;
+  }
+  .disclaimer {
+    max-width: 640px;
+    margin: 0 0 8px;
+  }
+  .license {
+    font-size: 0.75rem;
+    color: var(--subtle);
+    margin: 0;
   }
 </style>

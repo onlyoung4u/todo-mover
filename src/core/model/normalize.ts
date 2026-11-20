@@ -72,6 +72,7 @@ function normalizeTask(
       url: r.webUrl,
       externalId: r.externalId,
     })),
+    hasAttachments: raw.hasAttachments || Boolean(attachments?.length) || undefined,
     attachments: (attachments ?? []).map((a) => ({
       id: a.id,
       name: a.name,

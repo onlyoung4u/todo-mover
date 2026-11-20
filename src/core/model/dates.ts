@@ -175,6 +175,19 @@ export function parseGraphDateTime(
   };
 }
 
+/**
+ * 某时区的本地日期时间 → Graph 风格的 UTC dateTimeTimeZone（To Do 的存储方式，
+ * 例如北京时间 2019-11-30 00:00 → "2019-11-29T16:00:00.0000000" UTC）。用于生成演示数据。
+ * @param local "YYYY-MM-DD" 或 "YYYY-MM-DDTHH:mm"
+ */
+export function localToGraphUtc(local: string, timeZone: string): GraphDateTimeTimeZone {
+  const wall = parseWallTime(local);
+  if (!wall) throw new Error(`Invalid local date-time: ${local}`);
+  const tz = resolveTimeZone(timeZone) ?? "UTC";
+  const instant = tz === "UTC" ? new Date(wallTimeToUtcMs(wall)) : zonedWallTimeToInstant(wall, tz);
+  return { dateTime: instant.toISOString().replace(/Z$/, "0000"), timeZone: "UTC" };
+}
+
 /** 时间点 → 导出时区下的 "YYYY-MM-DD"。 */
 export function dateInZone(instant: Date, timeZone: string): string {
   return formatDate(zonedWallTime(instant, timeZone));

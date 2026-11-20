@@ -22,7 +22,13 @@ export type MicrosoftState =
   | { status: "initializing" }
   | { status: "ready"; account?: { name?: string; username?: string } };
 
-export type ReadResult = { raw: RawData; profile: Profile; failures: ListFailure[] };
+export type ReadResult = {
+  raw: RawData;
+  profile: Profile;
+  failures: ListFailure[];
+  /** 读取附件元数据时被微软以权限不足拒绝 */
+  attachmentsDenied: boolean;
+};
 
 type Modules = {
   auth: typeof AuthModule;
@@ -111,11 +117,23 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
   /** 读取账号信息和全部清单、任务 */
   const read = useCallback(async (onProgress: (p: FetchProgress) => void): Promise<ReadResult> => {
     const { m, g } = need();
-    const [profile, { raw, failures }] = await Promise.all([
+    const [profile, { raw, failures, attachmentFailures }] = await Promise.all([
       m.fetch.fetchProfile(g),
       m.fetch.fetchTodoData(g, onProgress),
     ]);
-    return { raw, profile, failures };
+    const attachmentsDenied = attachmentFailures.some((f) => m.fetch.isAccessDenied(f.error));
+    return { raw, profile, failures, attachmentsDenied };
+  }, []);
+
+  /**
+   * 只读权限读取附件被拒时：增量授权 Tasks.ReadWrite，再重新读取缺失的附件元数据（raw 原地更新）。
+   * 返回授权后是否仍然被拒。
+   */
+  const grantAndReadAttachments = useCallback(async (raw: RawData): Promise<boolean> => {
+    const { m, g, s } = need();
+    await s.requestReadWrite();
+    const failures = await m.fetch.fetchAttachmentMetadata(g, raw);
+    return failures.some((f) => m.fetch.isAccessDenied(f.error));
   }, []);
 
   /** 只重试读取失败的清单；raw 会被原地更新 */
@@ -123,7 +141,10 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
     async (raw: RawData, listIds: string[], onProgress: (p: FetchProgress) => void) => {
       const { m, g } = need();
       const lists = raw.lists.filter((l) => listIds.includes(l.id));
-      return m.fetch.fetchTasksForLists(g, raw, lists, onProgress);
+      const failures = await m.fetch.fetchTasksForLists(g, raw, lists, onProgress);
+      // 补读这些清单的附件元数据；失败时导出前会再次尝试并报告
+      await m.fetch.fetchAttachmentMetadata(g, raw, listIds);
+      return failures;
     },
     [],
   );
@@ -164,6 +185,7 @@ export function useMicrosoft(clientId: string | undefined, onRedirectSignIn: () 
     signOut,
     requestReadWrite,
     read,
+    grantAndReadAttachments,
     retryLists,
     fetchAttachments,
   };

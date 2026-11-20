@@ -6,14 +6,8 @@ const zhTW: Messages = {
   "site.description":
     "將 Microsoft To Do 的所有清單與工作匯出為 JSON、CSV、Markdown、ICS、Todoist 或 Things 格式。完全在瀏覽器本機執行，資料不經過任何伺服器。",
 
-  "landing.news": "Microsoft To Do 將於 2027 年 6 月 30 日停止服務，現有工作不會自動遷移。",
-  "landing.countdown": "還剩 {days} 天",
-  "landing.headline": "把你的 Microsoft To Do 資料帶走",
-  "landing.privacy":
-    "資料只在你的瀏覽器中處理，只傳送到 graph.microsoft.com，不經過任何其他伺服器。",
   "landing.signIn": "使用 Microsoft 帳戶登入",
   "landing.demo": "先看示範",
-  "landing.importJson": "匯入先前匯出的 JSON",
   "landing.noClientId": "未設定 Client ID，僅能使用示範模式。",
 
   "app.title": "匯出你的工作",
@@ -238,7 +232,47 @@ const zhTW: Messages = {
   "app.attachments.downloading": "正在下載附件 {done}/{total}…",
   "app.attachments.confirm": "附件總共約 {size} MB，確定全部下載嗎？",
   "app.attachments.skipped": "依你的選擇，沒有下載附件。附件名稱仍記錄在 JSON 備份中。",
-  "app.attachments.failed": "工作「{task}」的附件「{name}」下載失敗。",
+  "app.attachments.failed": "工作「{task}」的附件「{name}」下載失敗（{reason}）。",
+  "app.attachments.denied":
+    "Microsoft 拒絕以唯讀權限讀取附件。授予讀寫權限後即可讀取附件；本站仍然只會讀取，不會修改任何內容。",
+  "app.attachments.grant": "授予權限並讀取附件",
+  "app.attachments.granting": "正在讀取附件…",
+  "app.attachments.deniedReadWrite":
+    "授予讀寫權限後，Microsoft 仍然拒絕讀取附件。附件無法匯出，其餘資料不受影響。",
+  "app.attachments.metadataFailed": "工作「{task}」的附件資訊讀取失敗（{reason}）。",
+
+  "landing.headline": "把你的 Microsoft To Do 工作帶走",
+  "nav.label": "主導覽",
+  "nav.tool": "匯出工具",
+  "nav.formats": "格式",
+  "nav.theme": "切換淺色 / 深色",
+  "nav.privacy": "隱私",
+  "footer.local": "完全在瀏覽器本機執行",
+  "landing.eyebrow": "Microsoft To Do 將於 2027-06-30 停止服務 · 還剩 {days} 天",
+  "landing.lead":
+    "把所有清單、工作、步驟、備註和提醒匯出為完整備份，以及 Excel、Obsidian、Todoist、Things 和行事曆應用程式能直接匯入的檔案。全程在你的瀏覽器中完成。",
+  "landing.local": "僅在本機處理",
+  "landing.windowFoot": "上傳 0 位元組 · 只連線 graph.microsoft.com",
+  "landing.how.eyebrow": "使用方法",
+  "landing.stepLabel": "步驟 {n}",
+  "landing.formats.eyebrow": "讀取一次，六種格式",
+  "landing.privacyDetails.eyebrow": "資料只屬於你",
+  "landing.limits.eyebrow": "需要知道",
+  "landing.limits.heading": "Microsoft 介面拿不到的內容",
+  "app.start.eyebrow": "第 1 步 · 選擇資料來源",
+  "app.start.dropHint": "也可以把檔案拖曳到這裡。",
+  "app.read.eyebrow": "正在讀取",
+  "app.window.stats": "{lists} 個清單 · {tasks} 項工作",
+  "app.detail.empty": "選擇一項工作查看詳細資料。",
+  "app.detail.attachments": "附件",
+  "app.detail.attachmentsUnknown": "這個工作有附件，但無法讀取附件資訊。",
+  "app.export.eyebrow": "匯出",
+  "app.export.heading": "選擇格式與選項",
+  "app.done.eyebrow": "第 3 步 · 完成",
+  "app.done.downloadedLabel": "已下載",
+  "app.done.guidesEyebrow": "下一步",
+  "app.preview.eyebrow": "第 2 步 · 檢查並匯出",
+  "app.preview.heading": "檢查你的工作",
 };
 
 export default zhTW;

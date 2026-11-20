@@ -6,13 +6,8 @@ const zhCN: Messages = {
   "site.description":
     "把 Microsoft To Do 的全部清单和任务导出为 JSON、CSV、Markdown、ICS、Todoist 或 Things 格式。完全在浏览器本地运行，数据不经过任何服务器。",
 
-  "landing.news": "Microsoft To Do 将于 2027 年 6 月 30 日停止服务，现有任务不会自动迁移。",
-  "landing.countdown": "还剩 {days} 天",
-  "landing.headline": "把你的 Microsoft To Do 数据带走",
-  "landing.privacy": "数据只在你的浏览器里处理，只发往 graph.microsoft.com，不经过任何其他服务器。",
   "landing.signIn": "用微软账号登录",
   "landing.demo": "先看演示",
-  "landing.importJson": "导入之前导出的 JSON",
   "landing.noClientId": "未配置 Client ID，仅可使用演示模式。",
 
   "app.title": "导出你的任务",
@@ -236,7 +231,47 @@ const zhCN: Messages = {
   "app.attachments.downloading": "正在下载附件 {done}/{total}…",
   "app.attachments.confirm": "附件总共约 {size} MB，确定全部下载吗？",
   "app.attachments.skipped": "按你的选择，没有下载附件。附件名称仍记录在 JSON 备份中。",
-  "app.attachments.failed": "任务“{task}”的附件“{name}”下载失败。",
+  "app.attachments.failed": "任务“{task}”的附件“{name}”下载失败（{reason}）。",
+  "app.attachments.denied":
+    "微软拒绝用只读权限读取附件。授予读写权限后可以读取附件；本站仍然只读取，不会修改任何内容。",
+  "app.attachments.grant": "授予权限并读取附件",
+  "app.attachments.granting": "正在读取附件…",
+  "app.attachments.deniedReadWrite":
+    "授予读写权限后，微软仍然拒绝读取附件。附件无法导出，其余数据不受影响。",
+  "app.attachments.metadataFailed": "任务“{task}”的附件信息读取失败（{reason}）。",
+
+  "landing.headline": "把你的 Microsoft To Do 任务带走",
+  "nav.label": "主导航",
+  "nav.tool": "导出工具",
+  "nav.formats": "格式",
+  "nav.theme": "切换浅色 / 深色",
+  "nav.privacy": "隐私",
+  "footer.local": "完全在浏览器本地运行",
+  "landing.eyebrow": "Microsoft To Do 将于 2027-06-30 停服 · 还剩 {days} 天",
+  "landing.lead":
+    "把全部清单、任务、步骤、备注和提醒导出为完整备份，以及 Excel、Obsidian、Todoist、Things 和日历应用能直接导入的文件。全程在你的浏览器里完成。",
+  "landing.local": "仅在本地处理",
+  "landing.windowFoot": "上传 0 字节 · 只连接 graph.microsoft.com",
+  "landing.how.eyebrow": "使用方法",
+  "landing.stepLabel": "步骤 {n}",
+  "landing.formats.eyebrow": "读取一次，六种格式",
+  "landing.privacyDetails.eyebrow": "数据只属于你",
+  "landing.limits.eyebrow": "需要知道",
+  "landing.limits.heading": "微软接口拿不到的内容",
+  "app.start.eyebrow": "第 1 步 · 选择数据来源",
+  "app.start.dropHint": "也可以把文件拖到这里。",
+  "app.read.eyebrow": "正在读取",
+  "app.window.stats": "{lists} 个清单 · {tasks} 个任务",
+  "app.detail.empty": "选择一个任务查看详情。",
+  "app.detail.attachments": "附件",
+  "app.detail.attachmentsUnknown": "这个任务有附件，但无法读取附件信息。",
+  "app.export.eyebrow": "导出",
+  "app.export.heading": "选择格式和选项",
+  "app.done.eyebrow": "第 3 步 · 完成",
+  "app.done.downloadedLabel": "已下载",
+  "app.done.guidesEyebrow": "下一步",
+  "app.preview.eyebrow": "第 2 步 · 检查并导出",
+  "app.preview.heading": "检查你的任务",
 };
 
 export default zhCN;

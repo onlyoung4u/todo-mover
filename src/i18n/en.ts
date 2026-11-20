@@ -5,15 +5,8 @@ const en = {
   "site.description":
     "Export all your Microsoft To Do lists and tasks to JSON, CSV, Markdown, ICS, Todoist or Things. Runs entirely in your browser; your data never touches our servers.",
 
-  "landing.news":
-    "Microsoft To Do will be retired on June 30, 2027. Existing tasks will not be migrated automatically.",
-  "landing.countdown": "{days} days left",
-  "landing.headline": "Take your Microsoft To Do data with you",
-  "landing.privacy":
-    "Your data is processed only in your browser. It is sent to graph.microsoft.com and nowhere else.",
   "landing.signIn": "Sign in with Microsoft",
   "landing.demo": "Try the demo",
-  "landing.importJson": "Open a previously exported JSON",
   "landing.noClientId": "Client ID not configured — demo mode only.",
 
   "app.title": "Export your tasks",
@@ -249,7 +242,48 @@ const en = {
   "app.attachments.confirm": "The attachments add up to about {size} MB. Download all of them?",
   "app.attachments.skipped":
     "Attachments were not downloaded, as you chose. Their names are still listed in the JSON backup.",
-  "app.attachments.failed": "Attachment “{name}” of task “{task}” couldn't be downloaded.",
+  "app.attachments.failed":
+    "Attachment “{name}” of task “{task}” couldn't be downloaded ({reason}).",
+  "app.attachments.denied":
+    "Microsoft refused to read attachments with the read-only permission. Grant the read/write permission to include them; this site still only reads and never changes anything.",
+  "app.attachments.grant": "Grant permission and read attachments",
+  "app.attachments.granting": "Reading attachments…",
+  "app.attachments.deniedReadWrite":
+    "Microsoft still refused to read attachments after the read/write permission was granted. Attachments can't be exported; everything else is unaffected.",
+  "app.attachments.metadataFailed": "Couldn't read the attachments of task “{task}” ({reason}).",
+
+  "landing.headline": "Take your Microsoft To Do tasks with you",
+  "nav.label": "Main",
+  "nav.tool": "Export tool",
+  "nav.formats": "Formats",
+  "nav.theme": "Switch between light and dark",
+  "nav.privacy": "Privacy",
+  "footer.local": "Runs entirely in your browser",
+  "landing.eyebrow": "Microsoft To Do shuts down on June 30, 2027 · {days} days left",
+  "landing.lead":
+    "Export every list, task, step, note and reminder as a complete backup, plus files that Excel, Obsidian, Todoist, Things and calendar apps can import. Everything happens in your browser.",
+  "landing.local": "Processed locally",
+  "landing.windowFoot": "0 bytes uploaded · talks only to graph.microsoft.com",
+  "landing.how.eyebrow": "How it works",
+  "landing.stepLabel": "Step {n}",
+  "landing.formats.eyebrow": "Six formats, one read",
+  "landing.privacyDetails.eyebrow": "Your data stays yours",
+  "landing.limits.eyebrow": "Good to know",
+  "landing.limits.heading": "What Microsoft doesn't provide",
+  "app.start.eyebrow": "Step 1 · Choose where your tasks come from",
+  "app.start.dropHint": "Or drop the file here.",
+  "app.read.eyebrow": "Reading",
+  "app.window.stats": "{lists} lists · {tasks} tasks",
+  "app.detail.empty": "Select a task to see its details.",
+  "app.detail.attachments": "Attachments",
+  "app.detail.attachmentsUnknown": "This task has attachments, but their details couldn't be read.",
+  "app.export.eyebrow": "Export",
+  "app.export.heading": "Choose formats and options",
+  "app.done.eyebrow": "Step 3 · Done",
+  "app.done.downloadedLabel": "Downloaded",
+  "app.done.guidesEyebrow": "Next",
+  "app.preview.eyebrow": "Step 2 · Review and export",
+  "app.preview.heading": "Review your tasks",
 } as const;
 
 export type MessageKey = keyof typeof en;

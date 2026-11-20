@@ -43,6 +43,16 @@ export function toUiError(error: unknown): UiError {
   return { kind: "other", message };
 }
 
+/** 单个附件失败时附在提示后面的简短原因，例如 "HTTP 404 ErrorItemNotFound" */
+export function failureReason(error: unknown): string {
+  const e = error as { name?: string; status?: number; code?: string; message?: string };
+  if (e?.name === "GraphError") {
+    if (e.status === 0) return e.code ?? "network_error";
+    return `HTTP ${e.status} ${e.code ?? ""}`.trim();
+  }
+  return e?.message ?? String(error);
+}
+
 export function errorText(error: UiError, t: Translate): string {
   switch (error.kind) {
     case "consentBlocked":

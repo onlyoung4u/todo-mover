@@ -8,6 +8,7 @@ import {
   fetchProfile,
   fetchTasksForLists,
   fetchTodoData,
+  isAccessDenied,
   type FetchProgress,
 } from "./fetchAll";
 
@@ -16,6 +17,8 @@ type Options = {
   noCombinedExpand?: boolean;
   /** 读取这些清单的任务时返回 500 */
   failingLists?: string[];
+  /** 读取附件元数据时返回这个状态码（真实情况：个人账号只读权限下返回 401 accessDenied） */
+  failingAttachments?: number;
   pageSize?: number;
 };
 
@@ -101,6 +104,11 @@ function fakeGraph(options: Options = {}) {
       });
     }
     if ((m = path.match(/^\/me\/todo\/lists\/[^/]+\/tasks\/([^/]+)\/attachments$/))) {
+      if (options.failingAttachments)
+        return respond(
+          { error: { code: "accessDenied", message: "Access denied" } },
+          options.failingAttachments,
+        );
       return respond(paged(url, attachments[decodeURIComponent(m[1]!)]?.value ?? []));
     }
     if ((m = path.match(/\/attachments\/([^/]+)\/\$value$/))) {
@@ -196,14 +204,10 @@ describe("fetchTodoData", () => {
 });
 
 describe("attachments", () => {
-  it("only requests attachments for tasks that have them", async () => {
+  it("reads metadata while reading tasks, only for tasks that have attachments", async () => {
     const graph = fakeGraph();
     const { raw } = await fetchTodoData(graph.client);
-    graph.requests.length = 0;
-
-    const failures = await fetchAttachmentMetadata(graph.client, raw);
-    expect(failures).toEqual([]);
-    expect(graph.requests).toEqual([
+    expect(graph.requests.filter((r) => r.includes("/attachments"))).toEqual([
       "/v1.0/me/todo/lists/SYN_LIST_MAIN/tasks/SYN_ATTACHMENT/attachments",
     ]);
     expect(raw.attachmentsByTaskId.SYN_ATTACHMENT!.map((a) => a.name)).toEqual([
@@ -212,6 +216,30 @@ describe("attachments", () => {
     ]);
     expect(attachmentBytes(raw)).toBe(12345 + 204800);
     expect(attachmentBytes(raw, ["SYN_LIST_BULK"])).toBe(0);
+
+    // 导出时再次调用不会重复请求
+    graph.requests.length = 0;
+    expect(await fetchAttachmentMetadata(graph.client, raw)).toEqual([]);
+    expect(graph.requests).toEqual([]);
+  });
+
+  it("keeps the list when attachment metadata is denied, and reports why", async () => {
+    const { raw, failures, attachmentFailures } = await fetchTodoData(
+      fakeGraph({ failingAttachments: 401 }).client,
+    );
+    expect(failures).toEqual([]);
+    expect(raw.tasksByListId.SYN_LIST_MAIN).toHaveLength(14);
+    expect(raw.attachmentsByTaskId).toEqual({});
+    expect(attachmentFailures.map((f) => f.taskId)).toEqual(["SYN_ATTACHMENT"]);
+    expect(isAccessDenied(attachmentFailures[0]!.error)).toBe(true);
+    const { attachmentFailures: serverErrors } = await fetchTodoData(
+      fakeGraph({ failingAttachments: 500 }).client,
+    );
+    expect(isAccessDenied(serverErrors[0]!.error)).toBe(false);
+
+    const healthy = fakeGraph();
+    expect(await fetchAttachmentMetadata(healthy.client, raw)).toEqual([]);
+    expect(raw.attachmentsByTaskId.SYN_ATTACHMENT).toHaveLength(2);
   });
 
   it("downloads contents, records failures and skips what is already stored", async () => {

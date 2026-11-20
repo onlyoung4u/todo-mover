@@ -99,6 +99,16 @@ function FormatOptions({
   }
 }
 
+/** 卡片上显示的文件类型 */
+const EXT: Record<ExporterId, string> = {
+  json: ".json",
+  csv: ".csv",
+  markdown: ".md",
+  ics: ".ics",
+  todoist: "todoist.csv",
+  things: "things://",
+};
+
 export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: Props) {
   const { t, locale } = useI18n();
   const ticktickHelp =
@@ -107,14 +117,7 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
       : "https://help.ticktick.com/articles/7055781405648748544";
 
   return (
-    <section className="formats" aria-labelledby="formats-heading">
-      <h2 id="formats-heading">{t("app.formats.heading")}</h2>
-      <p className="notice">
-        {t("app.formats.ticktick")}{" "}
-        <a href={ticktickHelp} target="_blank" rel="noopener noreferrer">
-          {t("app.formats.ticktickLink")}
-        </a>
-      </p>
+    <div className="formats">
       <div className="format-grid">
         {EXPORTER_ORDER.map((id) => {
           const exporter = EXPORTERS[id];
@@ -123,7 +126,7 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
           return (
             <div
               key={id}
-              className={`card format${enabled ? " selected" : ""}${disabled ? " disabled" : ""}`}
+              className={`format-tile${enabled ? " selected" : ""}${disabled ? " disabled" : ""}`}
             >
               <label className="format-title">
                 <input
@@ -132,18 +135,20 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
                   disabled={disabled}
                   onChange={(e) => onToggle(id, e.target.checked)}
                 />
-                <span>{t(exporter.label)}</span>
-                {id === "json" && (
-                  <span className="badge accent">{t("app.formats.recommended")}</span>
-                )}
+                <span className="format-name">{t(exporter.label)}</span>
+                <span className="chip">{EXT[id]}</span>
               </label>
-              {disabled && <p className="hint">{t("app.formats.appleOnly")}</p>}
-              <dl>
-                <dt>{t("app.formats.targets")}</dt>
-                <dd>{t(exporter.targets)}</dd>
-                <dt>{t("app.formats.losses")}</dt>
-                <dd>{t(exporter.losses)}</dd>
-              </dl>
+              {id === "json" && (
+                <span className="badge accent">{t("app.formats.recommended")}</span>
+              )}
+              <p className="format-targets">{t(exporter.targets)}</p>
+              {disabled ? (
+                <p className="hint">{t("app.formats.appleOnly")}</p>
+              ) : (
+                <p className="format-losses">
+                  <span className="mono">{t("app.formats.losses")}</span> {t(exporter.losses)}
+                </p>
+              )}
               {enabled && (
                 <div className="format-options">
                   <FormatOptions id={id} formats={formats} onOptions={onOptions} />
@@ -153,6 +158,12 @@ export function FormatCards({ formats, thingsAvailable, onToggle, onOptions }: P
           );
         })}
       </div>
-    </section>
+      <p className="ticktick-tip">
+        {t("app.formats.ticktick")}{" "}
+        <a href={ticktickHelp} target="_blank" rel="noopener noreferrer">
+          {t("app.formats.ticktickLink")}
+        </a>
+      </p>
+    </div>
   );
 }

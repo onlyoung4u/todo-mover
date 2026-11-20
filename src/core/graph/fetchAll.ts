@@ -21,7 +21,11 @@ export type FetchProgress = {
 
 export type ListFailure = { listId: string; listName: string; error: unknown };
 
-export type FetchResult = { raw: RawData; failures: ListFailure[] };
+export type FetchResult = {
+  raw: RawData;
+  failures: ListFailure[];
+  attachmentFailures: AttachmentFailure[];
+};
 
 export type Profile = { displayName?: string; username?: string };
 
@@ -139,7 +143,11 @@ export async function fetchTasksForLists(
   return failures.sort((a, b) => (order.get(a.listId) ?? 0) - (order.get(b.listId) ?? 0));
 }
 
-/** 读取全部清单和任务。读取清单本身失败（例如 403）会直接抛出。 */
+/**
+ * 读取全部清单、任务和附件元数据。读取清单本身失败（例如 403）会直接抛出。
+ * 附件元数据（名称、大小）很小，读取时一并获取，预览里才能显示附件；
+ * 它的失败不影响清单本身，单独返回（例如只读权限下被拒，界面可以提示授予读写权限）。
+ */
 export async function fetchTodoData(
   client: GraphClient,
   onProgress?: (p: FetchProgress) => void,
@@ -147,7 +155,13 @@ export async function fetchTodoData(
   const lists = cleanGraphObject(await client.getAll<GraphTodoTaskList>("/me/todo/lists"));
   const raw: RawData = { lists, tasksByListId: {}, attachmentsByTaskId: {} };
   const failures = await fetchTasksForLists(client, raw, lists, onProgress);
-  return { raw, failures };
+  const attachmentFailures = await fetchAttachmentMetadata(client, raw);
+  return { raw, failures, attachmentFailures };
+}
+
+/** 附件请求是否因为权限被拒（client 已对 401 刷新过一次 token，仍然 401 / 403 就是权限问题） */
+export function isAccessDenied(error: unknown): boolean {
+  return error instanceof GraphError && (error.status === 401 || error.status === 403);
 }
 
 // ───────────────────────────── 附件 ─────────────────────────────

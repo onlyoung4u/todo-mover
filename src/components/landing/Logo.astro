@@ -1,0 +1,28 @@
+---
+/** 站点标志：圆角方块里的对勾。颜色由 CSS 变量控制（CSP 不允许内联 style 属性）。 */
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" class="logo">
+  <rect x="1" y="1" width="30" height="30" rx="8" class="logo-bg"></rect>
+  <path
+    d="M8.5 16.5l5 5L23.5 11"
+    fill="none"
+    class="logo-mark"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  ></path>
+</svg>
+
+<style is:global>
+  .logo-bg {
+    fill: var(--accent);
+  }
+  .logo-mark {
+    stroke: var(--accent-fg);
+  }
+</style>

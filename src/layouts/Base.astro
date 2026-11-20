@@ -27,6 +27,8 @@ const alternates =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 同步执行：在绘制前应用用户选择的浅色 / 深色主题 -->
+    <script is:inline src="/theme-init.js"></script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {noindex && <meta name="robots" content="noindex" />}

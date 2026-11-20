@@ -28,21 +28,22 @@ export function ListSidebar({
   const selectedSet = new Set(selected);
 
   return (
-    <nav className="lists" aria-label={t("app.lists.heading")}>
-      <div className="lists-header">
-        <h2>{t("app.lists.heading")}</h2>
-        <div className="lists-actions">
+    <nav className="pane lists-pane" aria-label={t("app.lists.heading")}>
+      <div className="pane-head">
+        <span className="pane-label">{t("app.lists.heading")}</span>
+        <span className="lists-actions">
           <button type="button" className="link-button" onClick={() => onSelectAll(true)}>
             {t("app.lists.selectAll")}
           </button>
           <button type="button" className="link-button" onClick={() => onSelectAll(false)}>
             {t("app.lists.selectNone")}
           </button>
-        </div>
+        </span>
       </div>
-      <ul>
+      <ul className="list-rows">
         {lists.map((list) => {
           const count = counts[list.id] ?? { total: 0, completed: 0 };
+          const isFailed = failed.includes(list.id);
           return (
             <li key={list.id} className={list.id === focused ? "focused" : undefined}>
               <input
@@ -51,18 +52,17 @@ export function ListSidebar({
                 onChange={(e) => onToggle(list.id, e.target.checked)}
                 aria-label={list.name}
               />
-              <button type="button" className="list-name" onClick={() => onFocus(list.id)}>
+              <button
+                type="button"
+                className="list-name"
+                aria-current={list.id === focused ? "true" : undefined}
+                onClick={() => onFocus(list.id)}
+                title={t("app.lists.count", { tasks: count.total, completed: count.completed })}
+              >
                 <span className="name">{list.name}</span>
-                <span className="meta">
-                  {t("app.lists.count", { tasks: count.total, completed: count.completed })}
-                </span>
-                {(list.wellknown === "flaggedEmails" ||
-                  list.isShared ||
-                  failed.includes(list.id)) && (
+                {(list.wellknown === "flaggedEmails" || list.isShared || isFailed) && (
                   <span className="badges">
-                    {failed.includes(list.id) && (
-                      <span className="badge danger">{t("app.lists.failed")}</span>
-                    )}
+                    {isFailed && <span className="badge danger">{t("app.lists.failed")}</span>}
                     {list.wellknown === "flaggedEmails" && (
                       <span className="badge">{t("app.lists.flagged")}</span>
                     )}
@@ -70,6 +70,7 @@ export function ListSidebar({
                   </span>
                 )}
               </button>
+              <span className="count mono">{count.total}</span>
             </li>
           );
         })}

@@ -75,7 +75,7 @@ export const csvExporter: Exporter<CsvOptions> = {
       },
       {
         header: "csv.col.hasAttachments",
-        value: (task) => (task.attachments.length ? t("common.yes") : t("common.no")),
+        value: (task) => (task.hasAttachments ? t("common.yes") : t("common.no")),
       },
       { header: "csv.col.taskId", value: (task) => task.id },
       { header: "csv.col.listId", value: (_, l) => l.id },

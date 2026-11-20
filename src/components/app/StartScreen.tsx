@@ -1,8 +1,9 @@
-import { useId, useRef, useState, type ChangeEvent } from "react";
+import { useId, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { BackupError, parseBackup, type ParsedBackup } from "../../core/model/backup";
 import type { MessageKey } from "../../i18n";
 import { errorText, type UiError } from "./errors";
 import { useI18n } from "./i18n";
+import { LockIcon } from "./icons";
 import type { MicrosoftState } from "./useMicrosoft";
 
 type Props = {
@@ -27,7 +28,7 @@ const IMPORT_ERRORS: Record<BackupError["code"], MessageKey> = {
   newerSchema: "app.import.error.newerSchema",
 };
 
-function MicrosoftCard({
+function MicrosoftEntry({
   microsoft,
   account,
   error,
@@ -42,9 +43,13 @@ function MicrosoftCard({
   const name = account?.name || account?.username;
 
   return (
-    <div className={`card${highlight === "signin" ? " card-highlight" : ""}`}>
+    <div className={`entry primary${highlight === "signin" ? " highlight" : ""}`}>
       <h2>{t("app.start.signIn")}</h2>
-      <p className="muted">{t("app.start.signInDesc")}</p>
+      <p className="muted">
+        {microsoft === "ready" && account
+          ? t("app.start.signedInAs", { name: name ?? "" })
+          : t("app.start.signInDesc")}
+      </p>
 
       {microsoft === "unavailable" && (
         <>
@@ -55,7 +60,11 @@ function MicrosoftCard({
         </>
       )}
 
-      {microsoft === "initializing" && <p className="hint">{t("app.loading")}</p>}
+      {microsoft === "initializing" && (
+        <button type="button" className="button primary" disabled>
+          {t("app.loading")}
+        </button>
+      )}
 
       {microsoft === "ready" && !account && (
         <button type="button" className="button primary" onClick={onSignIn}>
@@ -64,29 +73,26 @@ function MicrosoftCard({
       )}
 
       {microsoft === "ready" && account && (
-        <>
-          <p>{t("app.start.signedInAs", { name: name ?? "" })}</p>
-          <div className="button-row">
-            <button type="button" className="button primary" onClick={onReadAgain}>
-              {t("app.start.readTasks")}
-            </button>
-            <button type="button" className="link-button" onClick={onSignOut}>
-              {t("app.signOut")}
-            </button>
-          </div>
-        </>
+        <span className="button-row">
+          <button type="button" className="button primary" onClick={onReadAgain}>
+            {t("app.start.readTasks")}
+          </button>
+          <button type="button" className="link-button" onClick={onSignOut}>
+            {t("app.signOut")}
+          </button>
+        </span>
       )}
 
       {error && (
-        <div className="error" role="alert">
+        <div className="inline-error" role="alert">
           <p>{errorText(error, t)}</p>
           {error.kind === "popupBlocked" && (
-            <button type="button" className="button" onClick={onSignInRedirect}>
+            <button type="button" className="button small" onClick={onSignInRedirect}>
               {t("app.start.signInRedirect")}
             </button>
           )}
           {error.kind === "forbidden" && (
-            <button type="button" className="button" onClick={onRequestReadWrite}>
+            <button type="button" className="button small" onClick={onRequestReadWrite}>
               {t("app.start.grantPermission")}
             </button>
           )}
@@ -104,10 +110,9 @@ export function StartScreen(props: Props) {
   const fileInputId = useId();
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const [dragging, setDragging] = useState(false);
 
-  async function handleFile(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
+  async function readFile(file: File | undefined) {
     if (!file) return;
     setError(undefined);
     setBusy(true);
@@ -122,47 +127,90 @@ export function StartScreen(props: Props) {
     }
   }
 
+  function handleFile(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    void readFile(file);
+  }
+
+  function handleDrop(event: DragEvent<HTMLDivElement>) {
+    event.preventDefault();
+    setDragging(false);
+    void readFile(event.dataTransfer.files[0]);
+  }
+
   return (
     <section className="start">
+      <p className="eyebrow">
+        <span className="dot" />
+        {t("app.start.eyebrow")}
+      </p>
       <h1>{t("app.start.heading")}</h1>
-      <div className="start-options">
-        <MicrosoftCard {...props} />
-
-        <div className="card">
-          <h2>{t("app.start.demo")}</h2>
-          <p className="muted">{t("app.start.demoDesc")}</p>
-          <button type="button" className="button" onClick={onDemo}>
-            {t("landing.demo")}
-          </button>
+      <div className="window">
+        <div className="window-bar">
+          <span className="window-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className="chip">todo-mover</span>
+          <span className="spacer" />
+          <span className="local">
+            <LockIcon />
+            {t("landing.local")}
+          </span>
         </div>
+        <div className="entry-grid">
+          <MicrosoftEntry {...props} />
 
-        <div className={`card${highlight === "import" ? " card-highlight" : ""}`}>
-          <h2>{t("app.start.import")}</h2>
-          <p className="muted">{t("app.start.importDesc")}</p>
-          <label htmlFor={fileInputId} className="visually-hidden">
-            {t("app.start.import")}
-          </label>
-          <input
-            id={fileInputId}
-            ref={fileInput}
-            type="file"
-            accept=".json,application/json"
-            className="visually-hidden"
-            onChange={handleFile}
-          />
-          <button
-            type="button"
-            className="button"
-            disabled={busy}
-            onClick={() => fileInput.current?.click()}
+          <div className="entry">
+            <h2>{t("app.start.demo")}</h2>
+            <p className="muted">{t("app.start.demoDesc")}</p>
+            <button type="button" className="button" onClick={onDemo}>
+              {t("landing.demo")}
+            </button>
+          </div>
+
+          <div
+            className={`entry dropzone${highlight === "import" ? " highlight" : ""}${dragging ? " dragging" : ""}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
           >
-            {t("app.start.chooseFile")}
-          </button>
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          )}
+            <h2>{t("app.start.import")}</h2>
+            <p className="muted">{t("app.start.importDesc")}</p>
+            <label htmlFor={fileInputId} className="visually-hidden">
+              {t("app.start.import")}
+            </label>
+            <input
+              id={fileInputId}
+              ref={fileInput}
+              type="file"
+              accept=".json,application/json"
+              className="visually-hidden"
+              onChange={handleFile}
+            />
+            <button
+              type="button"
+              className="button"
+              disabled={busy}
+              onClick={() => fileInput.current?.click()}
+            >
+              {t("app.start.chooseFile")}
+            </button>
+            <p className="hint">{t("app.start.dropHint")}</p>
+            {error && (
+              <p className="inline-error" role="alert">
+                {error}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="window-foot">
+          <span>{t("landing.windowFoot")}</span>
         </div>
       </div>
     </section>

@@ -1,0 +1,116 @@
+---
+import Logo from "./Logo.astro";
+import { LOCALES, getTranslator, localizedPath, type Locale } from "../../i18n";
+import { config } from "../../config";
+
+interface Props {
+  lang: Locale;
+  /** 不含语言前缀的当前页面路径，用于语言切换后停留在同一页面 */
+  path: string;
+}
+
+const { lang, path } = Astro.props;
+const t = getTranslator(lang);
+const short: Record<Locale, string> = { en: "EN", "zh-CN": "简", "zh-TW": "繁" };
+const home = localizedPath(lang);
+const app = localizedPath(lang, "/app/");
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href={home}>
+      <Logo />
+      <span>{t("site.name")}</span>
+    </a>
+    <nav class="site-nav" aria-label={t("nav.label")}>
+      <a href={app} aria-current={path === "/app/" ? "page" : undefined}>
+        {t("nav.tool")}
+      </a>
+      <a class="optional" href={`${home}#formats`}>
+        {t("nav.formats")}
+      </a>
+      <a class="optional" href={`${home}#privacy`}>
+        {t("nav.privacy")}
+      </a>
+      <a class="optional" href={config.repoUrl} rel="noopener">
+        GitHub
+      </a>
+      <button
+        type="button"
+        class="theme-toggle"
+        data-theme-toggle
+        aria-label={t("nav.theme")}
+        title={t("nav.theme")}
+      >
+        <svg
+          class="icon-moon"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path>
+        </svg>
+        <svg
+          class="icon-sun"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+      </button>
+      <span class="locale-switch" aria-label={t("footer.language")}>
+        {LOCALES.map((l) => (
+          <a
+            href={localizedPath(l, path)}
+            hreflang={l}
+            lang={l}
+            data-locale={l}
+            aria-current={l === lang ? "true" : undefined}
+          >
+            {short[l]}
+          </a>
+        ))}
+      </span>
+    </nav>
+  </div>
+</header>
+
+<script>
+  import "../../scripts/locale-switch";
+  import "../../scripts/theme-toggle";
+</script>
+
+<style>
+  .locale-switch {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+  .locale-switch a {
+    padding: 3px 8px;
+    color: var(--muted);
+  }
+  .locale-switch a + a {
+    border-left: 1px solid var(--border);
+  }
+  .locale-switch a[aria-current="true"] {
+    background: var(--bg-inset);
+    color: var(--fg);
+  }
+</style>

@@ -14,7 +14,7 @@ import { PreviewScreen } from "./PreviewScreen";
 import { ReadingScreen } from "./ReadingScreen";
 import { StartScreen } from "./StartScreen";
 import { downloadFile, isAppleDevice } from "./browser";
-import { errorText, toUiError, type UiError } from "./errors";
+import { errorText, failureReason, toUiError, type UiError } from "./errors";
 import { I18nProvider, useI18n } from "./i18n";
 import { enabledFormats, initialSettings, type Settings } from "./settings";
 import { useMicrosoft } from "./useMicrosoft";
@@ -22,13 +22,24 @@ import { useMicrosoft } from "./useMicrosoft";
 type Source =
   { kind: "demo" } | { kind: "import"; fileName: string } | { kind: "graph"; profile: Profile };
 
-type Loaded = { source: Source; raw: RawData; failures: ListFailure[] };
+type Loaded = {
+  source: Source;
+  raw: RawData;
+  failures: ListFailure[];
+  /** 读取附件被拒："readOnly" 可以尝试授予读写权限；"readWrite" 授权后仍被拒 */
+  attachmentsDenied?: "readOnly" | "readWrite";
+};
 
 type Download = { name: string; data: string | Uint8Array; mime: string };
 
 type View = "start" | "reading" | "preview" | "done";
 
-const demo = (): Loaded => ({ source: { kind: "demo" }, raw: demoRawData(), failures: [] });
+/** 演示数据跟随界面语言，日期按浏览器时区生成（与真实 To Do 的存储方式一致） */
+const demo = (locale: Locale): Loaded => ({
+  source: { kind: "demo" },
+  raw: demoRawData(locale, defaultTimeZone()),
+  failures: [],
+});
 
 const MB = 1024 * 1024;
 
@@ -37,7 +48,7 @@ function App() {
   const [mode] = useState(() => new URLSearchParams(location.search).get("mode"));
   // 从落地页点"先看演示"进来时直接打开演示数据
   const [loaded, setLoaded] = useState<Loaded | undefined>(() =>
-    mode === "demo" ? demo() : undefined,
+    mode === "demo" ? demo(locale) : undefined,
   );
   const [settings, setSettings] = useState<Settings | undefined>(() =>
     loaded ? initialSettings(loaded.raw, defaultTimeZone()) : undefined,
@@ -76,9 +87,14 @@ function App() {
     setProgress(undefined);
     setView("reading");
     try {
-      const { raw, profile, failures } = await microsoft.read(setProgress);
+      const { raw, profile, failures, attachmentsDenied } = await microsoft.read(setProgress);
       attachmentStore.current = new Map();
-      load({ source: { kind: "graph", profile }, raw, failures });
+      load({
+        source: { kind: "graph", profile },
+        raw,
+        failures,
+        attachmentsDenied: attachmentsDenied ? "readOnly" : undefined,
+      });
     } catch (e) {
       setAuthError(handleError(e));
       setView("start");
@@ -104,6 +120,26 @@ function App() {
       attachmentStore.current = new Map();
     }
     setView("start");
+  }
+
+  /** 只读权限读不到附件时，由用户主动授予读写权限，再补读附件信息 */
+  async function grantForAttachments() {
+    if (!loaded) return;
+    setBusy(t("app.attachments.granting"));
+    setExportError(undefined);
+    try {
+      const stillDenied = await microsoft.grantAndReadAttachments(loaded.raw);
+      setLoaded({
+        ...loaded,
+        raw: { ...loaded.raw },
+        attachmentsDenied: stillDenied ? "readWrite" : undefined,
+      });
+    } catch (e) {
+      const ui = handleError(e);
+      if (ui) setExportError(errorText(ui, t));
+    } finally {
+      setBusy(undefined);
+    }
   }
 
   /** 只重试读取失败的清单，已读取的数据保留 */
@@ -153,8 +189,11 @@ function App() {
         );
         if (skipped) warnings.push(t("app.attachments.skipped"));
         for (const f of failures) {
+          const reason = failureReason(f.error);
           warnings.push(
-            t("app.attachments.failed", { task: f.taskTitle, name: f.attachmentName ?? "" }),
+            f.attachmentName === undefined
+              ? t("app.attachments.metadataFailed", { task: f.taskTitle, reason })
+              : t("app.attachments.failed", { task: f.taskTitle, name: f.attachmentName, reason }),
           );
         }
       }
@@ -232,6 +271,8 @@ function App() {
           thingsAvailable={thingsAvailable}
           attachmentsAvailable={source.kind === "graph"}
           failedListIds={loaded.failures.map((f) => f.listId)}
+          attachmentsDenied={loaded.attachmentsDenied}
+          onGrantAttachments={grantForAttachments}
           busy={busy}
           onChange={setSettings}
           onExport={handleExport}
@@ -266,7 +307,7 @@ function App() {
           setAuthError(handleError(e));
         }
       }}
-      onDemo={() => load(demo())}
+      onDemo={() => load(demo(locale))}
       onImport={(backup: ParsedBackup, fileName) =>
         // 默认沿用备份导出时选择的时区
         load(

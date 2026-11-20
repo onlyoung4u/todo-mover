@@ -87,5 +87,7 @@ export type Task = {
   steps: Step[];
   /** 来自 linkedResources */
   links: Link[];
+  /** Graph 标记任务有附件时为 true（即使附件元数据没有读到） */
+  hasAttachments?: boolean;
   attachments: Attachment[];
 };

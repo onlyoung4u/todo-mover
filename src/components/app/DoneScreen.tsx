@@ -2,6 +2,7 @@ import { config, donateUrlFor } from "../../config";
 import type { ExporterId } from "../../core/exporters/types";
 import type { MessageKey } from "../../i18n";
 import { useI18n } from "./i18n";
+import { CheckIcon, DownloadIcon } from "./icons";
 
 export type DoneResult = {
   fileName: string;
@@ -71,29 +72,43 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
       : "https://help.ticktick.com/articles/7055781405648748544";
 
   return (
-    <section className="done">
+    <section className="done-screen">
+      <p className="eyebrow">
+        <span className="dot" />
+        {t("app.done.eyebrow")}
+      </p>
       <h1>{t("app.done.heading")}</h1>
-      <p>
-        {t("app.done.downloaded", { file: result.fileName })}{" "}
-        <button type="button" className="link-button" onClick={onDownloadAgain}>
-          {t("app.done.downloadAgain")}
-        </button>
-      </p>
-      <p>
-        <button type="button" className="button" onClick={onBack}>
-          {t("app.done.backToPreview")}
-        </button>
-      </p>
+      <div className="window done-window">
+        <div className="done-file">
+          <span className="done-check" aria-hidden="true">
+            <CheckIcon size={20} />
+          </span>
+          <div>
+            <p className="muted">{t("app.done.downloadedLabel")}</p>
+            <span className="chip accent">{result.fileName}</span>
+          </div>
+          <span className="spacer" />
+          <span className="button-row">
+            <button type="button" className="button" onClick={onDownloadAgain}>
+              <DownloadIcon />
+              {t("app.done.downloadAgain")}
+            </button>
+            <button type="button" className="button" onClick={onBack}>
+              {t("app.done.backToPreview")}
+            </button>
+          </span>
+        </div>
+      </div>
 
       {result.links.length > 0 && (
-        <div className="card">
+        <div className="card things-card">
           <h2>{t("app.done.things.heading")}</h2>
           <p className="hint">{t("app.done.things.hint")}</p>
           <ul className="things-links">
             {result.links.map((link) => (
               <li key={link.url}>
                 <span>{link.label}</span>
-                <a className="button" href={link.url}>
+                <a className="button small" href={link.url}>
                   {t("app.done.things.open")}
                 </a>
               </li>
@@ -113,6 +128,7 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
         </details>
       )}
 
+      <p className="eyebrow section-eyebrow">{t("app.done.guidesEyebrow")}</p>
       <h2>{t("app.done.guides")}</h2>
       <div className="guides">
         {guidesFor(result.formats, ticktickLink).map((g) => (
@@ -160,7 +176,7 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
         {donateUrl && (
           <p>
             {t("app.done.donate")}{" "}
-            <a className="button" href={donateUrl} target="_blank" rel="noopener noreferrer">
+            <a className="button small" href={donateUrl} target="_blank" rel="noopener noreferrer">
               {t("footer.donate")}
             </a>
           </p>

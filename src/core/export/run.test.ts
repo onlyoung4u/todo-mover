@@ -1,6 +1,6 @@
 import JSZip from "jszip";
 import { describe, expect, it } from "vitest";
-import { demoRawData, sampleRawData, syntheticRawData } from "../../fixtures";
+import { sampleAndSyntheticRawData, sampleRawData, syntheticRawData } from "../../fixtures";
 import { EXPORTERS, EXPORTER_ORDER } from "../exporters";
 import { runExport, type FormatRequest } from "./run";
 import { makeZip, packageFiles, zipFileName } from "./zip";
@@ -49,7 +49,7 @@ describe("runExport", () => {
     expect(one.files.map((f) => f.path)).toEqual(["todo-tasks.csv"]);
 
     const all = runExport({
-      raw: demoRawData(),
+      raw: sampleAndSyntheticRawData(),
       selection: { includeCompleted: true },
       timeZone: "Asia/Shanghai",
       locale: "en",

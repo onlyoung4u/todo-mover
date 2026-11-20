@@ -4,9 +4,10 @@ import type { RawData } from "../../core/graph/types";
 import { normalize, selectRaw } from "../../core/model/normalize";
 import { FormatCards } from "./FormatCards";
 import { ListSidebar } from "./ListSidebar";
-import { TaskPreview } from "./TaskPreview";
+import { TaskDetail, TaskList } from "./TaskViews";
 import { timeZoneOptions } from "./browser";
 import { useI18n } from "./i18n";
+import { DownloadIcon, LockIcon } from "./icons";
 import type { FormatState, Settings } from "./settings";
 
 type Props = {
@@ -17,6 +18,9 @@ type Props = {
   attachmentsAvailable: boolean;
   /** 读取失败的清单（可重试） */
   failedListIds: string[];
+  /** 读取附件被拒（见 ExportApp 的 Loaded.attachmentsDenied） */
+  attachmentsDenied?: "readOnly" | "readWrite";
+  onGrantAttachments: () => void;
   /** 正在进行的操作说明（导出、下载附件、重试）；有值时禁用按钮 */
   busy?: string;
   onChange: (settings: Settings) => void;
@@ -33,6 +37,8 @@ export function PreviewScreen({
   thingsAvailable,
   attachmentsAvailable,
   failedListIds,
+  attachmentsDenied,
+  onGrantAttachments,
   busy,
   onChange,
   onExport,
@@ -43,6 +49,7 @@ export function PreviewScreen({
   const { t } = useI18n();
   const tzId = useId();
   const [focused, setFocused] = useState(raw.lists[0]?.id);
+  const [selectedTaskId, setSelectedTaskId] = useState<string>();
   const zones = useMemo(() => timeZoneOptions(settings.timeZone), [settings.timeZone]);
 
   // 预览显示所有清单（不受勾选影响），但遵循"包含已完成"和导出时区
@@ -71,6 +78,10 @@ export function PreviewScreen({
     [raw],
   );
 
+  const focusedList = preview.lists.find((l) => l.id === focused);
+  const selectedTask = focusedList?.tasks.find((x) => x.id === selectedTaskId);
+  const totalTasks = preview.lists.reduce((n, l) => n + l.tasks.length, 0);
+
   const selected = new Set(settings.selectedListIds);
   const selectedTasks = preview.lists
     .filter((l) => selected.has(l.id))
@@ -90,130 +101,191 @@ export function PreviewScreen({
 
   return (
     <div className="preview-screen">
-      <div className="source-bar">
-        <span>{sourceLabel}</span>
-        <span className="button-row">
+      <p className="eyebrow">
+        <span className="dot" />
+        {t("app.preview.eyebrow")}
+      </p>
+      <h1 className="screen-title">{t("app.preview.heading")}</h1>
+      <div className="window viewer">
+        <div className="window-bar">
+          <span className="window-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className="chip accent">{sourceLabel}</span>
+          <span>{t("app.window.stats", { lists: preview.lists.length, tasks: totalTasks })}</span>
+          <span className="spacer" />
+          <span className="local">
+            <LockIcon />
+            {t("landing.local")}
+          </span>
           {onSignOut && (
-            <button type="button" className="link-button" onClick={onSignOut}>
+            <button type="button" className="bar-button" onClick={onSignOut}>
               {t("app.signOut")}
             </button>
           )}
-          <button type="button" className="link-button" onClick={onBack}>
+          <button type="button" className="bar-button" onClick={onBack}>
             {t("app.back")}
           </button>
-        </span>
+        </div>
+
+        {failedListIds.length > 0 && (
+          <div className="viewer-alert" role="alert">
+            <span>
+              {t("app.read.someFailed", {
+                names: raw.lists
+                  .filter((l) => failedListIds.includes(l.id))
+                  .map((l) => l.displayName)
+                  .join(t("app.listSeparator")),
+              })}
+            </span>
+            <button
+              type="button"
+              className="button small"
+              disabled={Boolean(busy)}
+              onClick={onRetryFailed}
+            >
+              {t("app.read.retry")}
+            </button>
+          </div>
+        )}
+
+        {attachmentsDenied === "readOnly" && (
+          <div className="viewer-alert" role="alert">
+            <span>{t("app.attachments.denied")}</span>
+            <button
+              type="button"
+              className="button small"
+              disabled={Boolean(busy)}
+              onClick={onGrantAttachments}
+            >
+              {t("app.attachments.grant")}
+            </button>
+          </div>
+        )}
+        {attachmentsDenied === "readWrite" && (
+          <div className="viewer-alert" role="alert">
+            <span>{t("app.attachments.deniedReadWrite")}</span>
+          </div>
+        )}
+
+        <div className="viewer-panes">
+          <ListSidebar
+            lists={preview.lists}
+            counts={counts}
+            failed={failedListIds}
+            selected={settings.selectedListIds}
+            focused={focused}
+            onFocus={(id) => {
+              setFocused(id);
+              setSelectedTaskId(undefined);
+            }}
+            onToggle={(id, checked) =>
+              set({
+                selectedListIds: checked
+                  ? raw.lists.map((l) => l.id).filter((x) => x === id || selected.has(x))
+                  : settings.selectedListIds.filter((x) => x !== id),
+              })
+            }
+            onSelectAll={(checked) =>
+              set({ selectedListIds: checked ? raw.lists.map((l) => l.id) : [] })
+            }
+          />
+          <TaskList
+            list={focusedList}
+            selectedTaskId={selectedTaskId}
+            onSelect={setSelectedTaskId}
+          />
+          <TaskDetail task={selectedTask} timeZone={settings.timeZone} />
+        </div>
+
+        <div className="window-foot">
+          <span>
+            {t("app.limits.heading")} {t("app.limits.text")}
+          </span>
+        </div>
       </div>
 
-      {failedListIds.length > 0 && (
-        <div className="notice warning" role="alert">
-          <p>
-            {t("app.read.someFailed", {
-              names: raw.lists
-                .filter((l) => failedListIds.includes(l.id))
-                .map((l) => l.displayName)
-                .join(t("app.listSeparator")),
-            })}
-          </p>
-          <button type="button" className="button" disabled={Boolean(busy)} onClick={onRetryFailed}>
-            {t("app.read.retry")}
-          </button>
-        </div>
-      )}
+      <section className="export-panel" aria-labelledby="export-heading">
+        <p className="eyebrow">{t("app.export.eyebrow")}</p>
+        <h2 id="export-heading">{t("app.export.heading")}</h2>
 
-      <div className="workspace">
-        <ListSidebar
-          lists={preview.lists}
-          counts={counts}
-          failed={failedListIds}
-          selected={settings.selectedListIds}
-          focused={focused}
-          onFocus={setFocused}
-          onToggle={(id, checked) =>
-            set({
-              selectedListIds: checked
-                ? raw.lists.map((l) => l.id).filter((x) => x === id || selected.has(x))
-                : settings.selectedListIds.filter((x) => x !== id),
-            })
-          }
-          onSelectAll={(checked) =>
-            set({ selectedListIds: checked ? raw.lists.map((l) => l.id) : [] })
+        <div className="options-row">
+          <div className="option-tz">
+            <label htmlFor={tzId}>{t("app.options.timeZone")}</label>
+            <select
+              id={tzId}
+              value={settings.timeZone}
+              onChange={(e) => set({ timeZone: e.target.value })}
+            >
+              {zones.map((z) => (
+                <option key={z} value={z}>
+                  {z}
+                </option>
+              ))}
+            </select>
+            <p className="hint">{t("app.options.timeZoneHelp")}</p>
+          </div>
+          <div className="option-toggles">
+            <label className="option">
+              <input
+                type="checkbox"
+                checked={settings.includeCompleted}
+                onChange={(e) => set({ includeCompleted: e.target.checked })}
+              />
+              {t("app.options.includeCompleted")}
+            </label>
+            <label className={`option${attachmentsAvailable ? "" : " disabled"}`}>
+              <input
+                type="checkbox"
+                checked={attachmentsAvailable && settings.downloadAttachments}
+                disabled={!attachmentsAvailable}
+                onChange={(e) => set({ downloadAttachments: e.target.checked })}
+              />
+              <span>
+                {t("app.options.attachments")}
+                {!attachmentsAvailable && (
+                  <span className="hint block">{t("app.options.attachmentsUnavailable")}</span>
+                )}
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <FormatCards
+          formats={settings.formats}
+          thingsAvailable={thingsAvailable}
+          onToggle={(id, enabled) => setFormat(id, { enabled })}
+          onOptions={(id, patch) =>
+            setFormat(id, {
+              options: { ...settings.formats[id].options, ...patch },
+            } as Partial<FormatState[typeof id]>)
           }
         />
-        <TaskPreview list={preview.lists.find((l) => l.id === focused)} />
-      </div>
-
-      <section className="options" aria-labelledby="options-heading">
-        <h2 id="options-heading">{t("app.options.heading")}</h2>
-        <label className="option">
-          <input
-            type="checkbox"
-            checked={settings.includeCompleted}
-            onChange={(e) => set({ includeCompleted: e.target.checked })}
-          />
-          {t("app.options.includeCompleted")}
-        </label>
-
-        <div className="option-tz">
-          <label htmlFor={tzId}>{t("app.options.timeZone")}</label>
-          <select
-            id={tzId}
-            value={settings.timeZone}
-            onChange={(e) => set({ timeZone: e.target.value })}
-          >
-            {zones.map((z) => (
-              <option key={z} value={z}>
-                {z}
-              </option>
-            ))}
-          </select>
-          <p className="hint">{t("app.options.timeZoneHelp")}</p>
-        </div>
-
-        <label className="option">
-          <input
-            type="checkbox"
-            checked={attachmentsAvailable && settings.downloadAttachments}
-            disabled={!attachmentsAvailable}
-            onChange={(e) => set({ downloadAttachments: e.target.checked })}
-          />
-          {t("app.options.attachments")}
-        </label>
-        {!attachmentsAvailable && <p className="hint">{t("app.options.attachmentsUnavailable")}</p>}
-
-        <p className="notice">
-          <strong>{t("app.limits.heading")}</strong> {t("app.limits.text")}
-        </p>
       </section>
 
-      <FormatCards
-        formats={settings.formats}
-        thingsAvailable={thingsAvailable}
-        onToggle={(id, enabled) => setFormat(id, { enabled })}
-        onOptions={(id, patch) =>
-          setFormat(id, {
-            options: { ...settings.formats[id].options, ...patch },
-          } as Partial<FormatState[typeof id]>)
-        }
-      />
-
       <div className="export-bar">
-        <p className="muted" aria-live="polite">
-          {busy ??
-            blocker ??
-            t("app.export.summary", {
-              lists: selected.size,
-              tasks: selectedTasks,
-              formats: formatCount,
-            })}
-        </p>
-        <button
-          type="button"
-          className="button primary"
-          disabled={Boolean(blocker) || Boolean(busy)}
-          onClick={onExport}
-        >
-          {busy ? t("app.export.working") : t("app.export.button")}
-        </button>
+        <div className="export-bar-inner">
+          <p aria-live="polite">
+            {busy ??
+              blocker ??
+              t("app.export.summary", {
+                lists: selected.size,
+                tasks: selectedTasks,
+                formats: formatCount,
+              })}
+          </p>
+          <button
+            type="button"
+            className="button primary"
+            disabled={Boolean(blocker) || Boolean(busy)}
+            onClick={onExport}
+          >
+            <DownloadIcon />
+            {busy ? t("app.export.working") : t("app.export.button")}
+          </button>
+        </div>
       </div>
     </div>
   );

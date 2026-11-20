@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   formatUtcInZone,
+  localToGraphUtc,
   parseGraphDateTime,
   resolveTimeZone,
   toCompletedDate,
@@ -132,6 +133,25 @@ describe("resolveTimeZone", () => {
     for (const [windows, iana] of Object.entries(WINDOWS_TO_IANA)) {
       expect(resolveTimeZone(windows), windows).toBe(iana);
       expect(() => new Intl.DateTimeFormat("en-US", { timeZone: iana }), iana).not.toThrow();
+    }
+  });
+});
+
+describe("localToGraphUtc", () => {
+  it("stores a local date the way To Do does", () => {
+    expect(localToGraphUtc("2019-11-30", "Asia/Shanghai")).toEqual({
+      dateTime: "2019-11-29T16:00:00.0000000",
+      timeZone: "UTC",
+    });
+    expect(localToGraphUtc("2026-12-10T10:00", "UTC")).toEqual({
+      dateTime: "2026-12-10T10:00:00.0000000",
+      timeZone: "UTC",
+    });
+  });
+
+  it("round-trips through toLocalDate in the same time zone", () => {
+    for (const tz of ["Asia/Shanghai", "America/New_York", "Europe/London", "Pacific/Kiritimati"]) {
+      expect(toLocalDate(localToGraphUtc("2027-03-14", tz), tz), tz).toBe("2027-03-14");
     }
   });
 });
