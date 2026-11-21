@@ -16,7 +16,8 @@
     "staging": {
       "name": "todo-mover-staging",
       "workers_dev": true,
-      "routes": [{ "pattern": "staging.todo-mover.example.com", "custom_domain": true }],
+      // 用一级子域名：Universal SSL 只覆盖 *.<域名>，staging.todo-mover.<域名> 这类多级子域名不在其内
+      "routes": [{ "pattern": "todo-mover-staging.example.com", "custom_domain": true }],
     },
   },
 }
