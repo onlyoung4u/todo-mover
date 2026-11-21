@@ -292,6 +292,25 @@ suite("resolveRecurrenceStart", () => {
     expect(resolveRecurrenceStart("2027-01-24", biweeklyMonSun)).toEqual({ date: "2027-01-24" });
   });
 
+  it("treats a missing firstDayOfWeek as Sunday (Graph default) and writes WKST=SU", () => {
+    const range = { type: "numbered", startDate: "2027-01-04", numberOfOccurrences: 3 } as const;
+    const days: GraphRecurrencePattern["daysOfWeek"] = ["sunday", "monday"];
+    const missing = rec({ type: "weekly", interval: 2, daysOfWeek: days }, range);
+    const sunday = rec(
+      { type: "weekly", interval: 2, daysOfWeek: days, firstDayOfWeek: "sunday" },
+      range,
+    );
+    // 以周日为一周起点：有效周为 01-03~01-09、01-17~01-23，序列为 01-04、01-17、01-18；
+    // 若误按周一起算，01-10 会被当成第二期
+    for (const r of [missing, sunday]) {
+      expect(resolveRecurrenceStart("2027-01-10", r)).toEqual({
+        date: "2027-01-17",
+        remainingCount: 2,
+      });
+      expect(toRRule(r)).toBe("FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,SU;WKST=SU;COUNT=3");
+    }
+  });
+
   it("picks one date per month for relativeMonthly with multiple daysOfWeek", () => {
     const firstMonOrWed = rec(
       { type: "relativeMonthly", daysOfWeek: ["monday", "wednesday"], index: "first" },

@@ -44,6 +44,15 @@ const INDEX_NUMBER: Record<GraphWeekIndex, number> = {
 const intervalOf = (rec: Recurrence) => Math.max(1, Math.trunc(rec.pattern.interval || 1));
 
 /** 按周一到周日排序并去重 */
+/**
+ * 每周重复的"一周从哪天开始"。Graph 文档规定 firstDayOfWeek 缺省为周日，
+ * 而 RFC 5545 省略 WKST 时默认周一，所以缺字段时按周日计算，并在 RRULE 中显式写出 WKST。
+ */
+function weekStart(pattern: Recurrence["pattern"]): GraphDayOfWeek {
+  const raw = pattern.firstDayOfWeek?.toLowerCase() as GraphDayOfWeek | undefined;
+  return raw && raw in RRULE_DAY ? raw : "sunday";
+}
+
 function sortedDays(days: GraphDayOfWeek[] | undefined): GraphDayOfWeek[] {
   const set = new Set((days ?? []).map((d) => d.toLowerCase() as GraphDayOfWeek));
   return WEEK_ORDER.filter((d) => set.has(d));
@@ -197,10 +206,8 @@ export function resolveRecurrenceStart(
       const days = sortedDays(pattern.daysOfWeek);
       const effectiveDays = days.length ? days : [JS_DAY_NAME[dowOfEpochDay(startDay)]!];
       const daySet = new Set(effectiveDays.map((d) => JS_DAY_NAME.indexOf(d)));
-      // 与 toRRule 一致：未显式提供 firstDayOfWeek 时 RFC 5545 默认 WKST=MO
-      const rawWkst = pattern.firstDayOfWeek?.toLowerCase() as GraphDayOfWeek | undefined;
-      const wkstIndex = rawWkst ? JS_DAY_NAME.indexOf(rawWkst) : -1;
-      const wkstDow = wkstIndex >= 0 ? wkstIndex : 1;
+      // 与 toRRule 一致：缺 firstDayOfWeek 时按 Graph 默认的周日计算有效周
+      const wkstDow = JS_DAY_NAME.indexOf(weekStart(pattern));
       const week0 = startDay - ((dowOfEpochDay(startDay) - wkstDow + 7) % 7);
       const weekDays = (k: number): number[] => {
         const base = week0 + k * interval * 7;
@@ -413,8 +420,7 @@ export function toRRule(rec: Recurrence, options?: RRuleOptions): string | undef
       parts.push("FREQ=WEEKLY", `INTERVAL=${interval}`);
       const days = sortedDays(pattern.daysOfWeek);
       if (days.length) parts.push(`BYDAY=${days.map((d) => RRULE_DAY[d]).join(",")}`);
-      const wkst = pattern.firstDayOfWeek?.toLowerCase() as GraphDayOfWeek | undefined;
-      if (wkst && RRULE_DAY[wkst]) parts.push(`WKST=${RRULE_DAY[wkst]}`);
+      parts.push(`WKST=${RRULE_DAY[weekStart(pattern)]}`);
       break;
     }
     case "absoluteMonthly":
