@@ -39,6 +39,7 @@ Injected at build time. Locally, put them in `.env.local` (not committed). All o
 | `PUBLIC_SITE_URL`           | Site origin, used for canonical, hreflang and sitemap URLs. Defaults to `http://localhost:4321`                                                                            |
 | `PUBLIC_DONATE_URL_CN`      | Donation link shown in the Simplified Chinese UI                                                                                                                           |
 | `PUBLIC_DONATE_URL_GLOBAL`  | Donation link shown in all other languages                                                                                                                                 |
+| `PUBLIC_CONTACT_EMAIL`      | Optional contact email shown on the privacy policy and terms pages (GitHub Issues is always listed)                                                                        |
 | `PUBLIC_CF_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token                                                                                                                                    |
 | `PUBLIC_NOINDEX`            | Set to `true` for staging / preview builds to emit `noindex, nofollow`, skip `sitemap-*.xml` & `llms*.txt`, and append `X-Robots-Tag` to `dist/_headers`                   |
 

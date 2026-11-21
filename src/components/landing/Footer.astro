@@ -42,7 +42,18 @@ const donateUrl = donateUrlFor(lang);
         <a href={localizedPath(lang, "/faq/")} aria-current={path === "/faq/" ? "page" : undefined}>
           {t("nav.faq")}
         </a>
-        <a href={authorUrlFor(lang, "/privacy/")}>{t("footer.privacy")}</a>
+        <a
+          href={localizedPath(lang, "/privacy/")}
+          aria-current={path === "/privacy/" ? "page" : undefined}
+        >
+          {t("footer.privacy")}
+        </a>
+        <a
+          href={localizedPath(lang, "/terms/")}
+          aria-current={path === "/terms/" ? "page" : undefined}
+        >
+          {t("footer.terms")}
+        </a>
         <a href={config.repoUrl} rel="noopener">
           {t("footer.source")}
         </a>

@@ -27,6 +27,8 @@ describe("isIndexableSitemapUrl", () => {
     "https://example.com/en/guides/",
     "https://example.com/zh-CN/guides/backup-microsoft-to-do/",
     "https://example.com/zh-TW/faq/",
+    "https://example.com/en/privacy/",
+    "https://example.com/zh-CN/terms/",
   ])("includes indexable page %s", (url) => {
     expect(isIndexableSitemapUrl(url, locales)).toBe(true);
   });

@@ -19,6 +19,10 @@ const zhCN: Messages = {
   "footer.donate": "请我喝杯咖啡",
   "footer.language": "语言",
   "footer.privacy": "隐私政策",
+  "footer.terms": "服务条款",
+  "legal.updated": "最后更新：{date}",
+  "legal.contactIssues": "在 GitHub 提交 Issue",
+  "landing.privacyDetails.more": "阅读完整隐私政策",
   "footer.madeBy": "{name} 出品",
 
   "root.choose": "选择语言",

@@ -19,6 +19,10 @@ const zhTW: Messages = {
   "footer.donate": "請我喝杯咖啡",
   "footer.language": "語言",
   "footer.privacy": "隱私權政策",
+  "footer.terms": "服務條款",
+  "legal.updated": "最後更新：{date}",
+  "legal.contactIssues": "在 GitHub 提出 Issue",
+  "landing.privacyDetails.more": "閱讀完整隱私權政策",
   "footer.madeBy": "{name} 出品",
 
   "root.choose": "選擇語言",

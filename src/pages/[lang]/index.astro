@@ -216,6 +216,9 @@ const landingLd = buildLandingJsonLd({
           // SPEC 9 / 15.6：启用 Cloudflare Web Analytics 时必须在隐私说明中写明
           config.cfAnalyticsToken && <p>{t("landing.privacyDetails.analytics")}</p>
         }
+        <p>
+          <a href={localizedPath(lang, "/privacy/")}>{t("landing.privacyDetails.more")} →</a>
+        </p>
       </div>
       <div class="card">
         <p class="eyebrow">{t("landing.limits.eyebrow")}</p>

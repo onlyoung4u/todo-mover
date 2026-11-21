@@ -18,6 +18,10 @@ const en = {
   "footer.donate": "Buy me a coffee",
   "footer.language": "Language",
   "footer.privacy": "Privacy policy",
+  "footer.terms": "Terms of service",
+  "legal.updated": "Last updated {date}",
+  "legal.contactIssues": "Open an issue on GitHub",
+  "landing.privacyDetails.more": "Read the full privacy policy",
   "footer.madeBy": "Made by {name}",
 
   "root.choose": "Choose your language",

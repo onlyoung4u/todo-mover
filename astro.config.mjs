@@ -90,7 +90,7 @@ export default defineConfig({
       ? [
           sitemap({
             i18n: { defaultLocale: "en", locales },
-            // 收录各语言落地页、指南页与 FAQ 页；排除 /、/404/、/app/、/auth/
+            // 收录各语言落地页、指南页、FAQ 页与隐私 / 条款页；排除 /、/404/、/app/、/auth/
             filter: (page) => isIndexableSitemapUrl(page, localeKeys),
           }),
         ]

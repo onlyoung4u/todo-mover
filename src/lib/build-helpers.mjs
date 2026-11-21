@@ -11,7 +11,8 @@ export function isNoindexEnv(value) {
 
 /**
  * 站点地图 URL 过滤器：
- * 收录各语言落地页（/<lang>/）、指南列表页（/<lang>/guides/）、指南详情页（/<lang>/guides/<slug>/）与 FAQ 页（/<lang>/faq/）；
+ * 收录各语言落地页（/<lang>/）、指南列表页（/<lang>/guides/）、指南详情页（/<lang>/guides/<slug>/）、FAQ 页（/<lang>/faq/）
+ * 以及隐私政策（/<lang>/privacy/）与服务条款（/<lang>/terms/）；
  * 排除根路径 /、/404/、/<lang>/app/、/auth/ 及其他非收录页面。
  *
  * @param {string} pageUrl
@@ -21,7 +22,9 @@ export function isNoindexEnv(value) {
 export function isIndexableSitemapUrl(pageUrl, localeKeys) {
   const pathname = new URL(pageUrl).pathname;
   const escapedLocales = localeKeys.map((l) => l.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
-  const pattern = new RegExp(`^\\/(?:${escapedLocales})\\/(?:$|faq\\/$|guides\\/(?:[^/]+\\/)?$)`);
+  const pattern = new RegExp(
+    `^\\/(?:${escapedLocales})\\/(?:$|faq\\/$|privacy\\/$|terms\\/$|guides\\/(?:[^/]+\\/)?$)`,
+  );
   return pattern.test(pathname);
 }
 

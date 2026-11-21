@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_CF_ANALYTICS_TOKEN?: string;
   /** 设为 "true" 时开启整站防收录（预发 / PR 预览环境使用）。 */
   readonly PUBLIC_NOINDEX?: string;
+  /** 可选：隐私政策与服务条款中显示的联系邮箱。 */
+  readonly PUBLIC_CONTACT_EMAIL?: string;
 }
 
 interface ImportMeta {
