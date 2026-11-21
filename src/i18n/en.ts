@@ -17,6 +17,8 @@ const en = {
   "footer.source": "Source code",
   "footer.donate": "Buy me a coffee",
   "footer.language": "Language",
+  "footer.privacy": "Privacy policy",
+  "footer.madeBy": "Made by {name}",
 
   "root.choose": "Choose your language",
 
@@ -198,7 +200,7 @@ const en = {
   "app.done.revoke.personal": "Personal Microsoft account:",
   "app.done.revoke.work": "Work or school account:",
   "app.done.donate": "If this saved you some time, you can buy me a coffee.",
-  "app.done.follow": "Follow the project for future tools:",
+  "app.done.follow": "See what I build next:",
   "guide.json.title": "Keep the JSON backup",
   "guide.json.steps":
     "Save todo-backup.json somewhere safe, such as your cloud drive.\nTo convert it later, open this site and choose “JSON backup”.\nNo sign-in is needed, so this works even after Microsoft To Do is retired.",

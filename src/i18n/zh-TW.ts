@@ -18,6 +18,8 @@ const zhTW: Messages = {
   "footer.source": "原始碼",
   "footer.donate": "請我喝杯咖啡",
   "footer.language": "語言",
+  "footer.privacy": "隱私權政策",
+  "footer.madeBy": "{name} 出品",
 
   "root.choose": "選擇語言",
 
@@ -188,7 +190,7 @@ const zhTW: Messages = {
   "app.done.revoke.personal": "個人帳戶：",
   "app.done.revoke.work": "公司或學校帳戶：",
   "app.done.donate": "如果這個工具幫到了你，可以請我喝杯咖啡。",
-  "app.done.follow": "追蹤專案，取得後續工具：",
+  "app.done.follow": "看看我接下來做的工具：",
   "guide.json.title": "保存 JSON 備份",
   "guide.json.steps":
     "把 todo-backup.json 保存到安全的地方，例如雲端硬碟。\n之後要轉換格式時，開啟本站並選擇「JSON 備份」。\n全程不需要登入，即使 Microsoft To Do 退役後也能使用。",

@@ -8,7 +8,7 @@ import {
   localizedPath,
   type Locale,
 } from "../../i18n";
-import { config, donateUrlFor } from "../../config";
+import { authorUrlFor, config, donateUrlFor } from "../../config";
 
 interface Props {
   lang: Locale;
@@ -42,6 +42,7 @@ const donateUrl = donateUrlFor(lang);
         <a href={localizedPath(lang, "/faq/")} aria-current={path === "/faq/" ? "page" : undefined}>
           {t("nav.faq")}
         </a>
+        <a href={authorUrlFor(lang, "/privacy/")}>{t("footer.privacy")}</a>
         <a href={config.repoUrl} rel="noopener">
           {t("footer.source")}
         </a>
@@ -66,7 +67,10 @@ const donateUrl = donateUrlFor(lang);
       </nav>
     </div>
     <p class="disclaimer">{t("footer.disclaimer")}</p>
-    <p class="license">AGPL-3.0 · {t("footer.local")}</p>
+    <p class="license">
+      AGPL-3.0 · {t("footer.local")} ·{" "}
+      <a href={authorUrlFor(lang)}>{t("footer.madeBy", { name: "Alchemew" })}</a>
+    </p>
   </div>
 </footer>
 
@@ -122,5 +126,11 @@ const donateUrl = donateUrlFor(lang);
     font-size: var(--font-label-size);
     color: var(--subtle);
     margin: 0;
+  }
+  .license a {
+    color: inherit;
+  }
+  .license a:hover {
+    color: var(--fg);
   }
 </style>

@@ -1,4 +1,4 @@
-import { config, donateUrlFor } from "../../config";
+import { authorUrlFor, config, donateUrlFor } from "../../config";
 import type { ExporterId } from "../../core/exporters/types";
 import type { MessageKey } from "../../i18n";
 import { findGuideLinkForTargetKey } from "../../lib/guides";
@@ -205,6 +205,10 @@ export function DoneScreen({ result, signedIn, guideLinks, onDownloadAgain, onBa
         )}
         <p>
           {t("app.done.follow")}{" "}
+          <a href={authorUrlFor(locale, "/#contact")} target="_blank" rel="noopener">
+            alchemew.com
+          </a>
+          {" · "}
           <a href={config.repoUrl} target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
