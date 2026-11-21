@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { injectNoindexHeader, isIndexableSitemapUrl, isNoindexEnv } from "./build-helpers.mjs";
+import {
+  identityAssociationJson,
+  injectNoindexHeader,
+  isIndexableSitemapUrl,
+  isNoindexEnv,
+} from "./build-helpers.mjs";
 
 describe("isNoindexEnv", () => {
   it("only returns true when explicitly set to true", () => {
@@ -75,5 +80,24 @@ describe("injectNoindexHeader", () => {
     expect(() => injectNoindexHeader("/_astro/*\n  Cache-Control: public\n")).toThrow(
       "Could not find '/*' rule block",
     );
+  });
+});
+
+describe("identityAssociationJson", () => {
+  it("returns undefined when no client ID is configured", () => {
+    expect(identityAssociationJson(undefined)).toBeUndefined();
+    expect(identityAssociationJson("  ")).toBeUndefined();
+  });
+
+  it("emits the Entra association format for the configured app", () => {
+    const json = identityAssociationJson(" B90699D5-E643-40DD-9D44-AFC112C1E525 ");
+    expect(JSON.parse(json!)).toEqual({
+      associatedApplications: [{ applicationId: "b90699d5-e643-40dd-9d44-afc112c1e525" }],
+    });
+    expect(json!.charCodeAt(0)).not.toBe(0xfeff);
+  });
+
+  it("rejects a malformed client ID instead of publishing a broken file", () => {
+    expect(() => identityAssociationJson("not-a-guid")).toThrow(/not a GUID/);
   });
 });

@@ -33,14 +33,14 @@ npm run dev                  # http://localhost:4321
 
 Injected at build time. Locally, put them in `.env.local` (not committed). All of them end up in the client-side JS, so none of them are secrets.
 
-| Variable                    | Description                                                                                                                                              |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_MSAL_CLIENT_ID`     | Application (client) ID of the Azure app. If empty, the sign-in button is disabled and only demo mode and JSON import work                               |
-| `PUBLIC_SITE_URL`           | Site origin, used for canonical, hreflang and sitemap URLs. Defaults to `http://localhost:4321`                                                          |
-| `PUBLIC_DONATE_URL_CN`      | Donation link shown in the Simplified Chinese UI                                                                                                         |
-| `PUBLIC_DONATE_URL_GLOBAL`  | Donation link shown in all other languages                                                                                                               |
-| `PUBLIC_CF_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token                                                                                                                  |
-| `PUBLIC_NOINDEX`            | Set to `true` for staging / preview builds to emit `noindex, nofollow`, skip `sitemap-*.xml` & `llms*.txt`, and append `X-Robots-Tag` to `dist/_headers` |
+| Variable                    | Description                                                                                                                                                                |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_MSAL_CLIENT_ID`     | Application (client) ID of the Azure app. If empty, the sign-in button is disabled and only demo mode and JSON import work. Also generates the publisher-domain file below |
+| `PUBLIC_SITE_URL`           | Site origin, used for canonical, hreflang and sitemap URLs. Defaults to `http://localhost:4321`                                                                            |
+| `PUBLIC_DONATE_URL_CN`      | Donation link shown in the Simplified Chinese UI                                                                                                                           |
+| `PUBLIC_DONATE_URL_GLOBAL`  | Donation link shown in all other languages                                                                                                                                 |
+| `PUBLIC_CF_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token                                                                                                                                    |
+| `PUBLIC_NOINDEX`            | Set to `true` for staging / preview builds to emit `noindex, nofollow`, skip `sitemap-*.xml` & `llms*.txt`, and append `X-Robots-Tag` to `dist/_headers`                   |
 
 The sign-in redirect URI needs no configuration: at runtime it is always `<current origin>/auth/redirect/`.
 
@@ -76,6 +76,7 @@ The official site's Azure app only allows the official domain as a redirect URI,
 4. Copy the **Application (client) ID** into `PUBLIC_MSAL_CLIENT_ID`.
 5. Under **API permissions**, add the Microsoft Graph **Delegated** permissions `Tasks.Read` and `User.Read`. Admin consent is not required.
 6. Don't create a client secret. This is a browser-only app.
+7. Optional, to set a **Publisher domain**: when `PUBLIC_MSAL_CLIENT_ID` is set, the build writes `/.well-known/microsoft-identity-association.json` declaring that app ID. After deploying, go to **Branding & properties → Publisher domain → Verify a new domain**, enter your site's domain and click **Verify and save domain**. You can verify each environment's own domain with the app built for it.
 
 If sign-in fails with **AADSTS70002** ("must include a 'client_secret'") or **AADSTS9002326**, the redirect URI is registered under the **Web** platform. Remove it there and add it under **Single-page application** instead. **AADSTS50011** means the current address (for example `http://localhost:8787/auth/redirect/`) isn't registered yet.
 

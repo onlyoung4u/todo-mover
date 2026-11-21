@@ -1,5 +1,5 @@
 // @ts-check
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
@@ -7,6 +7,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { loadEnv } from "vite";
 import {
+  identityAssociationJson,
   injectNoindexHeader,
   isIndexableSitemapUrl,
   isNoindexEnv,
@@ -16,6 +17,7 @@ const env = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "PUBLIC
 const site = env.PUBLIC_SITE_URL || "http://localhost:4321";
 const analyticsEnabled = Boolean(env.PUBLIC_CF_ANALYTICS_TOKEN);
 const noindex = isNoindexEnv(env.PUBLIC_NOINDEX);
+const identityAssociation = identityAssociationJson(env.PUBLIC_MSAL_CLIENT_ID);
 
 // 与 src/i18n/locales.ts 保持一致（配置文件里不能直接 import TS）
 const locales = { en: "en", "zh-CN": "zh-CN", "zh-TW": "zh-TW" };
@@ -47,6 +49,27 @@ function noindexHeadersIntegration() {
   };
 }
 
+/**
+ * 配置了 PUBLIC_MSAL_CLIENT_ID 时，生成 Microsoft Entra 发布者域名验证文件
+ * dist/.well-known/microsoft-identity-association.json（Azure → Branding → Publisher domain）。
+ * 放在构建钩子里而不是 public/，这样每个环境和自部署站点只声明自己的应用 ID。
+ *
+ * @param {string} json
+ * @returns {import("astro").AstroIntegration}
+ */
+function identityAssociationIntegration(json) {
+  return {
+    name: "todo-mover-identity-association",
+    hooks: {
+      "astro:build:done": async ({ dir }) => {
+        const wellKnown = path.join(fileURLToPath(dir), ".well-known");
+        await mkdir(wellKnown, { recursive: true });
+        await writeFile(path.join(wellKnown, "microsoft-identity-association.json"), json, "utf8");
+      },
+    },
+  };
+}
+
 // 本地通过 CONTENT_DIR=../todo-mover-content 预览私有内容时，允许 Vite 读取外部目录中的配图
 const customContentDir = process.env.CONTENT_DIR?.trim();
 const fsAllow = customContentDir
@@ -72,6 +95,7 @@ export default defineConfig({
           }),
         ]
       : [noindexHeadersIntegration()]),
+    ...(identityAssociation ? [identityAssociationIntegration(identityAssociation)] : []),
   ],
   markdown: {
     // Shiki 依赖内联样式，与 CSP 冲突；本站没有代码高亮需求

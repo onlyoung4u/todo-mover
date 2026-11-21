@@ -54,3 +54,22 @@ export function injectNoindexHeader(content) {
   lines.splice(insertAt, 0, NOINDEX_HEADER_LINE);
   return lines.join(eol);
 }
+
+const GUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Microsoft Entra 发布者域名验证文件 `/.well-known/microsoft-identity-association.json` 的内容。
+ * 由构建时的 PUBLIC_MSAL_CLIENT_ID 生成，每个环境（含自部署）只声明自己的 Azure 应用；
+ * 未配置时返回 undefined（不生成文件）。格式错误时直接报错，避免发布一个必然验证失败的文件。
+ *
+ * @param {string | undefined} clientId
+ * @returns {string | undefined}
+ */
+export function identityAssociationJson(clientId) {
+  const id = clientId?.trim();
+  if (!id) return undefined;
+  if (!GUID.test(id)) {
+    throw new Error(`PUBLIC_MSAL_CLIENT_ID is not a GUID: ${JSON.stringify(id)}`);
+  }
+  return `${JSON.stringify({ associatedApplications: [{ applicationId: id.toLowerCase() }] }, null, 2)}\n`;
+}
