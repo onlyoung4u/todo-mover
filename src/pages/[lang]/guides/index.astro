@@ -1,0 +1,172 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Header from "../../../components/landing/Header.astro";
+import Footer from "../../../components/landing/Footer.astro";
+import JsonLd from "../../../components/landing/JsonLd.astro";
+import "../../../styles/content.css";
+import { getLocaleStaticPaths, getTranslator, localizedPath, type Locale } from "../../../i18n";
+import { getPublishedGuidesByLocale } from "../../../lib/content";
+import { formatUtcDate } from "../../../lib/dates";
+import { guideGroupOf, normalizeTarget } from "../../../lib/guides";
+import { buildBreadcrumbJsonLd } from "../../../lib/jsonld";
+
+export const getStaticPaths = getLocaleStaticPaths;
+
+const lang = Astro.params.lang as Locale;
+const t = getTranslator(lang);
+const guides = await getPublishedGuidesByLocale(lang);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (p: string) => new URL(p, site).href;
+
+const backupGuides = guides.filter((g) => guideGroupOf(g) === "backup");
+const migrateGuides = guides.filter((g) => guideGroupOf(g) === "migrate");
+const showGroups = backupGuides.length > 0 && migrateGuides.length > 0;
+
+const TARGET_LABELS: Record<string, string> = {
+  json: "JSON",
+  csv: "CSV",
+  excel: "Excel",
+  markdown: "Markdown",
+  obsidian: "Obsidian",
+  todoist: "Todoist",
+  things: "Things 3",
+  ics: "ICS",
+  thunderbird: "Thunderbird",
+  nextcloud: "Nextcloud",
+  ticktick: "TickTick",
+};
+
+function targetLabel(target: string | undefined): string | undefined {
+  const key = normalizeTarget(target);
+  if (!key) return undefined;
+  if (key === "backup") return t("guides.target.backup");
+  return TARGET_LABELS[key] ?? target;
+}
+
+const breadcrumbLd = buildBreadcrumbJsonLd([
+  { name: t("breadcrumb.home"), url: abs(localizedPath(lang)) },
+  { name: t("nav.guides"), url: abs(localizedPath(lang, "/guides/")) },
+]);
+---
+
+<Base
+  lang={lang}
+  title={`${t("guides.title")} · ${t("site.name")}`}
+  description={t("guides.description")}
+  path="/guides/"
+>
+  <Fragment slot="head">
+    <JsonLd data={breadcrumbLd} />
+  </Fragment>
+  <Header lang={lang} path="/guides/" />
+  <main class="container content-page">
+    <nav class="breadcrumb" aria-label={t("breadcrumb.label")}>
+      <ol>
+        <li>
+          <a href={localizedPath(lang)}>{t("breadcrumb.home")}</a>
+        </li>
+        <li aria-current="page">{t("nav.guides")}</li>
+      </ol>
+    </nav>
+
+    <p class="eyebrow">
+      <span class="dot"></span>
+      {t("guides.eyebrow")}
+    </p>
+    <h1>{t("guides.heading")}</h1>
+    <p class="content-lead">{t("guides.lead")}</p>
+
+    {guides.length === 0 ? (
+      <p class="muted">{t("guides.empty")}</p>
+    ) : showGroups ? (
+      <>
+        <section class="guide-group" aria-labelledby="group-backup">
+          <h2 id="group-backup" class="guide-group-title">
+            {t("guides.group.backup")}
+          </h2>
+          <ul class="guide-grid">
+            {backupGuides.map((guide) => {
+              const updated = formatUtcDate(guide.data.updated);
+              const badge = targetLabel(guide.data.target);
+              return (
+                <li>
+                  <a class="guide-card" href={localizedPath(lang, `/guides/${guide.slug}/`)}>
+                    <div class="guide-card-meta">
+                      {badge ? <span class="chip accent">{badge}</span> : <span></span>}
+                      <time datetime={updated}>{updated}</time>
+                    </div>
+                    <h3>{guide.data.title}</h3>
+                    <p>{guide.data.description}</p>
+                    <span class="guide-card-cta">{t("guides.read")} →</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+
+        <section class="guide-group" aria-labelledby="group-migrate">
+          <h2 id="group-migrate" class="guide-group-title">
+            {t("guides.group.migrate")}
+          </h2>
+          <ul class="guide-grid">
+            {migrateGuides.map((guide) => {
+              const updated = formatUtcDate(guide.data.updated);
+              const badge = targetLabel(guide.data.target);
+              return (
+                <li>
+                  <a class="guide-card" href={localizedPath(lang, `/guides/${guide.slug}/`)}>
+                    <div class="guide-card-meta">
+                      {badge ? <span class="chip accent">{badge}</span> : <span></span>}
+                      <time datetime={updated}>{updated}</time>
+                    </div>
+                    <h3>{guide.data.title}</h3>
+                    <p>{guide.data.description}</p>
+                    <span class="guide-card-cta">{t("guides.read")} →</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </>
+    ) : (
+      <ul class="guide-grid">
+        {guides.map((guide) => {
+          const updated = formatUtcDate(guide.data.updated);
+          const badge = targetLabel(guide.data.target);
+          return (
+            <li>
+              <a class="guide-card" href={localizedPath(lang, `/guides/${guide.slug}/`)}>
+                <div class="guide-card-meta">
+                  {badge ? <span class="chip accent">{badge}</span> : <span></span>}
+                  <time datetime={updated}>{updated}</time>
+                </div>
+                <h2>{guide.data.title}</h2>
+                <p>{guide.data.description}</p>
+                <span class="guide-card-cta">{t("guides.read")} →</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+
+    <section class="content-cta">
+      <div class="content-cta-copy">
+        <h2>{t("guides.ctaHeading")}</h2>
+        <p>{t("guides.ctaBody")}</p>
+      </div>
+      <div class="content-cta-actions">
+        <a class="button primary" href={localizedPath(lang, "/app/")}>
+          {t("guides.ctaButton")}
+        </a>
+        <a class="button" href={localizedPath(lang, "/faq/")}>
+          {t("nav.faq")}
+        </a>
+      </div>
+    </section>
+  </main>
+  <Footer lang={lang} path="/guides/" />
+</Base>

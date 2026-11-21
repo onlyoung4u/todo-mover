@@ -2,11 +2,15 @@
 import Base from "../../layouts/Base.astro";
 import Header from "../../components/landing/Header.astro";
 import Footer from "../../components/landing/Footer.astro";
+import JsonLd from "../../components/landing/JsonLd.astro";
 import { getLocaleStaticPaths, getTranslator, localizedPath, type Locale } from "../../i18n";
 import { config } from "../../config";
 import { daysUntil } from "../../core/countdown";
 import { EXPORTERS, EXPORTER_ORDER } from "../../core/exporters";
 import type { ExporterId } from "../../core/exporters/types";
+import { getFaqForLocale, getPublishedGuidesByLocale } from "../../lib/content";
+import { buildGuideLinksByTarget, findGuideLinkForTargetKey } from "../../lib/guides";
+import { buildLandingJsonLd } from "../../lib/jsonld";
 
 export const getStaticPaths = getLocaleStaticPaths;
 
@@ -23,9 +27,31 @@ const EXT: Record<ExporterId, string> = {
   things: "things://",
 };
 const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.step3")];
+
+const [guides, faqEntry] = await Promise.all([
+  getPublishedGuidesByLocale(lang),
+  getFaqForLocale(lang),
+]);
+const guideLinksByTarget = buildGuideLinksByTarget(guides);
+const featuredGuides = guides.slice(0, 4);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (p: string) => new URL(p, site).href;
+const landingLd = buildLandingJsonLd({
+  siteUrl: site.href,
+  pageUrl: abs(localizedPath(lang)),
+  lang,
+  siteName: t("site.name"),
+  description: t("site.description"),
+  repoUrl: config.repoUrl,
+  faqUrl: faqEntry ? abs(localizedPath(lang, "/faq/")) : undefined,
+});
 ---
 
 <Base lang={lang} title={t("site.title")} description={t("site.description")} path="/">
+  <Fragment slot="head">
+    <JsonLd data={landingLd} />
+  </Fragment>
   <Header lang={lang} path="/" />
   <main>
     <section class="container hero">
@@ -121,20 +147,65 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
       <p class="eyebrow">{t("landing.formats.eyebrow")}</p>
       <h2 id="formats-heading">{t("landing.formats.heading")}</h2>
       <ul class="formats">
-        {EXPORTER_ORDER.map((id) => (
-          <li class="card">
-            <div class="format-head">
-              <h3>{t(EXPORTERS[id].label)}</h3>
-              <span class="chip accent">{EXT[id]}</span>
-            </div>
-            <p>{t(EXPORTERS[id].targets)}</p>
-            <p class="loss">
-              <span class="loss-label">{t("app.formats.losses")}</span> {t(EXPORTERS[id].losses)}
-            </p>
-          </li>
-        ))}
+        {EXPORTER_ORDER.map((id) => {
+          const guideHref = findGuideLinkForTargetKey(guideLinksByTarget, id);
+          return (
+            <li class="card">
+              <div class="format-head">
+                <h3>{t(EXPORTERS[id].label)}</h3>
+                <span class="chip accent">{EXT[id]}</span>
+              </div>
+              <p>{t(EXPORTERS[id].targets)}</p>
+              <p class="loss">
+                <span class="loss-label">{t("app.formats.losses")}</span> {t(EXPORTERS[id].losses)}
+              </p>
+              {guideHref && (
+                <a class="format-guide-link" href={guideHref}>
+                  {t("landing.formats.readGuide")} →
+                </a>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </section>
+
+    {(featuredGuides.length > 0 || faqEntry) && (
+      <section class="container section" id="guides" aria-labelledby="guides-heading">
+        <div class="guides-head">
+          <div>
+            <p class="eyebrow">{t("landing.guides.eyebrow")}</p>
+            <h2 id="guides-heading">{t("landing.guides.heading")}</h2>
+          </div>
+          <div class="guides-actions">
+            <a class="button small" href={localizedPath(lang, "/guides/")}>
+              {t("landing.guides.all")}
+            </a>
+            {faqEntry && (
+              <a class="button small" href={localizedPath(lang, "/faq/")}>
+                {t("landing.guides.faq")}
+              </a>
+            )}
+          </div>
+        </div>
+        {featuredGuides.length > 0 && (
+          <ul class="featured-guides">
+            {featuredGuides.map((guide) => (
+              <li>
+                <a
+                  class="card featured-guide-card"
+                  href={localizedPath(lang, `/guides/${guide.slug}/`)}
+                >
+                  <h3>{guide.data.title}</h3>
+                  <p>{guide.data.description}</p>
+                  <span class="featured-guide-more">{t("guides.read")} →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    )}
 
     <section class="container section two-col" id="privacy">
       <div class="card">
@@ -229,6 +300,68 @@ const steps = [t("landing.how.step1"), t("landing.how.step2"), t("landing.how.st
     font-weight: var(--font-label-weight);
     color: var(--subtle);
     margin-right: 4px;
+  }
+  .format-guide-link {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: 550;
+    text-decoration: none;
+  }
+  .format-guide-link:hover {
+    text-decoration: underline;
+  }
+  .guides-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px 20px;
+  }
+  .guides-head h2 {
+    margin-bottom: 0;
+  }
+  .guides-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .featured-guides {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .featured-guide-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .featured-guide-card:hover {
+    border-color: var(--accent);
+    color: inherit;
+    box-shadow: var(--shadow);
+  }
+  .featured-guide-card h3 {
+    font-family: var(--font-card-heading);
+    margin: 0 0 8px;
+  }
+  .featured-guide-card p {
+    margin: 0 0 14px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .featured-guide-more {
+    margin-top: auto;
+    font-size: 0.85rem;
+    font-weight: 550;
+    color: var(--accent);
   }
   .two-col {
     display: grid;

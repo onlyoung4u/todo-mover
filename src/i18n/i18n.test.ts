@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LOCALES, MESSAGES, getTranslator, localizedPath, matchLocale } from ".";
+import { LOCALES, MESSAGES, getTranslator, localeSwitchPath, localizedPath, matchLocale } from ".";
 
 describe("messages", () => {
   const enKeys = Object.keys(MESSAGES.en).sort();
@@ -47,5 +47,17 @@ describe("localizedPath", () => {
     expect(localizedPath("zh-TW")).toBe("/zh-TW/");
     expect(localizedPath("en", "/app/")).toBe("/en/app/");
     expect(localizedPath("en", "app/")).toBe("/en/app/");
+  });
+});
+
+describe("localeSwitchPath", () => {
+  it("keeps the same path when translation exists and falls back when missing", () => {
+    expect(localeSwitchPath("en", "/guides/foo/", ["en", "zh-CN"], "/guides/")).toBe(
+      "/en/guides/foo/",
+    );
+    expect(localeSwitchPath("zh-TW", "/guides/foo/", ["en", "zh-CN"], "/guides/")).toBe(
+      "/zh-TW/guides/",
+    );
+    expect(localeSwitchPath("zh-TW", "/faq/")).toBe("/zh-TW/faq/");
   });
 });

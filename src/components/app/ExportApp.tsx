@@ -75,7 +75,7 @@ const demo = (locale: Locale): Loaded => ({
 
 const MB = 1024 * 1024;
 
-function App() {
+function App({ guideLinks }: { guideLinks?: Readonly<Record<string, string>> }) {
   const { t, locale } = useI18n();
   const [mode, setMode] = useState(() => new URLSearchParams(location.search).get("mode"));
   // 从落地页点"先看演示"进来时直接打开演示数据
@@ -515,6 +515,7 @@ function App() {
       <DoneScreen
         result={done.result}
         signedIn={loaded?.source.kind === "graph"}
+        guideLinks={guideLinks}
         onDownloadAgain={() =>
           downloadFile(done.download.name, done.download.data, done.download.mime)
         }
@@ -584,10 +585,16 @@ function App() {
 }
 
 /** 导出工具入口。只在浏览器中渲染（client:only），因为 MSAL 依赖浏览器环境。 */
-export default function ExportApp({ locale }: { locale: Locale }) {
+export default function ExportApp({
+  locale,
+  guideLinks,
+}: {
+  locale: Locale;
+  guideLinks?: Readonly<Record<string, string>>;
+}) {
   return (
     <I18nProvider locale={locale}>
-      <App />
+      <App guideLinks={guideLinks} />
     </I18nProvider>
   );
 }

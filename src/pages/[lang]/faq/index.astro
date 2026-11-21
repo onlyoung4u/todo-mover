@@ -1,0 +1,120 @@
+---
+import Base from "../../../layouts/Base.astro";
+import Header from "../../../components/landing/Header.astro";
+import Footer from "../../../components/landing/Footer.astro";
+import JsonLd from "../../../components/landing/JsonLd.astro";
+import "../../../styles/content.css";
+import { getTranslator, localizedPath, type Locale } from "../../../i18n";
+import { getFaqEntries, type FaqCollectionEntry } from "../../../lib/content";
+import { formatUtcDate } from "../../../lib/dates";
+import { getDefaultLocaleForPage, splitParagraphs } from "../../../lib/guides";
+import { buildFaqJsonLd } from "../../../lib/jsonld";
+
+export async function getStaticPaths() {
+  const faqEntries = await getFaqEntries();
+  const availableLocales = faqEntries.map((item) => item.lang);
+  return faqEntries.map(({ lang, entry }) => ({
+    params: { lang },
+    props: {
+      entry,
+      availableLocales,
+    },
+  }));
+}
+
+interface Props {
+  entry: FaqCollectionEntry;
+  availableLocales: Locale[];
+}
+
+const lang = Astro.params.lang as Locale;
+const { entry, availableLocales } = Astro.props;
+const { data } = entry;
+
+const t = getTranslator(lang);
+const updatedIso = formatUtcDate(data.updated);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (p: string) => new URL(p, site).href;
+
+const defaultLocale = getDefaultLocaleForPage(availableLocales);
+const xDefaultHref = abs(localizedPath(defaultLocale, "/faq/"));
+
+const jsonLd = buildFaqJsonLd({
+  pageUrl: abs(localizedPath(lang, "/faq/")),
+  lang,
+  title: t("faq.heading"),
+  description: t("faq.description"),
+  updated: data.updated,
+  items: data.items,
+  breadcrumbs: [
+    { name: t("breadcrumb.home"), url: abs(localizedPath(lang)) },
+    { name: t("nav.faq"), url: abs(localizedPath(lang, "/faq/")) },
+  ],
+});
+---
+
+<Base
+  lang={lang}
+  title={`${t("faq.title")} · ${t("site.name")}`}
+  description={t("faq.description")}
+  path="/faq/"
+  availableLocales={availableLocales}
+  xDefaultHref={xDefaultHref}
+>
+  <Fragment slot="head">
+    <JsonLd data={jsonLd} />
+  </Fragment>
+  <Header lang={lang} path="/faq/" availableLocales={availableLocales} fallbackPath="/" />
+  <main class="container content-page">
+    <div class="content-measure">
+      <nav class="breadcrumb" aria-label={t("breadcrumb.label")}>
+        <ol>
+          <li>
+            <a href={localizedPath(lang)}>{t("breadcrumb.home")}</a>
+          </li>
+          <li aria-current="page">{t("nav.faq")}</li>
+        </ol>
+      </nav>
+
+      <p class="eyebrow">
+        <span class="dot"></span>
+        {t("faq.eyebrow")}
+      </p>
+      <h1>{t("faq.heading")}</h1>
+      <p class="content-lead">{t("faq.lead")}</p>
+      <div class="meta-row">
+        <span>
+          <time datetime={updatedIso}>{t("guides.updated", { date: updatedIso })}</time>
+        </span>
+      </div>
+
+      <div class="qa-list">
+        {data.items.map((item) => (
+          <section class="qa-item">
+            <h2>{item.q}</h2>
+            {splitParagraphs(item.a).map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </section>
+        ))}
+      </div>
+
+      <section class="content-cta">
+        <div class="content-cta-copy">
+          <h2>{t("faq.ctaHeading")}</h2>
+          <p>{t("faq.ctaBody")}</p>
+        </div>
+        <div class="content-cta-actions">
+          <a class="button primary" href={localizedPath(lang, "/app/")}>
+            {t("guides.ctaButton")}
+          </a>
+          <a class="button" href={localizedPath(lang, "/guides/")}>
+            {t("nav.guides")}
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+  <Footer lang={lang} path="/faq/" availableLocales={availableLocales} fallbackPath="/" />
+</Base>

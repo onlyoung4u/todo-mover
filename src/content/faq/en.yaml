@@ -1,0 +1,31 @@
+updated: 2026-11-20
+items:
+  - q: When is Microsoft To Do retiring, and what happens to my tasks?
+    a: |
+      Microsoft announced that all Microsoft To Do apps (Windows, Mac, iOS, Android, and Web) will retire on June 30, 2027, for both personal and work or school accounts. The underlying To Do service and APIs will retire on separate, later dates.
+
+      Existing tasks do not migrate automatically to Microsoft Planner, and Planner is not available for personal Microsoft accounts. Backing up your lists early ensures you keep a complete copy regardless of which app you move to.
+
+  - q: Does To Do Mover upload my tasks or credentials to a server?
+    a: |
+      No. To Do Mover is a static web page with no backend. When you sign in with Microsoft, your browser talks directly to login.microsoftonline.com and graph.microsoft.com.
+
+      Your tasks stay only in browser memory while the tab is open, and sign-in tokens live in session storage and are cleared when you close the tab. The source code is public under AGPL-3.0.
+
+  - q: Which export format should I choose first?
+    a: |
+      Always include the JSON backup (todo-backup.json). It is lossless and preserves the original Microsoft Graph data along with normalized fields.
+
+      You can reopen todo-backup.json in To Do Mover offline at any time—even after Microsoft To Do is retired—and convert it to CSV, Markdown, ICS, Todoist CSV, or Things 3 without signing in again.
+
+  - q: Why are My Day and list groups missing from the export?
+    a: |
+      The Microsoft Graph To Do API does not expose My Day (which is a temporary daily view) or list groups (folders). All lists are exported flat.
+
+      Everything else available from Graph—lists, tasks, steps, notes, due and start dates, reminders, repeat rules, categories, Outlook flagged-email links, and attachments—is included.
+
+  - q: How do I remove this site's access to my Microsoft account after exporting?
+    a: |
+      For a personal Microsoft account, visit https://account.live.com/consent/Manage and revoke permission for the app.
+
+      For a work or school account, visit https://myapps.microsoft.com, open the app menu, and remove its access.

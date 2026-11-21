@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly PUBLIC_DONATE_URL_GLOBAL?: string;
   /** 可选：Cloudflare Web Analytics 令牌。 */
   readonly PUBLIC_CF_ANALYTICS_TOKEN?: string;
+  /** 设为 "true" 时开启整站防收录（预发 / PR 预览环境使用）。 */
+  readonly PUBLIC_NOINDEX?: string;
 }
 
 interface ImportMeta {

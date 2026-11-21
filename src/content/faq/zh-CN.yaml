@@ -1,0 +1,31 @@
+updated: 2026-11-20
+items:
+  - q: Microsoft To Do 什么时候退役？现有任务会怎样？
+    a: |
+      微软宣布，全平台 Microsoft To Do 应用（Windows、Mac、iOS、Android、网页版）将于 2027 年 6 月 30 日退役，个人账号与工作/学校账号均受影响；底层服务与 API 将在之后另行公布的日期关停。
+
+      现有任务不会自动迁移到 Microsoft Planner，而且个人微软账号无法使用 Planner。尽早导出完整备份，可以确保你无论转向哪款工具都不会丢失数据。
+
+  - q: To Do 搬家会把我的任务或账号信息上传到服务器吗？
+    a: |
+      不会。本站是纯静态网页，没有任何后端。使用微软账号登录后，浏览器只直接与 login.microsoftonline.com 和 graph.microsoft.com 通信。
+
+      任务数据只保存在当前标签页的浏览器内存中，登录令牌存于会话存储并在关闭标签页时清除。全部源代码以 AGPL-3.0 协议公开。
+
+  - q: 应该先选哪种导出格式？
+    a: |
+      建议每次都勾选“JSON 完整备份”（todo-backup.json）。它是无损格式，保留了微软原始响应和整理后的结构化字段。
+
+      之后哪怕 Microsoft To Do 已经彻底停服，你也可以在不登录的情况下把这份 JSON 重新拖进本站，离线转换为 CSV、Markdown、ICS、Todoist CSV 或 Things 3。
+
+  - q: 为什么导出结果里没有“我的一天”和清单分组？
+    a: |
+      Microsoft Graph 的 To Do 接口本身不提供“我的一天”（临时视图）和清单分组（文件夹），因此所有清单都会平铺导出。
+
+      接口提供的其余信息——清单、任务、步骤、备注、开始与截止日期、提醒、重复规则、分类、Outlook 标记邮件链接以及附件——都会完整导出。
+
+  - q: 导出完成后，如何撤销本站对微软账号的授权？
+    a: |
+      个人微软账号请前往 https://account.live.com/consent/Manage，在已授权应用列表中撤销访问权限。
+
+      工作或学校账号请前往 https://myapps.microsoft.com，找到对应应用并移除授权。

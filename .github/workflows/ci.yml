@@ -1,10 +1,13 @@
-# SPEC 15.5
-# - 每个 PR：检查 + 构建；（可选）上传预览版本
-# - 推送到 main：检查 → 用预发环境变量构建 → wrangler deploy --env staging
-# - 发布 tag v*：检查 → 用正式环境变量构建 → wrangler deploy
+# SPEC 15.5（自部署模板）
+# - 官方站点由私有内容仓库（todo-mover-content）拉取本仓库代码、合入正式内容后构建并部署；
+#   本公开仓库不存放任何官方 Cloudflare 凭据或 Environments，DEPLOY_ENABLED 保持关闭。
+# - 自部署用户可复用本模板，开启 DEPLOY_ENABLED 后即可自动部署：
+#   - 每个 PR：检查 + 构建；（可选）上传预发预览版本（PUBLIC_NOINDEX=true）
+#   - 推送到 main：检查 → 用预发环境变量构建（PUBLIC_NOINDEX=true）→ wrangler deploy --env staging
+#   - 发布 tag v*：检查 → 用正式环境变量构建（PUBLIC_NOINDEX=false）→ wrangler deploy
 #
 # 部署相关的 job 只在仓库变量 DEPLOY_ENABLED 为 "true" 时运行，Cloudflare 配好之前 CI 不会因部署失败而变红。
-# 需要配置：
+# 自部署如需开启部署，请配置：
 #   Secrets（仓库级）：CLOUDFLARE_API_TOKEN（只授予 Workers 部署权限）、CLOUDFLARE_ACCOUNT_ID
 #   Variables（仓库级）：DEPLOY_ENABLED
 #   Environment variables（staging / production 各一套）：
@@ -63,6 +66,7 @@ jobs:
           PUBLIC_DONATE_URL_CN: ${{ vars.PUBLIC_DONATE_URL_CN }}
           PUBLIC_DONATE_URL_GLOBAL: ${{ vars.PUBLIC_DONATE_URL_GLOBAL }}
           PUBLIC_CF_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CF_ANALYTICS_TOKEN }}
+          PUBLIC_NOINDEX: "true"
       - uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -103,7 +107,9 @@ jobs:
       - run: npm ci
       # 每个环境必须用自己的变量单独构建，不能复用预发的构建产物（SPEC 15.4）
       - run: npx astro build
-        env: *public-env
+        env:
+          <<: *public-env
+          PUBLIC_NOINDEX: "false"
       - uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

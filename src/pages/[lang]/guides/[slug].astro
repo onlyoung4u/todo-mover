@@ -1,0 +1,207 @@
+---
+import { render } from "astro:content";
+import Base from "../../../layouts/Base.astro";
+import Header from "../../../components/landing/Header.astro";
+import Footer from "../../../components/landing/Footer.astro";
+import JsonLd from "../../../components/landing/JsonLd.astro";
+import "../../../styles/content.css";
+import { getTranslator, localizedPath, type Locale } from "../../../i18n";
+import { getPublishedGuides, type GuideCollectionEntry } from "../../../lib/content";
+import { formatUtcDate } from "../../../lib/dates";
+import {
+  getAvailableLocalesForSlug,
+  getDefaultLocaleForPage,
+  normalizeTarget,
+  splitParagraphs,
+} from "../../../lib/guides";
+import { buildGuideJsonLd } from "../../../lib/jsonld";
+
+export async function getStaticPaths() {
+  const allGuides = await getPublishedGuides();
+  return allGuides.map((guide) => {
+    const availableLocales = getAvailableLocalesForSlug(allGuides, guide.slug);
+    return {
+      params: { lang: guide.lang, slug: guide.slug },
+      props: {
+        entry: guide.entry,
+        availableLocales,
+      },
+    };
+  });
+}
+
+interface Props {
+  entry: GuideCollectionEntry;
+  availableLocales: Locale[];
+}
+
+const lang = Astro.params.lang as Locale;
+const slug = Astro.params.slug as string;
+const { entry, availableLocales } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const t = getTranslator(lang);
+const pagePath = `/guides/${slug}/`;
+const updatedIso = formatUtcDate(data.updated);
+
+const site = Astro.site ?? new URL(Astro.url.origin);
+const abs = (p: string) => new URL(p, site).href;
+
+const defaultLocale = getDefaultLocaleForPage(availableLocales);
+const xDefaultHref = abs(localizedPath(defaultLocale, pagePath));
+
+const TARGET_LABELS: Record<string, string> = {
+  json: "JSON",
+  csv: "CSV",
+  excel: "Excel",
+  markdown: "Markdown",
+  obsidian: "Obsidian",
+  todoist: "Todoist",
+  things: "Things 3",
+  ics: "ICS",
+  thunderbird: "Thunderbird",
+  nextcloud: "Nextcloud",
+  ticktick: "TickTick",
+};
+
+const normalizedTarget = normalizeTarget(data.target);
+const targetLabel = !normalizedTarget
+  ? undefined
+  : normalizedTarget === "backup"
+    ? t("guides.target.backup")
+    : (TARGET_LABELS[normalizedTarget] ?? data.target);
+
+const jsonLd = buildGuideJsonLd({
+  siteUrl: site.href,
+  pageUrl: abs(localizedPath(lang, pagePath)),
+  lang,
+  siteName: t("site.name"),
+  title: data.title,
+  description: data.description,
+  answer: data.answer,
+  updated: data.updated,
+  steps: data.steps,
+  faq: data.faq,
+  sources: data.sources,
+  breadcrumbs: [
+    { name: t("breadcrumb.home"), url: abs(localizedPath(lang)) },
+    { name: t("nav.guides"), url: abs(localizedPath(lang, "/guides/")) },
+    { name: data.title, url: abs(localizedPath(lang, pagePath)) },
+  ],
+});
+---
+
+<Base
+  lang={lang}
+  title={`${data.title} · ${t("site.name")}`}
+  description={data.description}
+  path={pagePath}
+  availableLocales={availableLocales}
+  xDefaultHref={xDefaultHref}
+  ogType="article"
+  modifiedTime={updatedIso}
+>
+  <Fragment slot="head">
+    <JsonLd data={jsonLd} />
+  </Fragment>
+  <Header lang={lang} path={pagePath} availableLocales={availableLocales} fallbackPath="/guides/" />
+  <main class="container content-page">
+    <article class="content-measure">
+      <nav class="breadcrumb" aria-label={t("breadcrumb.label")}>
+        <ol>
+          <li>
+            <a href={localizedPath(lang)}>{t("breadcrumb.home")}</a>
+          </li>
+          <li>
+            <a href={localizedPath(lang, "/guides/")}>{t("nav.guides")}</a>
+          </li>
+          <li aria-current="page">{data.title}</li>
+        </ol>
+      </nav>
+
+      <h1>{data.title}</h1>
+      <div class="meta-row">
+        {targetLabel && <span class="chip accent">{targetLabel}</span>}
+        <span>
+          <time datetime={updatedIso}>{t("guides.updated", { date: updatedIso })}</time>
+        </span>
+      </div>
+
+      <section class="answer-box" aria-label={t("guides.answerLabel")}>
+        <p class="eyebrow">
+          <span class="dot"></span>
+          {t("guides.answerLabel")}
+        </p>
+        <p>{data.answer}</p>
+      </section>
+
+      {data.steps.length > 0 && (
+        <section class="guide-section" aria-labelledby="steps-heading">
+          <h2 id="steps-heading">{t("guides.stepsHeading")}</h2>
+          <ol class="guide-steps">
+            {data.steps.map((step) => (
+              <li>
+                <div>
+                  <strong>{step.name}</strong>
+                  <p>{step.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {data.faq.length > 0 && (
+        <section class="guide-section" aria-labelledby="guide-faq-heading">
+          <h2 id="guide-faq-heading">{t("guides.faqHeading")}</h2>
+          <div class="qa-list">
+            {data.faq.map((item) => (
+              <div class="qa-item">
+                <h3>{item.q}</h3>
+                {splitParagraphs(item.a).map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {data.sources.length > 0 && (
+        <section class="guide-section" aria-labelledby="sources-heading">
+          <h2 id="sources-heading">{t("guides.sourcesHeading")}</h2>
+          <ul class="sources-list">
+            {data.sources.map((source) => (
+              <li>
+                <a href={source.url} rel="noopener noreferrer">
+                  {source.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <section class="content-cta">
+        <div class="content-cta-copy">
+          <h2>{t("guides.ctaHeading")}</h2>
+          <p>{t("guides.ctaBody")}</p>
+        </div>
+        <div class="content-cta-actions">
+          <a class="button primary" href={localizedPath(lang, "/app/")}>
+            {t("guides.ctaButton")}
+          </a>
+          <a class="button" href={localizedPath(lang, "/guides/")}>
+            {t("guides.backToAll")}
+          </a>
+        </div>
+      </section>
+    </article>
+  </main>
+  <Footer lang={lang} path={pagePath} availableLocales={availableLocales} fallbackPath="/guides/" />
+</Base>

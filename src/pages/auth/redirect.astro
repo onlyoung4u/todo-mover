@@ -3,6 +3,7 @@
  * MSAL 登录回调页（SPEC 5.2）。
  * 只负责把登录结果交回主窗口：不渲染界面，不加载 React 和完整的 MSAL 实例。
  */
+import { config } from "../../config";
 ---
 
 <!doctype html>
@@ -10,7 +11,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
+    <meta name="robots" content={config.noindex ? "noindex, nofollow" : "noindex"} />
     <title>Signing in…</title>
   </head>
   <body>

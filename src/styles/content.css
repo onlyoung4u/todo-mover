@@ -1,0 +1,426 @@
+/* 指南列表页、指南详情页与常见问题页的共用排版与组件样式（无任何行内样式，兼容严格 CSP） */
+
+.content-page {
+  padding-top: 40px;
+}
+
+.content-measure {
+  max-width: 780px;
+}
+
+.breadcrumb {
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumb li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb li + li::before {
+  content: "/";
+  color: var(--subtle);
+}
+
+.breadcrumb a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--fg);
+}
+
+.content-lead {
+  max-width: 44em;
+  font-size: 1.05rem;
+  color: var(--muted);
+  margin: 0 0 28px;
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 12px 0 24px;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--font-label-size);
+  color: var(--subtle);
+}
+
+/* 指南列表卡片网格 */
+
+.guide-group {
+  margin-top: 40px;
+}
+
+.guide-group:first-of-type {
+  margin-top: 24px;
+}
+
+.guide-group-title {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+}
+
+.guide-grid {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.guide-group .guide-grid {
+  margin-top: 0;
+}
+
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  padding: 20px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.guide-card:hover {
+  border-color: var(--accent);
+  color: inherit;
+  box-shadow: var(--shadow);
+}
+
+.guide-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-family: var(--font-label);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--subtle);
+}
+
+.guide-card h2,
+.guide-card h3 {
+  font-family: var(--font-card-heading);
+  font-size: 1.15rem;
+  line-height: 1.35;
+  margin: 0 0 8px;
+  color: var(--fg);
+}
+
+.guide-card p {
+  font-size: 0.92rem;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.guide-card-cta {
+  margin-top: auto;
+  font-size: 0.875rem;
+  font-weight: 550;
+  color: var(--accent);
+}
+
+/* 指南详情页：页首直接回答 */
+
+.answer-box {
+  margin: 0 0 32px;
+  padding: 20px 22px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+}
+
+.answer-box .eyebrow {
+  margin-bottom: 8px;
+}
+
+.answer-box p:last-child {
+  margin-bottom: 0;
+  font-size: 1rem;
+  color: var(--fg);
+}
+
+/* 操作步骤 */
+
+.guide-section {
+  margin-top: 44px;
+}
+
+.guide-steps {
+  list-style: none;
+  counter-reset: guide-step;
+  margin: 16px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.guide-steps li {
+  counter-increment: guide-step;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+}
+
+.guide-steps li::before {
+  content: counter(guide-step, decimal-leading-zero);
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 26px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.guide-steps strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+
+.guide-steps p {
+  margin: 0;
+  font-size: 0.94rem;
+  color: var(--muted);
+}
+
+/* Markdown 正文 */
+
+.prose {
+  margin-top: 36px;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.prose h2 {
+  margin: 2em 0 0.6em;
+  font-size: clamp(1.3rem, 2.3vw, 1.6rem);
+}
+
+.prose h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  margin: 1.6em 0 0.5em;
+  font-size: 1.12rem;
+}
+
+.prose p {
+  margin: 0 0 1.1em;
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.2em;
+  padding-left: 1.4em;
+}
+
+.prose li {
+  margin-bottom: 0.4em;
+}
+
+.prose code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+.prose pre {
+  margin: 0 0 1.2em;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-inset);
+  overflow-x: auto;
+}
+
+.prose pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.prose blockquote {
+  margin: 0 0 1.2em;
+  padding: 10px 16px;
+  border-left: 3px solid var(--border-strong);
+  background: var(--bg-inset);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--muted);
+}
+
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.5em 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.4em;
+  font-size: 0.92rem;
+}
+
+.prose th,
+.prose td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--bg-inset);
+  font-weight: 600;
+}
+
+/* 问答列表（指南文末 FAQ 与独立 FAQ 页共用，正文保持可见） */
+
+.qa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.qa-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  padding: 20px 22px;
+}
+
+.qa-item h2,
+.qa-item h3 {
+  font-family: var(--font-card-heading);
+  font-size: 1.08rem;
+  line-height: 1.4;
+  margin: 0 0 10px;
+  color: var(--fg);
+}
+
+.qa-item p {
+  margin: 0 0 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.qa-item p:last-child {
+  margin-bottom: 0;
+}
+
+/* 参考来源 */
+
+.sources-list {
+  margin: 14px 0 0;
+  padding-left: 1.3em;
+  color: var(--muted);
+}
+
+.sources-list li {
+  margin-bottom: 6px;
+}
+
+/* 底部行动召唤 */
+
+.content-cta {
+  margin-top: 56px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-elev);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.content-cta-copy {
+  max-width: 540px;
+}
+
+.content-cta h2 {
+  font-size: 1.3rem;
+  margin: 0 0 6px;
+}
+
+.content-cta p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.content-cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .content-page {
+    padding-top: 28px;
+  }
+
+  .guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-steps li {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

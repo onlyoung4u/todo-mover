@@ -1,26 +1,67 @@
 ---
 import "../styles/global.css";
-import { LOCALES, type Locale } from "../i18n";
+import { LOCALES, MESSAGES, getTranslator, type Locale } from "../i18n";
 import { config } from "../config";
+import { getDefaultLocaleForPage } from "../lib/guides";
 
 interface Props {
   /** 当前页面语言；不传表示与语言无关的页面（根跳转页、404、登录回调）。 */
   lang?: Locale;
   title: string;
   description?: string;
-  /** 不含语言前缀的页面路径，例如 "/" 或 "/app/"；用于生成 canonical 和 hreflang。 */
+  /** 不含语言前缀的页面路径，例如 "/"、"/app/"、"/guides/backup-microsoft-to-do/"；用于生成 canonical 和 hreflang。 */
   path?: string;
   noindex?: boolean;
+  /** 当前页面实际存在的语言列表（缺译文的指南页只传入实际存在的语言）。 */
+  availableLocales?: readonly Locale[];
+  /** 可选：覆盖 hreflang="x-default" 的目标地址。 */
+  xDefaultHref?: string;
+  /** Open Graph 类型：默认 website，指南详情页为 article。 */
+  ogType?: "website" | "article";
+  /** 仅 ogType="article" 使用：UTC YYYY-MM-DD 格式的更新日期。 */
+  modifiedTime?: string;
 }
 
-const { lang, title, description, path, noindex = false } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  path,
+  noindex = false,
+  availableLocales,
+  xDefaultHref,
+  ogType = "website",
+  modifiedTime,
+} = Astro.props;
+
+const OG_LOCALE: Record<Locale, string> = {
+  en: "en_US",
+  "zh-CN": "zh_CN",
+  "zh-TW": "zh_TW",
+};
+
 const site = Astro.site ?? new URL(Astro.url.origin);
 const abs = (p: string) => new URL(p, site).href;
 
+const siteNoindex = config.noindex;
+const effectiveNoindex = siteNoindex || noindex;
+const robotsContent = siteNoindex ? "noindex, nofollow" : noindex ? "noindex" : undefined;
+
 const canonical = lang && path ? abs(`/${lang}${path}`) : abs(Astro.url.pathname);
-// noindex 的页面（如 /[lang]/app/）不进搜索结果，也就不需要语言互链
+const effectiveLocales = availableLocales ?? LOCALES;
+// noindex 的页面（如 /[lang]/app/ 或预发站全站）不进搜索结果，不输出 canonical 与语言互链
 const alternates =
-  lang && path && !noindex ? LOCALES.map((l) => ({ hreflang: l, href: abs(`/${l}${path}`) })) : [];
+  lang && path && !effectiveNoindex
+    ? effectiveLocales.map((l) => ({ hreflang: l, href: abs(`/${l}${path}`) }))
+    : [];
+
+const resolvedXDefault =
+  alternates.length > 0
+    ? (xDefaultHref ??
+      (path === "/" ? abs("/") : abs(`/${getDefaultLocaleForPage(effectiveLocales)}${path}`)))
+    : undefined;
+
+const siteName = lang ? getTranslator(lang)("site.name") : MESSAGES.en["site.name"];
 ---
 
 <!doctype html>
@@ -32,13 +73,30 @@ const alternates =
     <script is:inline src="/theme-init.js"></script>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
-    {noindex && <meta name="robots" content="noindex" />}
+    {robotsContent && <meta name="robots" content={robotsContent} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    {!noindex && <link rel="canonical" href={canonical} />}
+    {!effectiveNoindex && <link rel="canonical" href={canonical} />}
     {alternates.map((a) => (
       <link rel="alternate" hreflang={a.hreflang} href={a.href} />
     ))}
-    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={abs("/")} />}
+    {resolvedXDefault && <link rel="alternate" hreflang="x-default" href={resolvedXDefault} />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:url" content={canonical} />
+    {lang && <meta property="og:locale" content={OG_LOCALE[lang]} />}
+    {!effectiveNoindex &&
+      lang &&
+      alternates
+        .filter((a) => a.hreflang !== lang)
+        .map((a) => <meta property="og:locale:alternate" content={OG_LOCALE[a.hreflang]} />)}
+    {ogType === "article" && modifiedTime && (
+      <meta property="article:modified_time" content={modifiedTime} />
+    )}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
     <slot name="head" />
     {config.cfAnalyticsToken && (
       <script

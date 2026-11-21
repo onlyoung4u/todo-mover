@@ -471,4 +471,31 @@ describe("ExportApp integration", () => {
     expect(shownAfter).toBeLessThan(totalBefore);
     expect(nameBtn.title).toContain(`将导出 ${shownAfter} / 共 ${totalBefore} 个任务`);
   });
+
+  it("renders matching guide links on DoneScreen only when guideLinks has that target", async () => {
+    act(() => {
+      root!.render(
+        createElement(ExportApp, {
+          locale: "zh-CN",
+          guideLinks: { backup: "/zh-CN/guides/backup-microsoft-to-do/" },
+        }),
+      );
+    });
+    await act(async () => {
+      buttonByText("先看演示").click();
+    });
+    await flush();
+
+    await act(async () => {
+      buttonByText("导出").click();
+    });
+    await flush();
+
+    const links = Array.from(
+      container.querySelectorAll<HTMLAnchorElement>(".done-screen .guide a"),
+    );
+    const detailed = links.filter((a) => a.textContent?.trim() === "详细指南");
+    expect(detailed).toHaveLength(1);
+    expect(detailed[0]?.getAttribute("href")).toBe("/zh-CN/guides/backup-microsoft-to-do/");
+  });
 });

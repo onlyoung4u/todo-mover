@@ -6,6 +6,8 @@ export const config = {
   donateUrlCn: import.meta.env.PUBLIC_DONATE_URL_CN?.trim() || undefined,
   donateUrlGlobal: import.meta.env.PUBLIC_DONATE_URL_GLOBAL?.trim() || undefined,
   cfAnalyticsToken: import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN?.trim() || undefined,
+  /** 预发 / PR 预览站防收录开关：为 true 时全站 noindex，跳过 sitemap 与 llms*.txt，响应头追加 X-Robots-Tag。 */
+  noindex: import.meta.env.PUBLIC_NOINDEX?.trim().toLowerCase() === "true",
   repoUrl: "https://github.com/onlyoung4u/todo-mover",
   /** Microsoft To Do 停止服务日期（SPEC 第 1 节）。 */
   shutdownDate: "2027-06-30",

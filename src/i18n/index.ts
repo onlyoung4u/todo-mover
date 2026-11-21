@@ -32,6 +32,22 @@ export function localizedPath(locale: Locale, path = "/"): string {
   return `/${locale}${normalized}`;
 }
 
+/**
+ * 计算语言切换器中目标语言的链接地址：
+ * 如果页面在目标语言下存在译文，停留在同一路径；否则回退到 fallbackPath（如指南列表页 `/guides/`），避免 404。
+ */
+export function localeSwitchPath(
+  targetLocale: Locale,
+  path: string,
+  availableLocales?: readonly Locale[],
+  fallbackPath = "/",
+): string {
+  if (!availableLocales || availableLocales.includes(targetLocale)) {
+    return localizedPath(targetLocale, path);
+  }
+  return localizedPath(targetLocale, fallbackPath);
+}
+
 export function getLocaleStaticPaths() {
   return LOCALES.map((lang) => ({ params: { lang } }));
 }

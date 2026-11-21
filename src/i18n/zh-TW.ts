@@ -294,6 +294,49 @@ const zhTW: Messages = {
   "app.preview.tabTasks": "工作",
   "app.preview.tabDetail": "詳細資料",
   "app.preview.backToTasks": "返回工作清單",
+
+  "nav.guides": "指南",
+  "nav.faq": "常見問題",
+  "breadcrumb.label": "頁面路徑",
+  "breadcrumb.home": "首頁",
+
+  "guides.title": "備份與遷移指南",
+  "guides.description":
+    "在 Microsoft To Do 應用程式退役前備份資料，並把工作遷移至 Todoist、Obsidian、Things 3、行事曆應用程式或試算表的實用指南。",
+  "guides.eyebrow": "指南",
+  "guides.heading": "備份與遷移指南",
+  "guides.lead": "安全匯出 Microsoft To Do 資料，並順利遷移至其他工作或筆記應用程式的分步說明。",
+  "guides.read": "閱讀指南",
+  "guides.backToAll": "全部指南",
+  "guides.empty": "此語言下尚未發布指南。",
+  "guides.updated": "最後核實：{date}",
+  "guides.answerLabel": "直接回答",
+  "guides.stepsHeading": "操作步驟",
+  "guides.faqHeading": "相關問題",
+  "guides.sourcesHeading": "參考來源",
+  "guides.ctaHeading": "準備好匯出你的工作了嗎？",
+  "guides.ctaBody":
+    "所有處理都在瀏覽器本機完成。可以先保存一份無損 JSON 備份，或開啟示範模式體驗。",
+  "guides.ctaButton": "開啟匯出工具",
+  "guides.group.backup": "備份與基礎",
+  "guides.group.migrate": "遷移至其他應用程式",
+  "guides.target.backup": "備份",
+
+  "faq.title": "常見問題",
+  "faq.description":
+    "關於 Microsoft To Do 退役時間、純瀏覽器隱私、匯出格式選擇、介面限制與撤銷 Microsoft 帳戶授權的常見問答。",
+  "faq.eyebrow": "常見問題",
+  "faq.heading": "常見問題",
+  "faq.lead": "關於 Microsoft To Do 應用程式退役、本機隱私處理方式與匯出注意事項的簡明回答。",
+  "faq.ctaHeading": "還沒決定要移去哪款應用程式？",
+  "faq.ctaBody": "先匯出一份無損 JSON 備份，日後選定工具時再隨時離線轉換。",
+
+  "landing.guides.eyebrow": "指南與說明",
+  "landing.guides.heading": "遷移指南",
+  "landing.guides.all": "檢視全部指南",
+  "landing.guides.faq": "檢視常見問題",
+  "landing.formats.readGuide": "遷移指南",
+  "app.done.readGuide": "詳細指南",
 };
 
 export default zhTW;

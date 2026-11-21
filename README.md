@@ -33,15 +33,34 @@ npm run dev                  # http://localhost:4321
 
 Injected at build time. Locally, put them in `.env.local` (not committed). All of them end up in the client-side JS, so none of them are secrets.
 
-| Variable                    | Description                                                                                                                |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `PUBLIC_MSAL_CLIENT_ID`     | Application (client) ID of the Azure app. If empty, the sign-in button is disabled and only demo mode and JSON import work |
-| `PUBLIC_SITE_URL`           | Site origin, used for canonical, hreflang and sitemap URLs. Defaults to `http://localhost:4321`                            |
-| `PUBLIC_DONATE_URL_CN`      | Donation link shown in the Simplified Chinese UI                                                                           |
-| `PUBLIC_DONATE_URL_GLOBAL`  | Donation link shown in all other languages                                                                                 |
-| `PUBLIC_CF_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token                                                                                    |
+| Variable                    | Description                                                                                                                                              |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PUBLIC_MSAL_CLIENT_ID`     | Application (client) ID of the Azure app. If empty, the sign-in button is disabled and only demo mode and JSON import work                               |
+| `PUBLIC_SITE_URL`           | Site origin, used for canonical, hreflang and sitemap URLs. Defaults to `http://localhost:4321`                                                          |
+| `PUBLIC_DONATE_URL_CN`      | Donation link shown in the Simplified Chinese UI                                                                                                         |
+| `PUBLIC_DONATE_URL_GLOBAL`  | Donation link shown in all other languages                                                                                                               |
+| `PUBLIC_CF_ANALYTICS_TOKEN` | Optional Cloudflare Web Analytics token                                                                                                                  |
+| `PUBLIC_NOINDEX`            | Set to `true` for staging / preview builds to emit `noindex, nofollow`, skip `sitemap-*.xml` & `llms*.txt`, and append `X-Robots-Tag` to `dist/_headers` |
 
 The sign-in redirect URI needs no configuration: at runtime it is always `<current origin>/auth/redirect/`.
+
+## Content & local preview
+
+The export tool, page templates, structured data (JSON-LD), Open Graph tags, sitemap, and `llms*.txt` generators all live in this repository.
+
+- **Public example content** (`src/content/`): ships a minimal FAQ and a short backup guide in all three languages so self-hosted builds work out of the box with complete SEO/GEO routes.
+- **Official site content**: long-form migration guides and expanded FAQs are maintained in a separate private content repository and merged at build time. When `private-content/<collection>/` (`guides` or `faq`, each checked independently) contains at least one content file, it replaces `src/content/<collection>/` wholesale.
+
+Local preview options:
+
+- **Public examples only**: run `npm run dev` or `npm run preview`.
+- **With private or custom content**: clone or place content directories (`guides/` and/or `faq/`) under `private-content/` (gitignored), or point `CONTENT_DIR` to another folder:
+
+```bash
+CONTENT_DIR=../todo-mover-content npm run dev
+```
+
+- **Local Cloudflare Workers preview**: run `npm run preview` (`public/_headers` is copied into `dist/_headers` automatically). Only temporarily copy a custom `wrangler.jsonc` if you need to verify production route fields, and do not commit it.
 
 ## Self-hosting
 
@@ -78,26 +97,29 @@ Build **separately for each environment** with its own variables. Don't deploy t
 
 ### 3. GitHub Actions (optional)
 
-`.github/workflows/ci.yml` runs the type check, ESLint, Prettier, unit tests and a build on every pull request. Pushes to `main` deploy to staging, and `v*` tags deploy to production. Deploy jobs are off by default. To turn them on, configure:
+`.github/workflows/ci.yml` runs the type check, ESLint, Prettier, unit tests and a build on every pull request. Its deploy jobs (`preview`, `deploy-staging`, `deploy-production`) serve as a **self-hosting template** and are off by default (the official site is built and deployed from its private content repository, so this public repo holds no Cloudflare credentials). To turn them on in your own fork, configure:
 
 - Repository secrets: `CLOUDFLARE_API_TOKEN` (Workers deploy permission only) and `CLOUDFLARE_ACCOUNT_ID`
 - Repository variable: `DEPLOY_ENABLED=true`
-- Variables on the `staging` and `production` environments: the `PUBLIC_*` variables listed under [Environment variables](#environment-variables)
+- Variables on the `staging` and `production` environments: the `PUBLIC_*` variables listed under [Environment variables](#environment-variables) (`preview` and `deploy-staging` automatically set `PUBLIC_NOINDEX=true`)
 
 ## Project structure
 
 ```
 src/
-  pages/          # Root language redirect, per-language landing pages, export tool, MSAL redirect page, 404
-  layouts/        # Base.astro: lang, title, canonical, hreflang
-  components/     # landing/ (static Astro components), app/ (React export tool)
+  pages/          # Root language redirect, landing, guides, FAQ, export tool, robots.txt, llms*.txt, MSAL redirect, 404
+  layouts/        # Base.astro: lang, title, canonical, hreflang, OG / Twitter Card, PUBLIC_NOINDEX
+  components/     # landing/ (static Astro components & JsonLd), app/ (React export tool)
+  content/        # Minimal public example guides and FAQs (replaced by private-content/ when non-empty)
+  content.config.ts # Content collection schemas and private-content/ fallback resolution
+  lib/            # Content helpers, UTC date formatting, JSON-LD, llms*.txt, and build helpers
   core/           # Plain TypeScript: Graph fetching, normalization, exporters (no React/Astro)
   i18n/           # UI strings (en, zh-CN, zh-TW)
   fixtures/       # Demo and test data (anonymized or synthetic, no real personal data)
   scripts/        # Small client-side scripts used by pages
 scripts/          # Build-time tooling, e.g. the synthetic fixture generator
 public/_headers   # Security response headers and cache rules
-wrangler.jsonc    # Cloudflare Workers static assets config
+wrangler.jsonc    # Cloudflare Workers static assets template config
 ```
 
 ## License

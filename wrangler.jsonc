@@ -10,7 +10,7 @@
   },
   // 正式环境只通过自定义域名访问：*.workers.dev 在中国大陆无法访问，且会造成重复收录
   "workers_dev": false,
-  // TODO: 购买域名后把 todo-mover.example.com 替换为正式域名（DNS 需托管在 Cloudflare）
+  // 自部署模板占位域名（DNS 需托管在 Cloudflare）；官方站点由私有内容仓库的 deploy/wrangler.jsonc 覆盖
   "routes": [{ "pattern": "todo-mover.example.com", "custom_domain": true }],
   "env": {
     "staging": {

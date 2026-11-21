@@ -293,6 +293,49 @@ const zhCN: Messages = {
   "app.preview.tabTasks": "任务",
   "app.preview.tabDetail": "详情",
   "app.preview.backToTasks": "返回任务列表",
+
+  "nav.guides": "指南",
+  "nav.faq": "常见问题",
+  "breadcrumb.label": "页面路径",
+  "breadcrumb.home": "首页",
+
+  "guides.title": "备份与迁移指南",
+  "guides.description":
+    "在 Microsoft To Do 应用退役前备份数据，并把任务迁移到 Todoist、Obsidian、Things 3、日历应用或表格的实用指南。",
+  "guides.eyebrow": "指南",
+  "guides.heading": "备份与迁移指南",
+  "guides.lead": "安全导出 Microsoft To Do 数据，并顺利迁移到其他任务或笔记应用的分步说明。",
+  "guides.read": "阅读指南",
+  "guides.backToAll": "全部指南",
+  "guides.empty": "该语言下暂未发布指南。",
+  "guides.updated": "最后核实：{date}",
+  "guides.answerLabel": "直接回答",
+  "guides.stepsHeading": "操作步骤",
+  "guides.faqHeading": "相关问题",
+  "guides.sourcesHeading": "参考来源",
+  "guides.ctaHeading": "准备好导出你的任务了吗？",
+  "guides.ctaBody":
+    "全部处理都在浏览器本地完成。可以先保存一份无损 JSON 备份，或打开演示模式体验。",
+  "guides.ctaButton": "打开导出工具",
+  "guides.group.backup": "备份与基础",
+  "guides.group.migrate": "迁移到其他应用",
+  "guides.target.backup": "备份",
+
+  "faq.title": "常见问题",
+  "faq.description":
+    "关于 Microsoft To Do 退役时间、纯浏览器隐私、导出格式选择、接口限制及撤销微软账号授权的常见问答。",
+  "faq.eyebrow": "常见问题",
+  "faq.heading": "常见问题",
+  "faq.lead": "关于 Microsoft To Do 应用退役、本地隐私处理方式以及导出注意事项的简明回答。",
+  "faq.ctaHeading": "还没想好迁去哪款应用？",
+  "faq.ctaBody": "先导出一份无损 JSON 备份，以后选定工具时再随时离线转换。",
+
+  "landing.guides.eyebrow": "指南与帮助",
+  "landing.guides.heading": "迁移指南",
+  "landing.guides.all": "查看全部指南",
+  "landing.guides.faq": "查看常见问题",
+  "landing.formats.readGuide": "迁移指南",
+  "app.done.readGuide": "详细指南",
 };
 
 export default zhCN;

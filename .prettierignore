@@ -3,6 +3,7 @@ dist/
 .wrangler/
 node_modules/
 docs/
+private-content/
 coverage/
 package-lock.json
 src/fixtures/*.json

@@ -9,7 +9,15 @@ import globals from "globals";
 
 export default defineConfig(
   {
-    ignores: ["dist/", ".astro/", ".wrangler/", "node_modules/", "docs/", "coverage/"],
+    ignores: [
+      "dist/",
+      ".astro/",
+      ".wrangler/",
+      "node_modules/",
+      "docs/",
+      "private-content/",
+      "coverage/",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

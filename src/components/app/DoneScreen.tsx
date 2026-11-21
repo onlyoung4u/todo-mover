@@ -1,6 +1,7 @@
 import { config, donateUrlFor } from "../../config";
 import type { ExporterId } from "../../core/exporters/types";
 import type { MessageKey } from "../../i18n";
+import { findGuideLinkForTargetKey } from "../../lib/guides";
 import { useI18n } from "./i18n";
 import { CheckIcon, DownloadIcon } from "./icons";
 
@@ -11,14 +12,16 @@ export type DoneResult = {
   warnings: string[];
 };
 
-type Guide = { title: MessageKey; steps: MessageKey; link?: string };
+type GuideTargetKey = ExporterId | "ticktick";
+type Guide = { targetKey: GuideTargetKey; title: MessageKey; steps: MessageKey; link?: string };
 
 /** 导入指引（SPEC 第 8 节）。没有官方文档的应用不放链接。 */
 function guidesFor(formats: ExporterId[], ticktickLink: string): Guide[] {
   const byFormat: Record<ExporterId, Guide[]> = {
-    json: [{ title: "guide.json.title", steps: "guide.json.steps" }],
+    json: [{ targetKey: "json", title: "guide.json.title", steps: "guide.json.steps" }],
     csv: [
       {
+        targetKey: "csv",
         title: "guide.excel.title",
         steps: "guide.excel.steps",
         link: "https://support.microsoft.com/office/opening-csv-utf-8-files-correctly-in-excel-8a935af5-3416-4edd-ba7e-3dfd2bc4a032",
@@ -26,17 +29,19 @@ function guidesFor(formats: ExporterId[], ticktickLink: string): Guide[] {
     ],
     markdown: [
       {
+        targetKey: "markdown",
         title: "guide.obsidian.title",
         steps: "guide.obsidian.steps",
         link: "https://publish.obsidian.md/tasks/Reference/Task+Formats/Tasks+Emoji+Format",
       },
     ],
     ics: [
-      { title: "guide.thunderbird.title", steps: "guide.thunderbird.steps" },
-      { title: "guide.nextcloud.title", steps: "guide.nextcloud.steps" },
+      { targetKey: "ics", title: "guide.thunderbird.title", steps: "guide.thunderbird.steps" },
+      { targetKey: "ics", title: "guide.nextcloud.title", steps: "guide.nextcloud.steps" },
     ],
     todoist: [
       {
+        targetKey: "todoist",
         title: "guide.todoist.title",
         steps: "guide.todoist.steps",
         link: "https://todoist.com/help/articles/208821185",
@@ -44,6 +49,7 @@ function guidesFor(formats: ExporterId[], ticktickLink: string): Guide[] {
     ],
     things: [
       {
+        targetKey: "things",
         title: "guide.things.title",
         steps: "guide.things.steps",
         link: "https://culturedcode.com/things/help/url-scheme/",
@@ -52,18 +58,24 @@ function guidesFor(formats: ExporterId[], ticktickLink: string): Guide[] {
   };
   return [
     ...formats.flatMap((f) => byFormat[f]),
-    { title: "guide.ticktick.title", steps: "guide.ticktick.steps", link: ticktickLink },
+    {
+      targetKey: "ticktick",
+      title: "guide.ticktick.title",
+      steps: "guide.ticktick.steps",
+      link: ticktickLink,
+    },
   ];
 }
 
 type Props = {
   result: DoneResult;
   signedIn: boolean;
+  guideLinks?: Readonly<Record<string, string>>;
   onDownloadAgain: () => void;
   onBack: () => void;
 };
 
-export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props) {
+export function DoneScreen({ result, signedIn, guideLinks, onDownloadAgain, onBack }: Props) {
   const { t, locale } = useI18n();
   const donateUrl = donateUrlFor(locale);
   const ticktickLink =
@@ -133,23 +145,31 @@ export function DoneScreen({ result, signedIn, onDownloadAgain, onBack }: Props)
       <p className="eyebrow section-eyebrow">{t("app.done.guidesEyebrow")}</p>
       <h2>{t("app.done.guides")}</h2>
       <div className={`guides${guides.length === 4 ? " guides-even" : ""}`}>
-        {guides.map((g) => (
-          <div key={g.title} className="card guide">
-            <h3>{t(g.title)}</h3>
-            <ol>
-              {t(g.steps)
-                .split("\n")
-                .map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-            </ol>
-            {g.link && (
-              <a href={g.link} target="_blank" rel="noopener noreferrer">
-                {t("app.done.officialHelp")}
-              </a>
-            )}
-          </div>
-        ))}
+        {guides.map((g) => {
+          const siteGuideHref = findGuideLinkForTargetKey(guideLinks, g.targetKey);
+          return (
+            <div key={g.title} className="card guide">
+              <h3>{t(g.title)}</h3>
+              <ol>
+                {t(g.steps)
+                  .split("\n")
+                  .map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+              </ol>
+              {(siteGuideHref || g.link) && (
+                <div className="guide-links">
+                  {siteGuideHref && <a href={siteGuideHref}>{t("app.done.readGuide")}</a>}
+                  {g.link && (
+                    <a href={g.link} target="_blank" rel="noopener noreferrer">
+                      {t("app.done.officialHelp")}
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {signedIn && (

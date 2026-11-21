@@ -416,10 +416,17 @@ progress {
   color: var(--fg);
 }
 
+@media (max-width: 860px) {
+  .site-nav .optional {
+    display: none;
+  }
+}
+
 @media (max-width: 640px) {
   .site-header .container {
     gap: 10px;
-    padding: 0 14px;
+    padding: 8px 14px;
+    flex-wrap: wrap;
   }
 
   .brand {
@@ -430,10 +437,7 @@ progress {
   .site-nav {
     gap: 10px;
     font-size: 0.85rem;
-  }
-
-  .site-nav .optional {
-    display: none;
+    flex-wrap: wrap;
   }
 }
 

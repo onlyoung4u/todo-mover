@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Logo from "../components/landing/Logo.astro";
+import { config } from "../config";
 import { LOCALES, LOCALE_NAMES, MESSAGES, localizedPath } from "../i18n";
 
 const site = Astro.site ?? new URL(Astro.url.origin);
@@ -8,10 +9,14 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 
 <Base title={MESSAGES.en["site.title"]} description={MESSAGES.en["site.description"]}>
   <Fragment slot="head">
-    {LOCALES.map((l) => (
-      <link rel="alternate" hreflang={l} href={new URL(localizedPath(l), site).href} />
-    ))}
-    <link rel="alternate" hreflang="x-default" href={new URL("/", site).href} />
+    {!config.noindex && (
+      <>
+        {LOCALES.map((l) => (
+          <link rel="alternate" hreflang={l} href={new URL(localizedPath(l), site).href} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={new URL("/", site).href} />
+      </>
+    )}
   </Fragment>
   <main class="container gate">
     <div class="window gate-card">

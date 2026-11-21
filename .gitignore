@@ -40,5 +40,8 @@ pnpm-debug.log*
 export/
 m1-samples/
 
+# 私有内容仓库本地预览 / CI 合并目录（不入库）
+private-content/
+
 # Claude Code 本地设置
 .claude/

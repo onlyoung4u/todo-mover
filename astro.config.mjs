@@ -1,15 +1,25 @@
 // @ts-check
+import { readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import { loadEnv } from "vite";
+import {
+  injectNoindexHeader,
+  isIndexableSitemapUrl,
+  isNoindexEnv,
+} from "./src/lib/build-helpers.mjs";
 
 const env = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "PUBLIC_");
 const site = env.PUBLIC_SITE_URL || "http://localhost:4321";
 const analyticsEnabled = Boolean(env.PUBLIC_CF_ANALYTICS_TOKEN);
+const noindex = isNoindexEnv(env.PUBLIC_NOINDEX);
 
 // 与 src/i18n/locales.ts 保持一致（配置文件里不能直接 import TS）
 const locales = { en: "en", "zh-CN": "zh-CN", "zh-TW": "zh-TW" };
+const localeKeys = Object.keys(locales);
 
 // CSP 说明（见 SPEC 第 9 节）：
 // Astro 会生成内联脚本 / 样式（island 激活等），由 Astro 计算哈希后写入每页的 <meta> CSP。
@@ -17,6 +27,31 @@ const locales = { en: "en", "zh-CN": "zh-CN", "zh-TW": "zh-TW" };
 // 只保留 <meta> 无法表达的 frame-ancestors 等指令，避免两条策略叠加后拦截内联脚本。
 const cfAnalytics = analyticsEnabled ? ["https://static.cloudflareinsights.com"] : [];
 const cfBeacon = analyticsEnabled ? " https://cloudflareinsights.com" : "";
+
+/**
+ * 当 PUBLIC_NOINDEX=true 时，在构建产物 dist/_headers 的 /* 规则下追加
+ * `X-Robots-Tag: noindex, nofollow`，兜底覆盖所有静态资源；不改动源码中的 public/_headers。
+ *
+ * @returns {import("astro").AstroIntegration}
+ */
+function noindexHeadersIntegration() {
+  return {
+    name: "todo-mover-noindex-headers",
+    hooks: {
+      "astro:build:done": async ({ dir }) => {
+        const headersPath = path.join(fileURLToPath(dir), "_headers");
+        const content = await readFile(headersPath, "utf8");
+        await writeFile(headersPath, injectNoindexHeader(content), "utf8");
+      },
+    },
+  };
+}
+
+// 本地通过 CONTENT_DIR=../todo-mover-content 预览私有内容时，允许 Vite 读取外部目录中的配图
+const customContentDir = process.env.CONTENT_DIR?.trim();
+const fsAllow = customContentDir
+  ? [process.cwd(), path.resolve(process.cwd(), customContentDir)]
+  : undefined;
 
 export default defineConfig({
   site,
@@ -28,11 +63,15 @@ export default defineConfig({
   },
   integrations: [
     react(),
-    sitemap({
-      i18n: { defaultLocale: "en", locales },
-      // 只收录各语言落地页：根路径是跳转页，/app/ 与 /auth/ 不需要被搜索引擎收录
-      filter: (page) => /^\/[^/]+\/$/.test(new URL(page).pathname),
-    }),
+    ...(!noindex
+      ? [
+          sitemap({
+            i18n: { defaultLocale: "en", locales },
+            // 收录各语言落地页、指南页与 FAQ 页；排除 /、/404/、/app/、/auth/
+            filter: (page) => isIndexableSitemapUrl(page, localeKeys),
+          }),
+        ]
+      : [noindexHeadersIntegration()]),
   ],
   markdown: {
     // Shiki 依赖内联样式，与 CSP 冲突；本站没有代码高亮需求
@@ -56,6 +95,7 @@ export default defineConfig({
     },
   },
   vite: {
+    ...(fsAllow ? { server: { fs: { allow: fsAllow } } } : {}),
     build: {
       // 不把小脚本内联进 HTML，配合 CSP
       assetsInlineLimit: 0,

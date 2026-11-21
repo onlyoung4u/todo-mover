@@ -1,0 +1,31 @@
+updated: 2026-11-20
+items:
+  - q: Microsoft To Do 什麼時候退役？現有工作會怎樣？
+    a: |
+      Microsoft 宣布，全平台 Microsoft To Do 應用程式（Windows、Mac、iOS、Android、網頁版）將於 2027 年 6 月 30 日退役，個人帳戶與公司或學校帳戶均受影響；底層服務與 API 會在之後另行公布的日期停止。
+
+      現有工作不會自動遷移至 Microsoft Planner，且個人 Microsoft 帳戶無法使用 Planner。盡早匯出完整備份，可確保你無論轉向哪款工具都不會遺失資料。
+
+  - q: To Do 搬家會把我的工作或帳戶資訊上傳到伺服器嗎？
+    a: |
+      不會。本站是純靜態網頁，沒有任何後端。使用 Microsoft 帳戶登入後，瀏覽器只直接與 login.microsoftonline.com 和 graph.microsoft.com 通訊。
+
+      工作資料只保存在目前分頁的瀏覽器記憶體中，登入權杖存於工作階段儲存空間並在關閉分頁時清除。全部原始碼以 AGPL-3.0 授權公開。
+
+  - q: 應該先選哪種匯出格式？
+    a: |
+      建議每次都勾選「JSON 完整備份」（todo-backup.json）。它是無損格式，保留了 Microsoft 原始回應與整理後的結構化欄位。
+
+      之後即使 Microsoft To Do 已經停服，你也可以在不登入的情況下把這份 JSON 重新匯入本站，離線轉換為 CSV、Markdown、ICS、Todoist CSV 或 Things 3。
+
+  - q: 為什麼匯出結果裡沒有「我的一天」和清單群組？
+    a: |
+      Microsoft Graph 的 To Do 介面本身不提供「我的一天」（暫時檢視）和清單群組（資料夾），因此所有清單都會平鋪匯出。
+
+      介面提供的其餘資訊——清單、工作、步驟、備註、開始與到期日、提醒、重複規則、類別、Outlook 已標幟郵件連結以及附件——都會完整匯出。
+
+  - q: 匯出完成後，如何撤銷本站對 Microsoft 帳戶的授權？
+    a: |
+      個人 Microsoft 帳戶請前往 https://account.live.com/consent/Manage，在已授權應用程式清單中撤銷存取權限。
+
+      公司或學校帳戶請前往 https://myapps.microsoft.com，找到對應應用程式並移除授權。

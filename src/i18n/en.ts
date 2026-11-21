@@ -309,6 +309,52 @@ const en = {
   "app.preview.tabTasks": "Tasks",
   "app.preview.tabDetail": "Details",
   "app.preview.backToTasks": "Back to tasks",
+
+  "nav.guides": "Guides",
+  "nav.faq": "FAQ",
+  "breadcrumb.label": "Breadcrumb",
+  "breadcrumb.home": "Home",
+
+  "guides.title": "Migration & backup guides",
+  "guides.description":
+    "Practical guides for backing up Microsoft To Do and migrating your tasks to Todoist, Obsidian, Things 3, calendar apps, and spreadsheets.",
+  "guides.eyebrow": "Guides",
+  "guides.heading": "Backup & migration guides",
+  "guides.lead":
+    "Step-by-step notes for exporting your Microsoft To Do data safely and moving it to another app.",
+  "guides.read": "Read guide",
+  "guides.backToAll": "All guides",
+  "guides.empty": "No guides are published in this language yet.",
+  "guides.updated": "Last verified {date}",
+  "guides.answerLabel": "Quick answer",
+  "guides.stepsHeading": "Step-by-step",
+  "guides.faqHeading": "Common questions",
+  "guides.sourcesHeading": "Sources",
+  "guides.ctaHeading": "Ready to export your tasks?",
+  "guides.ctaBody":
+    "Everything runs locally in your browser. Start with a lossless JSON backup or try the demo first.",
+  "guides.ctaButton": "Open export tool",
+  "guides.group.backup": "Backup & overview",
+  "guides.group.migrate": "Migrate to another app",
+  "guides.target.backup": "Backup",
+
+  "faq.title": "Frequently asked questions",
+  "faq.description":
+    "Answers about the Microsoft To Do retirement, local browser privacy, export formats, limitations, and revoking account permissions.",
+  "faq.eyebrow": "FAQ",
+  "faq.heading": "Frequently asked questions",
+  "faq.lead":
+    "Key details on Microsoft To Do retirement, how To Do Mover handles your data locally, and what to expect when exporting.",
+  "faq.ctaHeading": "Still deciding where to move?",
+  "faq.ctaBody":
+    "Export a lossless JSON backup now and convert it offline whenever you pick your next app.",
+
+  "landing.guides.eyebrow": "Guides & help",
+  "landing.guides.heading": "Migration guides",
+  "landing.guides.all": "All guides",
+  "landing.guides.faq": "Read FAQ",
+  "landing.formats.readGuide": "Migration guide",
+  "app.done.readGuide": "Detailed guide",
 } as const;
 
 export type MessageKey = keyof typeof en;
