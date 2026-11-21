@@ -328,6 +328,36 @@
   font-weight: 600;
 }
 
+/* 第一列通常是"数据项"之类的短标签，给个最小宽度，避免中文两三个字就换行 */
+.prose th:first-child,
+.prose td:first-child {
+  min-width: 6.5em;
+}
+
+/* 窄屏：表格整体在自身内部横向滑动，不再把各列挤成细条，也不会撑破页面 */
+@media (max-width: 640px) {
+  .prose table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .prose th,
+  .prose td {
+    padding: 8px 10px;
+  }
+
+  .prose th:not(:first-child),
+  .prose td:not(:first-child) {
+    min-width: 9em;
+  }
+
+  .prose th:last-child,
+  .prose td:last-child {
+    min-width: 14em;
+  }
+}
+
 /* 问答列表（指南文末 FAQ 与独立 FAQ 页共用，正文保持可见） */
 
 .qa-list {
