@@ -12,6 +12,7 @@
 #   Variables（仓库级）：DEPLOY_ENABLED
 #   Environment variables（staging / production 各一套）：
 #     PUBLIC_MSAL_CLIENT_ID、PUBLIC_SITE_URL、PUBLIC_DONATE_URL_CN、PUBLIC_DONATE_URL_GLOBAL、PUBLIC_CF_ANALYTICS_TOKEN、PUBLIC_CONTACT_EMAIL
+# 注意：GitHub Actions 不支持 YAML 合并键（<<:），三个构建步骤的 env 需要分别写全。
 name: CI
 
 on:
@@ -60,7 +61,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro build
-        env: &public-env
+        env:
           PUBLIC_MSAL_CLIENT_ID: ${{ vars.PUBLIC_MSAL_CLIENT_ID }}
           PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
           PUBLIC_DONATE_URL_CN: ${{ vars.PUBLIC_DONATE_URL_CN }}
@@ -87,7 +88,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro build
-        env: *public-env
+        env:
+          PUBLIC_MSAL_CLIENT_ID: ${{ vars.PUBLIC_MSAL_CLIENT_ID }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_DONATE_URL_CN: ${{ vars.PUBLIC_DONATE_URL_CN }}
+          PUBLIC_DONATE_URL_GLOBAL: ${{ vars.PUBLIC_DONATE_URL_GLOBAL }}
+          PUBLIC_CF_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CF_ANALYTICS_TOKEN }}
+          PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
+          PUBLIC_NOINDEX: "true"
       - uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -109,7 +117,12 @@ jobs:
       # 每个环境必须用自己的变量单独构建，不能复用预发的构建产物（SPEC 15.4）
       - run: npx astro build
         env:
-          <<: *public-env
+          PUBLIC_MSAL_CLIENT_ID: ${{ vars.PUBLIC_MSAL_CLIENT_ID }}
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL }}
+          PUBLIC_DONATE_URL_CN: ${{ vars.PUBLIC_DONATE_URL_CN }}
+          PUBLIC_DONATE_URL_GLOBAL: ${{ vars.PUBLIC_DONATE_URL_GLOBAL }}
+          PUBLIC_CF_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CF_ANALYTICS_TOKEN }}
+          PUBLIC_CONTACT_EMAIL: ${{ vars.PUBLIC_CONTACT_EMAIL }}
           PUBLIC_NOINDEX: "false"
       - uses: cloudflare/wrangler-action@v4
         with:
