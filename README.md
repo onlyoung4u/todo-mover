@@ -75,7 +75,7 @@ The official site's Azure app only allows the official domain as a redirect URI,
    - Register separate apps for development and production, and don't add localhost to the production app.
    - SPA redirect URIs don't support wildcards, so sign-in can't work on the random preview URLs Workers generates. Use demo mode there.
 4. Copy the **Application (client) ID** into `PUBLIC_MSAL_CLIENT_ID`.
-5. Under **API permissions**, add the Microsoft Graph **Delegated** permissions `Tasks.Read` and `User.Read`. Admin consent is not required.
+5. Under **API permissions**, add the Microsoft Graph **Delegated** permissions `User.Read`, `Tasks.Read` and `Tasks.ReadWrite`. Admin consent is not required. Sign-in only asks for `User.Read` and `Tasks.Read`; `Tasks.ReadWrite` is requested incrementally when a user chooses to read or download attachments, because Microsoft doesn't return attachments with read-only access. Listing it here lets an organization's admin approve everything at once.
 6. Don't create a client secret. This is a browser-only app.
 7. Optional, to set a **Publisher domain**: when `PUBLIC_MSAL_CLIENT_ID` is set, the build writes `/.well-known/microsoft-identity-association.json` declaring that app ID. After deploying, go to **Branding & properties → Publisher domain → Verify a new domain**, enter your site's domain and click **Verify and save domain**. You can verify each environment's own domain with the app built for it.
 
