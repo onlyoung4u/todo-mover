@@ -1,6 +1,6 @@
 # To Do Mover
 
-> Don't want to set anything up? Use the official site at **https://todo-mover.example.com**. No registration needed.<!-- TODO: replace with the production domain after launch -->
+> Don't want to set anything up? Use the official site at **https://todo-mover.alchemew.com**. No registration needed.
 
 The Microsoft To Do apps will be retired on **June 30, 2027** (Microsoft retires the underlying service and APIs on separate, later dates). To Do Mover is a static web page: sign in with your Microsoft account and it reads all of your To Do data in the browser, then exports it as a lossless JSON backup and as CSV, Markdown, ICS, Todoist or Things files. **Your data never touches our servers.** It only travels between your browser and `graph.microsoft.com`.
 
