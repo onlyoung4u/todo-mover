@@ -1,6 +1,6 @@
 {
   "name": "todo-mover",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Export and migrate your Microsoft To Do data, entirely in the browser.",
   "license": "AGPL-3.0-only",
