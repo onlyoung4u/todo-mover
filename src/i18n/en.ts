@@ -222,7 +222,7 @@ const en = {
     "Open the Calendar app and go to Calendar settings → Import calendar.\nChoose an .ics file and the calendar to import into (or a new one).\nThe tasks then appear in the Tasks app.",
   "guide.todoist.title": "Todoist",
   "guide.todoist.steps":
-    "Create a project for each list, or open an existing one.\nOpen the project's … menu and choose Import from CSV.\nPick the matching CSV file, then repeat for each list.\nRecurring tasks start from today; the original due date is kept in the description.",
+    "Still signed in to Microsoft To Do? Todoist's official importer on the web also keeps completed tasks and reminders, so it is usually the better choice; these steps are for the CSV files.\nCreate a project for each list, or open an existing one.\nOpen the project's … menu and choose Import from CSV.\nPick the matching CSV file, then repeat for each list.\nRecurring tasks start from today; the original due date is kept in the description.",
   "guide.things.title": "Things 3",
   "guide.things.steps":
     "Do the export on the Mac, iPhone or iPad where Things is installed; the buttons only work there.\nClick the “Open in Things” buttons one at a time, waiting a few seconds between clicks.\nTags that don't already exist in Things are skipped, so create them first if you need them.",

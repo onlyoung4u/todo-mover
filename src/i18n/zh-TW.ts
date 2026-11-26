@@ -212,7 +212,7 @@ const zhTW: Messages = {
     "開啟 Nextcloud 的「行事曆」應用程式，進入「行事曆設定 → 匯入行事曆」。\n選擇一個 .ics 檔案，以及要匯入的行事曆（或新增一個）。\n匯入後工作會出現在「工作」應用程式中。",
   "guide.todoist.title": "Todoist",
   "guide.todoist.steps":
-    "為每個清單建立一個專案（或開啟既有專案）。\n開啟專案的「…」選單，選擇「從 CSV 匯入」。\n選擇對應的 CSV 檔案，每個清單重複一次。\n重複工作會從今天開始，原到期日保存在描述中。",
+    "如果還能登入 Microsoft To Do，優先在 Todoist 網頁版用官方匯入工具直接匯入，它還能保留已完成工作與提醒；以下步驟適用於本站匯出的 CSV。\n為每個清單建立一個專案（或開啟既有專案）。\n開啟專案的「…」選單，選擇「從 CSV 匯入」。\n選擇對應的 CSV 檔案，每個清單重複一次。\n重複工作會從今天開始，原到期日保存在描述中。",
   "guide.things.title": "Things 3",
   "guide.things.steps":
     "請在安裝了 Things 的 Mac、iPhone 或 iPad 上匯出，按鈕只在那裡有效。\n逐一點擊「在 Things 中開啟」按鈕，每次間隔幾秒。\nThings 中不存在的標籤會被略過，如需保留請先在 Things 中建立。",

@@ -212,7 +212,7 @@ const zhCN: Messages = {
     "打开 Nextcloud 的“日历”应用，进入“日历设置 → 导入日历”。\n选择一个 .ics 文件，以及要导入到的日历（或新建一个）。\n导入后任务会出现在“任务”应用中。",
   "guide.todoist.title": "Todoist",
   "guide.todoist.steps":
-    "为每个清单新建一个项目（或打开已有项目）。\n打开项目的“…”菜单，选择“从 CSV 导入”。\n选择对应的 CSV 文件，每个清单重复一次。\n重复任务会从今天开始，原截止日期保存在描述里。",
+    "如果还能登录 Microsoft To Do，优先在 Todoist 网页版用官方导入器直接导入，它还能保留已完成任务和提醒；以下步骤适用于本站导出的 CSV。\n为每个清单新建一个项目（或打开已有项目）。\n打开项目的“…”菜单，选择“从 CSV 导入”。\n选择对应的 CSV 文件，每个清单重复一次。\n重复任务会从今天开始，原截止日期保存在描述里。",
   "guide.things.title": "Things 3",
   "guide.things.steps":
     "请在安装了 Things 的 Mac、iPhone 或 iPad 上导出，按钮只在那里有效。\n逐个点击“在 Things 中打开”按钮，每次间隔几秒。\nThings 中不存在的标签会被跳过，如需保留请先在 Things 里创建。",
